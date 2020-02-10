@@ -1,0 +1,16 @@
+{
+  "name": "cq",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "https-proxy-agent": "^3.0.1",
+    "mjsoul": "^1.4.4",
+    "ws": "^7.2.0"
+  }
+}
