@@ -98,7 +98,7 @@ const ranking = async(type = 0, jp = false)=>{
 const paipu = async(id)=>{
     let data = ""
     await new Promise(resolve=>{
-        http.get("http://localhost/record?id="+id, (res)=>{
+        http.get("http://localhost/record?id="+id.replace("https://www.majsoul.com/1/?paipu=", ""), (res)=>{
             res.on('data', d=>{
                 data += d
             })
@@ -167,7 +167,7 @@ const paipu = async(id)=>{
     for (let i in result) {
         result[i].ptChange.push(result[i].part_point_1)
         let v = result[i]
-        format += `\n${v.wind}起:${v.nickname}(${v.rank}) / 终:${v.part_point_1} / 摸${v.tsumo}次:+${v.tsumoPt} / 胡${v.ron}次:+${v.ronPt} / 铳${v.furikomi}次:${v.furikomiPt}
+        format += `\n${v.wind}起:${v.nickname}(${v.rank}) / 摸${v.tsumo}次:+${v.tsumoPt} / 胡${v.ron}次:+${v.ronPt} / 铳${v.furikomi}次:${v.furikomiPt}
 ${result[i].ptChange.join("->")}`
     }
     return format

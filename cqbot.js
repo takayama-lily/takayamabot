@@ -14,6 +14,8 @@ delete require.cache[require.resolve('./mjutil')]
 const mjutil = require("./mjutil")
 delete require.cache[require.resolve('./bgm')]
 const bgm = require("./bgm")
+delete require.cache[require.resolve('./riichi/index')]
+const MJ = require('./riichi/index')
 
 const restart = function() {
     let res = {"action": "set_restart_plugin"}
@@ -118,7 +120,7 @@ class Session {
                 restart()
                 return
             }
-            if (command === "雀魂" && param) {
+            if ((command === "雀魂" || command === "qh") && param) {
                 mjutil.shuibiao(param).then((res)=>{this._send(res)})
             }
             if (command === "雀魂日服" && param) {
@@ -139,17 +141,68 @@ class Session {
             if (["book","anime","music","game","real"].includes(command)) {
                 bgm.getBangumi(command, param).then((res)=>{this._send(res)})
             }
-            if (command === "帮助") {
+            if (command === "牌理" || command === "pl") {
+                if (!param) {
+                    let s = `-----"-牌理(-pl)"指令紹介-----
+例① "-pl 11123456789999m"
+ ※ 手牌: 1112345678999m / 自摸: 9m
+例② "-pl 1112345678999m+9m"
+ ※ 手牌: 1112345678999m / 栄和: 9m
+例③ "-pl 3m+3m+456p99s6666z777z+d56z"
+ ※ 手牌: 3m / 栄和: 3m / 副露: 456p順子、9s暗槓、発明槓、中明刻 / dora: 白発
+例④ "-pl 11123456789999m+riho23"
+ ※ 手牌: 1112345678999m / 自摸: 9m / 付属: 立直一発海底(親家南場西家)
+-----詳細説明-----
+使用方法: -pl 手牌[+栄和牌][+副露][+dora牌][+付属]
+ ※ 付属一覧
+    t=天和/地和/人和
+    w=w立直  l(r)=立直  y(i)=一発
+    h=海底/河底  k=槍槓/嶺上
+    o=親家  c=子家
+    1=11=東場東家(default)  2=12=東場南家  3=13=東場西家  4=14=東場北家
+    21=南場東家  22=南場南家  23=南場西家  24=南場北家
+ ※ 其他
+    m=萬子 p=筒子 s=索子 z=字牌 1234567z=東南西北白發中
+    0=赤  暗槓副露55m=五萬赤無 50m=五萬赤有`
+                    this._send(s)
+                    return
+                }
+                try {
+                    let mj = new MJ(param)
+                    let res = mj.calc()
+                    if (!res.isAgari)
+                        this._send('未和')
+                    else if (!res.text)
+                        this._send('無役')
+                    else {
+                        let s = ''
+                        for (let k in res.yaku)
+                            s += k + ' ' + res.yaku[k] + '\n'
+                        s += res.text
+                        if (res.ten > 0)
+                            s += ' ' + res.ten + '点'
+                        else {
+                            s += '\n親: ' + res.oya
+                            s += '\n子: ' + res.ko
+                        }
+                        this._send(s)
+                    }
+                } catch(e) {
+                    this._send('input error')
+                }
+            }
+            if (command === "帮助" || command === "help") {
                 this._send(`固定指令:
--疫情 (查询即时疫情信息)
--雀魂 nickname (查雀魂id)
--雀魂日服 nickname (查雀魂日服id)
--牌谱 paipu_id (查牌谱)
--国服排名 (雀魂排名;三麻排名输入-国服排名 3)
--日服排名 (雀魂日服排名)
--新番 (新番时间表)
--anime name (查动漫;同类指令:book,music,game,real)
--高级 (查看高级指令)`)
+-雀魂 nickname ※查雀魂id，缩写-qh
+-雀魂日服 nickname ※查雀魂日服id
+-牌谱 paipu_id ※查牌谱
+-国服排名 ※查雀魂排名，查三麻排名输入-国服排名 3
+-日服排名 ※查雀魂日服排名
+-新番 ※新番时间表
+-anime name ※查动漫，同类指令:book,music,game,real
+-疫情 ※查询即时疫情信息，缩写-yq
+-牌理 ※实验性指令，缩写-pl
+-高级 ※查看高级指令`)
             }
             if (command === "高级") {
                 this._send(`高级指令:
@@ -158,7 +211,7 @@ class Session {
     ②代码放在斜杠后，如/var a=1;有报错信息。
 2.危险指令暂时不写在这里了`)
             }
-            if (command === "疫情" ) {
+            if (command === "疫情" || command === "yq") {
                 let gbl = []
                 new Promise(resolve=>{
                     https.get("https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5", res=>{
