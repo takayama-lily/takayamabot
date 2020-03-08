@@ -7,22 +7,12 @@ mjsoul = new MJSoul({
     "url": "wss://mj-srv-6.majsoul.com:4501"
 })
 const deny = ["login", "logout"]
-let closeFlag = true
-let loginFlag = false
 const login = ()=>{
-    closeFlag = false
-    loginFlag = false
-    mjsoul.send("login", (data)=>{
-        if (!data.error)
-            loginFlag = true
-    }, mjsoul.jsonForLogin("372914165@qq.com", "552233"))
+    mjsoul.send("login", {account: "372914165@qq.com", password: mjsoul.hash("552233")})
 }
 mjsoul.on("NotifyAccountLogout", login)
 mjsoul.on("NotifyAnotherLogin", login)
-mjsoul.on("close", ()=>{
-    closeFlag = true
-    loginFlag = false
-})
+mjsoul.on("error", ()=>{})
 mjsoul.open(login)
 
 mjsoulJP = new MJSoul({
@@ -31,19 +21,14 @@ mjsoulJP = new MJSoul({
 const loginJP = ()=>{
 	let req = {
 		type: 10,
-		access_token: 'eff72bfc-b1a9-4006-ae54-db36cbd65ccb',
-		reconnect: false,
-		device: { device_type: 'pc', browser: 'chrome' },
-		random_key: '49c6fee7-52e2-429b-e2a9-5e4165d7b1b8',
-		client_version: '0.6.184.w',
-		currency_platforms: [2]
+		access_token: 'eff72bfc-b1a9-4006-ae54-db36cbd65ccb'
 	}
-    mjsoulJP.send("oauth2Login", (data)=>{
-        console.log(data)
-    }, req)
+    mjsoulJP.send("oauth2Login", req)
 }
+mjsoulJP.on("NotifyAccountLogout", loginJP)
+mjsoulJP.on("NotifyAnotherLogin", loginJP)
+mjsoulJP.on("error", ()=>{})
 mjsoulJP.open(loginJP)
-mjsoulJP.on("error", ()=>{mjsoulJP.open(loginJP)})
 
 let api = {}
 api.resolve = async(req, res)=>{
@@ -86,16 +71,7 @@ api.resolve = async(req, res)=>{
 	            }
 	        })
 	    } else if (r.pathname === "/api" && query.m && deny.indexOf(query.m) === -1) {
-	        if (closeFlag) {
-	        	mjsoul.open(login)
-	            resolve(JSON.stringify({"error": "可能在维护"}))
-	        }
-	        if (loginFlag) {
-	            mjsoul.send(query.m, cb, query)
-	        } else {
-	            login()
-	            resolve(JSON.stringify({"error": "可能在维护"}))
-	        }
+	    	mjsoul.send(query.m, cb, query)
 	    } else {
 	        res.writeHead(302, {'Location': '/index.html'});
 	        res.end()
