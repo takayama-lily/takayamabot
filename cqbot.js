@@ -214,28 +214,19 @@ class Session {
             if (command === "疫情" || command === "yq") {
                 let gbl = []
                 new Promise(resolve=>{
-                    https.get("https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5", res=>{
+                    https.get("https://view.inews.qq.com/g2/getOnsInfo?name=disease_other", res=>{
                         res.on('data', d=>gbl.push(d))
                         res.on("end", ()=>resolve())
                     })
                 }).then(()=>{
                     gbl = Buffer.concat(gbl).toString()
-                    gbl = JSON.parse(JSON.parse(gbl.replace("undefined", "")).data)
-                    let area = gbl.areaTree
-                    let msg = "", step = 0
-                    area = area[0].children.concat(area.slice(1))
-                    for (let k in area) {
-                        step++
-                        let v = area[k]
-                        let t = v.total
-                        msg += step % 2  ? "\n" : "; "
-                        msg += v.name + ":"
-                        msg += t.confirm ? "确" + t.confirm : ""
-                        msg += t.dead ? "亡" + t.dead : ""
-                        msg += t.heal ? "愈" + t.heal : ""
+                    gbl = JSON.parse(JSON.parse(gbl.replace("undefined", "")).data).foreignList
+                    let msg = ''
+                    for (let v of gbl) {
+                        msg += v.name + `(${v.date.substr(1)}): 確` + v.confirm
+                        msg += v.confirmAdd ? `(+${v.confirmAdd})` : ''
+                        msg += ' 亡' + v.dead + ' 癒' + v.heal + '\n'
                     }
-                    msg = `国内合计:确${gbl.chinaTotal.confirm} 疑${gbl.chinaTotal.suspect} 亡${gbl.chinaTotal.dead} 愈${gbl.chinaTotal.heal}` + msg
-                    msg += `\n(截至${gbl.lastUpdateTime} 来源腾讯news)`
                     this._send(msg)
                 })
             }
