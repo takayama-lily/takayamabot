@@ -69,8 +69,8 @@ class Session {
         }
     }
     _send(msg) {
-        if (typeof msg === "string" && msg.length > 2000) {
-            msg = msg.substr(0, 2000) + "\n(...字数太长，只能截取一部分)"
+        if (typeof msg === "string" && msg.length > 4500) {
+            msg = msg.substr(0, 4450) + "\n(...字数太长，只能截取一部分)"
         }
         let res = {
             "action": this.action,
@@ -84,7 +84,10 @@ class Session {
         ws.send(JSON.stringify(res))
     }
     receive(data) {
-        if (data.message.includes("constructor")) return
+        if (data.message.includes("constructor")) {
+            this._send('因constructor有bug可在沙盒内关闭父进程，已被禁用。')
+            return
+        }
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").trim()
         vm.runInContext("data="+JSON.stringify(data), context)
         if (data.message.substr(0, 1) === "/") {
