@@ -17,7 +17,7 @@ if (fs.existsSync("./context")) {
         tmp = JSON.parse(tmp)
         for (let k in tmp) {
             if (tmp[k].toString().includes("()=>{};"))
-                context[k] = eval(tmp[k])
+                continue
             else
                 context[k] = tmp[k]
         }
@@ -28,7 +28,9 @@ vm.createContext(context)
 setInterval(()=>{
     let tmp = {}
     for (let k in context) {
-        tmp[k] = typeof context[k] === "function" ? "()=>{};"+context[k].toString() : context[k]
+        if (typeof context[k] === "function")
+            continue
+        tmp[k] = context[k]
     }
     fs.writeFileSync("./context", JSON.stringify(tmp))
 }, 300000)
