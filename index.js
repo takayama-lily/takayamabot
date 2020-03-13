@@ -1,7 +1,6 @@
 const fs = require("fs")
 process.on("uncaughtException", (e)=>{
-    fs.appendFile("err.log", Date() + " " + e.message + "\n", ()=>{})
-    // console.log(e.message)
+    fs.appendFile("err.log", Date() + " " + e.stack + "\n", ()=>{})
 })
 const WebSocket = require("ws")
 const http = require("http")
