@@ -85,7 +85,7 @@ class Session {
     }
     receive(data) {
         if (data.message.includes("constructor")) {
-            this._send('因constructor有bug可在沙盒内关闭父进程，已被禁用。')
+            this._send('因constructor有bug可在沙盒内操纵父进程，已被禁用。')
             return
         }
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").trim()
@@ -212,6 +212,7 @@ class Session {
 1.执行js代码: 
     ①输入代码直接执行，如var a=1;无报错信息。
     ②代码放在斜杠后，如/var a=1;有报错信息。
+    ※进程有时会重启，目前function类型变量在重启进程后无法还原
 2.危险指令暂时不写在这里了`)
             }
             if (command === "疫情" || command === "yq") {
