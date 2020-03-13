@@ -2,6 +2,7 @@ const fs = require("fs")
 const url = require("url")
 const querystring = require('querystring')
 const zlib = require("zlib")
+const proc = require('child_process')
 const MJSoul = require("mjsoul")
 mjsoul = new MJSoul({
     "url": "wss://mj-srv-6.majsoul.com:4501"
@@ -72,6 +73,8 @@ api.resolve = async(req, res)=>{
 	        })
 	    } else if (r.pathname === "/api" && query.m && deny.indexOf(query.m) === -1) {
 	    	mjsoul.send(query.m, cb, query)
+	    } else if (r.pathname === "/youShouldPull") {
+	    	proc.exec('./up', (error, stdout, stderr) => {})
 	    } else {
 	        res.writeHead(302, {'Location': '/index.html'});
 	        res.end()

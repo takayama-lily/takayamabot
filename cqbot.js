@@ -197,7 +197,7 @@ class Session {
 -新番 ※新番时间表
 -anime name ※查动漫，同类指令:book,music,game,real
 -疫情 ※查询即时疫情信息，缩写-yq
--牌理 ※实验性指令，缩写-pl
+-牌理 ※(应该没bug了..)，缩写-pl
 -高级 ※查看高级指令`)
             }
             if (command === "高级") {
