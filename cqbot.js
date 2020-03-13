@@ -147,51 +147,44 @@ class Session {
             if (command === "牌理" || command === "pl") {
                 if (!param) {
                     let s = `-----"-牌理(-pl)"指令紹介-----
-例① "-pl 11123456789999m"
+例①自摸 "-pl 1112345678999m9m"
  ※ 手牌: 1112345678999m / 自摸: 9m
-例② "-pl 1112345678999m+9m"
+例②栄和 "-pl 1112345678999m+9m"
  ※ 手牌: 1112345678999m / 栄和: 9m
-例③ "-pl 3m+3m+456p99s6666z777z+d56z"
- ※ 手牌: 3m / 栄和: 3m / 副露: 456p順子、9s暗槓、発明槓、中明刻 / dora: 白発
-例④ "-pl 11123456789999m+riho23"
- ※ 手牌: 1112345678999m / 自摸: 9m / 付属: 立直一発海底(親家南場西家)
+例③副露&dora "-pl 33m+456p99s6666z777z+d56z"
+ ※ 副露: 456p順子、9s暗槓、発明槓、中明刻 / dora: 白発
+例④付属役 "-pl 11123456789999m+rih21"
+ ※ 付属役: 立直一発海底(南場東家)
 -----詳細説明-----
-使用方法: -pl 手牌[+栄和牌][+副露][+dora牌][+付属]
- ※ 付属一覧
+使用方法: -pl 手牌[+栄和牌][+副露][+dora牌][+付属役]
+ ※付属役一覧
     t=天和/地和/人和
     w=w立直  l(r)=立直  y(i)=一発
     h=海底/河底  k=槍槓/嶺上
-    o=親家  c=子家
-    1=11=東場東家(default)  2=12=東場南家  3=13=東場西家  4=14=東場北家
+ ※場風自風設定 (default: 東場南家)
+    1=11=東場東家  2=12=東場南家  3=13=東場西家  4=14=東場北家
     21=南場東家  22=南場南家  23=南場西家  24=南場北家
- ※ 其他
-    m=萬子 p=筒子 s=索子 z=字牌 1234567z=東南西北白發中
-    0=赤  暗槓副露55m=五萬赤無 50m=五萬赤有`
+ ※其他
+    m=萬子 p=筒子 s=索子 z=字牌 1234567z=東南西北白發中 0=赤dora`
                     this._send(s)
                     return
                 }
                 try {
-                    let mj = new MJ(param)
-                    let res = mj.calc()
+                    let msg = param + '\n'
+                    let res = new MJ(param).calc()
                     if (!res.isAgari)
-                        this._send('未和')
-                    else if (!res.text)
-                        this._send('無役')
+                        this._send(msg + '未和')
+                    else if (!res.ten)
+                        this._send(msg + '無役')
                     else {
                         let s = ''
                         for (let k in res.yaku)
                             s += k + ' ' + res.yaku[k] + '\n'
                         s += res.text
-                        if (res.ten > 0)
-                            s += ' ' + res.ten + '点'
-                        else {
-                            s += '\n親: ' + res.oya
-                            s += '\n子: ' + res.ko
-                        }
-                        this._send(s)
+                        this._send(msg + s)
                     }
                 } catch(e) {
-                    this._send('input error')
+                    this._send(param + '\n输入有误')
                 }
             }
             if (command === "帮助" || command === "help") {

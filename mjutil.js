@@ -16,10 +16,8 @@ const shuibiao = async (words, jp = false)=>{
             result = data, resolve()
         }, {pattern: words})
     })
-    // if (result.decode_id && result.match_accounts.length == 0)
-    //     result.match_accounts = [result.decode_id]
-    if (result.match_accounts.length == 0) 
-        return "玩家不存在"
+    if (result.match_accounts.length === 0) 
+        return `玩家 ${words} 不存在`
     let account_id = result.match_accounts.shift()
 
     let account, statistic, state
