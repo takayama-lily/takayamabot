@@ -75,6 +75,8 @@ api.resolve = async(req, res)=>{
 	    	mjsoul.send(query.m, cb, query)
 	    } else if (r.pathname === "/youShouldPull") {
 	    	proc.exec('./up', (error, stdout, stderr) => {})
+	    	res.end()
+	        reject()
 	    } else {
 	        res.writeHead(302, {'Location': '/index.html'});
 	        res.end()
