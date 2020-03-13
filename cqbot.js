@@ -85,7 +85,7 @@ class Session {
     }
     receive(data) {
         if (data.message.includes("constructor")) {
-            this._send('因constructor有bug可在沙盒内操纵父进程，已被禁用。')
+            this._send('由于constructor有bug可在沙盒内操纵父进程，已被禁用。')
             return
         }
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").trim()
