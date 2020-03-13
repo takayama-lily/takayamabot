@@ -12,27 +12,12 @@ const api = require("./api.js")
 
 context = {}
 if (fs.existsSync("./context")) {
-    let tmp = fs.readFileSync("./context")
-    try {
-        tmp = JSON.parse(tmp)
-        for (let k in tmp) {
-            if (tmp[k].toString().includes("()=>{};"))
-                continue
-            else
-                context[k] = tmp[k]
-        }
-    } catch(e){}
+    context = JSON.parse(fs.readFileSync("./context"))
 }
 vm.createContext(context)
 
 setInterval(()=>{
-    let tmp = {}
-    for (let k in context) {
-        if (typeof context[k] === "function")
-            continue
-        tmp[k] = context[k]
-    }
-    fs.writeFileSync("./context", JSON.stringify(tmp))
+    fs.writeFileSync("./context", JSON.stringify(context))
 }, 300000)
 
 const server = http.createServer((req, res)=>{
