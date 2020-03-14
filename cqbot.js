@@ -69,7 +69,7 @@ class Session {
         }
     }
     _send(msg) {
-        if (typeof msg === "object") {
+        if (typeof msg !== "string") {
             try {
                 msg = JSON.stringify(msg)
             } catch (e) {
