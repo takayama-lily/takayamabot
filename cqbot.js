@@ -69,14 +69,14 @@ class Session {
         }
     }
     _send(msg) {
-        if (typeof msg !== "string") {
+        if (typeof msg === "object") {
             try {
                 msg = JSON.stringify(msg)
             } catch (e) {
                 return
             }
         }
-        if (msg.length > 4500) {
+        if (typeof msg === 'string' && msg.length > 4500) {
             msg = msg.substr(0, 4450) + "\n(...字数太长，只能截取一部分)"
         }
         let res = {
