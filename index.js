@@ -17,6 +17,15 @@ if (fs.existsSync("./context")) {
 vm.createContext(context)
 
 setInterval(()=>{
+    for (let k in context) {
+        if (typeof context[k] !== 'string') {
+            try {
+                JSON.stringify(context[k])
+            } catch (e) {
+                context[k] = []
+            }
+        }
+    }
     fs.writeFileSync("./context", JSON.stringify(context))
 }, 300000)
 

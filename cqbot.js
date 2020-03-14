@@ -69,7 +69,14 @@ class Session {
         }
     }
     _send(msg) {
-        if (typeof msg === "string" && msg.length > 4500) {
+        if (typeof msg !== "string") {
+            try {
+                msg = JSON.stringify(msg)
+            } catch (e) {
+                return
+            }
+        }
+        if (msg.length > 4500) {
             msg = msg.substr(0, 4450) + "\n(...字数太长，只能截取一部分)"
         }
         let res = {
@@ -78,7 +85,7 @@ class Session {
                 "user_id": this.user_id,
                 "group_id": this.group_id,
                 "discuss_id": this.discuss_id,
-                "message": typeof msg === "string" ? msg : JSON.stringify(msg)
+                "message": msg
             }
         }
         ws.send(JSON.stringify(res))
