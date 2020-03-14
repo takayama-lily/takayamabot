@@ -100,7 +100,7 @@ class Session {
         if (data.message.substr(0, 1) === "/") {
             let result
             try {
-                result = vm.runInContext(data.message.substr(1), context, {timeout: 500})
+                result = vm.runInContext(data.message.substr(1), context, {timeout: 50})
             } catch(e) {
                 result = e.message
             }
@@ -238,7 +238,7 @@ class Session {
 
         } else {
             try {
-                let result = vm.runInContext(data.message, context, {timeout: 500})
+                let result = vm.runInContext(data.message, context, {timeout: 50})
                 this._send(result)
             } catch(e) {
                 if (Math.random() > 0.999) {
