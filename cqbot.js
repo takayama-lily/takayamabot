@@ -94,8 +94,7 @@ class Session {
         if ((data.message.includes("this")) && data.user_id !== master) {
             return
         }
-        if (data.message.includes("constructor") && data.user_id !== master) {
-            this._send('由于constructor有bug可在沙盒内操纵父进程，已被禁用。')
+        if (data.message.replace('constructor', '').includes("constructor")) {
             return
         }
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").trim()
