@@ -91,7 +91,7 @@ class Session {
         ws.send(JSON.stringify(res))
     }
     receive(data) {
-        if ((data.message.includes("this") || data.message.includes("globalThis") || data.message.includes("eval")) && data.user_id !== master) {
+        if ((data.message.includes("this")) && data.user_id !== master) {
             return
         }
         if (data.message.includes("constructor") && data.user_id !== master) {
@@ -99,7 +99,7 @@ class Session {
             return
         }
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").trim()
-        vm.runInContext("data="+JSON.stringify(data), context)
+        vm.runInContext("delete globalThis;delete eval;data="+JSON.stringify(data), context)
         if (data.message.substr(0, 1) === "/") {
             let result
             try {
