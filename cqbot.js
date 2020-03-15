@@ -205,7 +205,7 @@ class Session {
 -国服排名 ※查雀魂排名，查三麻排名输入-国服排名 3
 -日服排名 ※查雀魂日服排名
 -新番 ※新番时间表
--anime name ※查动漫，同类指令:book,music,game,real
+-anime name ※查动漫(加双引号可获得精确结果)，同类指令:book,music,game,real
 -疫情 ※查询即时疫情信息，缩写-yq
 -牌理 ※(应该没bug了..)，缩写-pl
 -高级 ※查看高级指令`)
