@@ -98,7 +98,9 @@ class Session {
             return
         }
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").trim()
-        vm.runInContext("delete globalThis;delete eval;data="+JSON.stringify(data), context)
+        try {
+            vm.runInContext("delete globalThis;delete eval;data="+JSON.stringify(data), context)
+        } catch(e) {}
         if (data.message.substr(0, 1) === "/") {
             let result
             try {
