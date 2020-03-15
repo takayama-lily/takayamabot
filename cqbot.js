@@ -14,8 +14,8 @@ delete require.cache[require.resolve('./mjutil')]
 const mjutil = require("./mjutil")
 delete require.cache[require.resolve('./bgm')]
 const bgm = require("./bgm")
-delete require.cache[require.resolve('./riichi/index')]
-const MJ = require('./riichi/index')
+delete require.cache[require.resolve('riichi')]
+const MJ = require('riichi')
 
 const restart = function() {
     let res = {"action": "set_restart_plugin"}
@@ -172,6 +172,7 @@ class Session {
     t=天和/地和/人和
     w=w立直  l(r)=立直  y(i)=一発
     h=海底/河底  k=槍槓/嶺上
+    o=古役有効 (目前只有人和,大七星)
  ※場風自風設定 (default: 東場南家)
     1=11=東場東家  2=12=東場南家  3=13=東場西家  4=14=東場北家
     21=南場東家  22=南場南家  23=南場西家  24=南場北家
@@ -185,8 +186,6 @@ class Session {
                     let res = new MJ(param).calc()
                     if (!res.isAgari)
                         this._send(msg + '未和')
-                    else if (!res.ten)
-                        this._send(msg + '無役')
                     else {
                         let s = ''
                         for (let k in res.yaku)
