@@ -91,7 +91,7 @@ class Session {
         ws.send(JSON.stringify(res))
     }
     receive(data) {
-        if (data.message.includes("this") && data.user_id !== master) {
+        if ((data.message.includes("this") || data.message.includes("globalThis")) && data.user_id !== master) {
             return
         }
         if (data.message.includes("constructor") && data.user_id !== master) {
