@@ -15,48 +15,48 @@ if (fs.existsSync("./context")) {
     context = JSON.parse(fs.readFileSync("./context"))
 }
 vm.createContext(context)
-vm.runInContext(`
-const Function = this.Function;
-const Object = this.Object;
-const Boolean = this.Boolean;
-const Number = this.Number;
-const BigInt = this.BigInt;
-const Math = this.Math;
-const Date = this.Date;
-const String = this.String;
-const RegExp = this.RegExp;
-const Array = this.Array;
-const Map = this.Map;
-const Set = this.Set;
-const ArrayBuffer = this.ArrayBuffer;
-const JSON = this.JSON;
-const Error = this.Error;
-Object.freeze(Function);
-Object.freeze(Object);
-Object.freeze(Boolean);
-Object.freeze(Number);
-Object.freeze(BigInt);
-Object.freeze(Math);
-Object.freeze(Date);
-Object.freeze(String);
-Object.freeze(RegExp);
-Object.freeze(Array);
-Object.freeze(Map);
-Object.freeze(Set);
-Object.freeze(ArrayBuffer);
-Object.freeze(JSON);
-Object.freeze(Error);
-const isFinite = this.isFinite;
-const isNaN = this.isNaN;
-const parseFloat = this.parseFloat;
-const parseInt = this.parseInt;
-const decodeURI = this.decodeURI;
-const decodeURIComponent = this.decodeURIComponent;
-const encodeURI = this.encodeURI;
-const encodeURIComponent = this.encodeURIComponent;
-const escape = this.escape;
-const unescape = this.unescape;
-`, context)
+// vm.runInContext(`
+// const Function = this.Function;
+// const Object = this.Object;
+// const Boolean = this.Boolean;
+// const Number = this.Number;
+// const BigInt = this.BigInt;
+// const Math = this.Math;
+// const Date = this.Date;
+// const String = this.String;
+// const RegExp = this.RegExp;
+// const Array = this.Array;
+// const Map = this.Map;
+// const Set = this.Set;
+// const ArrayBuffer = this.ArrayBuffer;
+// const JSON = this.JSON;
+// const Error = this.Error;
+// Object.freeze(Function);
+// Object.freeze(Object);
+// Object.freeze(Boolean);
+// Object.freeze(Number);
+// Object.freeze(BigInt);
+// Object.freeze(Math);
+// Object.freeze(Date);
+// Object.freeze(String);
+// Object.freeze(RegExp);
+// Object.freeze(Array);
+// Object.freeze(Map);
+// Object.freeze(Set);
+// Object.freeze(ArrayBuffer);
+// Object.freeze(JSON);
+// Object.freeze(Error);
+// const isFinite = this.isFinite;
+// const isNaN = this.isNaN;
+// const parseFloat = this.parseFloat;
+// const parseInt = this.parseInt;
+// const decodeURI = this.decodeURI;
+// const decodeURIComponent = this.decodeURIComponent;
+// const encodeURI = this.encodeURI;
+// const encodeURIComponent = this.encodeURIComponent;
+// const escape = this.escape;
+// const unescape = this.unescape;
+// `, context)
 
 
 setInterval(()=>{
