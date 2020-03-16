@@ -134,6 +134,10 @@ class Session {
                 restart()
                 return
             }
+            if (data.user_id === master && command === "free") {
+                this._send(process.memoryUsage())
+                return
+            }
             if ((command === "雀魂" || command === "qh") && param) {
                 mjutil.shuibiao(param).then((res)=>{this._send(res)})
             }
