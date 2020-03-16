@@ -99,7 +99,7 @@ class Session {
         }
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").trim()
         try {
-            vm.runInContext("delete globalThis;delete eval;data="+JSON.stringify(data), context)
+            vm.runInContext("delete globalThis;delete eval;this.data="+JSON.stringify(data), context)
         } catch(e) {}
         if (data.message.substr(0, 1) === "/") {
             let result
@@ -177,7 +177,9 @@ class Session {
     1=11=東場東家  2=12=東場南家  3=13=東場西家  4=14=東場北家
     21=南場東家  22=南場南家  23=南場西家  24=南場北家
  ※其他
-    m=萬子 p=筒子 s=索子 z=字牌 1234567z=東南西北白發中 0=赤dora`
+    m=萬子 p=筒子 s=索子 z=字牌 1234567z=東南西北白發中 0=赤dora
+-----Github-----
+https://github.com/takayama-lily/riichi`
                     this._send(s)
                     return
                 }
@@ -185,7 +187,7 @@ class Session {
                     let msg = param + '\n'
                     let res = new MJ(param).calc()
                     if (!res.isAgari)
-                        this._send(msg + '未和')
+                        this._send(msg + '未和或無役')
                     else {
                         let s = ''
                         for (let k in res.yaku)
@@ -207,7 +209,7 @@ class Session {
 -新番 ※新番时间表
 -anime name ※查动漫(加双引号可获得精确结果)，同类指令:book,music,game,real
 -疫情 ※查询即时疫情信息，缩写-yq
--牌理 ※(应该没bug了..)，缩写-pl
+-牌理 ※和牌点数計算，缩写-pl
 -高级 ※查看高级指令`)
             }
             if (command === "高级") {
