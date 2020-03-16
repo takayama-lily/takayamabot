@@ -92,7 +92,7 @@ const server = http.createServer((req, res)=>{
 const ws = new WebSocket.Server({server})
 ws.on('connection', (conn)=>{
     conn.on('message', (data)=>{
-        delete require.cache[require.resolve('./cqbot.js')]
+        // delete require.cache[require.resolve('./cqbot.js')]
         let cqbot = require("./cqbot.js")
         cqbot(conn, data)
     })   

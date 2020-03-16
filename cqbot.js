@@ -34,7 +34,7 @@ const deal = function(data) {
         }
         let session = sessions[data.message_type][data[data.message_type + "_id"]]
         session.receive(data)
-        delete sessions[data.message_type][data[data.message_type + "_id"]]
+        // delete sessions[data.message_type][data[data.message_type + "_id"]]
     }
     if (data.post_type === "request") {
         if (data.request_type === "friend") {
