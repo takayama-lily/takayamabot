@@ -97,7 +97,7 @@ class Session {
         if (data.message.replace('constructor', '').includes("constructor")) {
             return
         }
-        data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").trim()
+        data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
         try {
             vm.runInContext("delete globalThis;delete eval;this.data="+JSON.stringify(data), context)
         } catch(e) {}
