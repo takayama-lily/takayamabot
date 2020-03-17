@@ -90,9 +90,10 @@ const server = http.createServer((req, res)=>{
 })
 
 const ws = new WebSocket.Server({server})
-const mid = require("./mid.js")
+
 ws.on('connection', (conn)=>{
     conn.on('message', (data)=>{
+        let mid = require("./mid.js")
         mid(conn, data)
     })   
 })
