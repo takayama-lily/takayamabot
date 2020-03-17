@@ -151,7 +151,7 @@ class Session {
                 this._send('test')
             }
             if (command === "uptime") {
-                ws.send(process.uptime() + '秒前启动')
+                this.send(process.uptime() + '秒前启动')
             }
             if ((command === "雀魂" || command === "qh") && param) {
                 mjutil.shuibiao(param).then((res)=>{this._send(res)})

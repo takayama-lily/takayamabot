@@ -65,6 +65,7 @@ Object.freeze(ArrayBuffer.prototype);
 Object.freeze(JSON);
 Object.freeze(Error);
 Object.freeze(Error.prototype);
+delete data;
 delete globalThis;
 delete eval;
 delete Function;
