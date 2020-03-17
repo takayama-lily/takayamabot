@@ -140,6 +140,9 @@ class Session {
                 this._send(process.memoryUsage())
                 return
             }
+            if (command === "test") {
+                this._send('test')
+            }
             if ((command === "雀魂" || command === "qh") && param) {
                 mjutil.shuibiao(param).then((res)=>{this._send(res)})
             }
