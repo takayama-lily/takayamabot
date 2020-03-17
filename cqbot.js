@@ -34,7 +34,6 @@ const deal = function(data) {
         }
         let session = sessions[data.message_type][data[data.message_type + "_id"]]
         session.receive(data)
-        // delete sessions[data.message_type][data[data.message_type + "_id"]]
     }
     if (data.post_type === "request") {
         if (data.request_type === "friend") {
@@ -99,9 +98,7 @@ class Session {
             return
         }
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
-        try {
-            vm.runInContext("delete globalThis;delete eval;this.data="+JSON.stringify(data), context)
-        } catch(e) {}
+        vm.runInContext("this.data="+JSON.stringify(data), context)
         if (data.message.substr(0, 1) === "/") {
             let result
             try {

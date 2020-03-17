@@ -15,9 +15,7 @@ if (fs.existsSync("./context")) {
     context = JSON.parse(fs.readFileSync("./context"))
 }
 vm.createContext(context)
-try {
-    vm.runInContext(`
-const Function = this.Function;
+vm.runInContext(`const Function = this.Function;
 const Object = this.Object;
 const Boolean = this.Boolean;
 const Number = this.Number;
@@ -56,8 +54,10 @@ Object.freeze(Map);
 Object.freeze(Set);
 Object.freeze(ArrayBuffer);
 Object.freeze(JSON);
-Object.freeze(Error);`, context)
-} catch (e) {}
+Object.freeze(Error);
+delete globalThis;
+delete eval;
+const getData = ()=>{return this.data;}`, context)
 
 setInterval(()=>{
     for (let k in context) {
@@ -90,11 +90,10 @@ const server = http.createServer((req, res)=>{
 })
 
 const ws = new WebSocket.Server({server})
-let cqbot = require("./cqbot.js")
+const mid = require("./mid.js")
 ws.on('connection', (conn)=>{
     conn.on('message', (data)=>{
-        // delete require.cache[require.resolve('./cqbot.js')]
-        cqbot(conn, data)
+        mid(conn, data)
     })   
 })
 
