@@ -2,7 +2,10 @@ const fs = require("fs")
 const vm = require("vm")
 const proc = require('child_process')
 const https = require("https")
-const master = 372914165
+const isMaster = (uid)=>{
+    const master = [372914165]
+    return master.includes(uid)
+}
 let sessions = {
     "private": {},
     "group": {},
@@ -95,7 +98,7 @@ class Session {
         ws.send(JSON.stringify(res))
     }
     receive(data) {
-        if ((data.message.includes("this")) && data.user_id !== master) {
+        if ((data.message.includes("this")) && !isMaster(data.user_id)) {
             return
         }
         if (data.message.replace('constructor', '').includes("constructor")) {
@@ -131,12 +134,11 @@ class Session {
             if (command === "raw" && param) {
                 ws.send(param)
             }
-            if (data.user_id === master && command === "re") {
+            if (isMaster(data.user_id) && command === "re") {
                 this._send("重启插件")
                 restart()
-                return
             }
-            if (data.user_id === master && command === "run") {
+            if (isMaster(data.user_id) && command === "run") {
                 let result
                 try {
                     result = eval(data.message.substr(5))
@@ -259,11 +261,7 @@ https://github.com/takayama-lily/riichi`
             try {
                 let result = vm.runInContext(data.message, context, {timeout: 50})
                 this._send(result)
-            } catch(e) {
-                if (Math.random() > 0.999) {
-                    //this._send(`输入"-帮助"查看指令列表。`)
-                }
-            }
+            } catch(e) {}
         }
     }
 }
