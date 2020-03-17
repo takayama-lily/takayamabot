@@ -69,6 +69,10 @@ class Session {
         }
     }
     _send(msg) {
+        if (msg === undefined)
+            msg = 'undefined'
+        if (typeof msg === 'function')
+            msg = `[Function: ${msg.name?msg.name:'anonymous'}]`
         if (typeof msg !== "string") {
             try {
                 msg = JSON.stringify(msg)
@@ -77,7 +81,7 @@ class Session {
             }
         }
         if (typeof msg === 'string' && msg.length > 4500) {
-            msg = msg.substr(0, 4450) + "\n(...字数太长，只能截取一部分)"
+            msg = msg.substr(0, 4495) + "\n..."
         }
         let res = {
             "action": this.action,
