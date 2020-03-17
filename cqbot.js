@@ -231,7 +231,7 @@ https://github.com/takayama-lily/riichi`
 1.执行js代码: 
     ①输入代码直接执行，如var a=1;无报错信息。
     ②代码放在斜杠后，如/var a=1;有报错信息。
-    ※进程有时会重启，目前function类型变量和常量在重启进程后无法还原
+    ※进程有时会重启，常量和function类型变量在重启后无法还原
 2.危险指令暂时不写在这里了`)
             }
             if (command === "疫情" || command === "yq") {
