@@ -246,8 +246,10 @@ https://github.com/takayama-lily/riichi`
                 }).then(()=>{
                     gbl = Buffer.concat(gbl).toString()
                     gbl = JSON.parse(JSON.parse(gbl.replace("undefined", "")).data).foreignList
-                    let msg = ''
+                    let msg = '国外主要疫情:\n'
                     for (let v of gbl) {
+                        if (v.confirm < 100 && !v.dead)
+                            continue
                         msg += v.name + `(${v.date.substr(1)}): 確` + v.confirm
                         msg += v.confirmAdd ? `(+${v.confirmAdd})` : ''
                         msg += ' 亡' + v.dead + ' 癒' + v.heal + '\n'
