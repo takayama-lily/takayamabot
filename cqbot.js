@@ -102,7 +102,7 @@ class Session {
             return
         }
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
-        vm.runInContext("this.data="+JSON.stringify(data), context)
+        vm.runInContext("data="+JSON.stringify(data), context)
         if (data.message.substr(0, 1) === "/") {
             let result
             try {
@@ -136,9 +136,14 @@ class Session {
                 restart()
                 return
             }
-            if (data.user_id === master && command === "free") {
-                this._send(process.memoryUsage())
-                return
+            if (data.user_id === master && command === "run") {
+                let result
+                try {
+                    result = eval(data.message.substr(5))
+                } catch(e) {
+                    result = e.message
+                }
+                this._send(result)
             }
             if (command === "test") {
                 this._send('test')

@@ -15,8 +15,7 @@ if (fs.existsSync("./context")) {
     context = JSON.parse(fs.readFileSync("./context"))
 }
 vm.createContext(context)
-vm.runInContext(`const Function = this.Function;
-const Object = this.Object;
+vm.runInContext(`const Object = this.Object;
 const Boolean = this.Boolean;
 const Number = this.Number;
 const BigInt = this.BigInt;
@@ -40,24 +39,36 @@ const encodeURI = this.encodeURI;
 const encodeURIComponent = this.encodeURIComponent;
 const escape = this.escape;
 const unescape = this.unescape;
-Object.freeze(Function);
 Object.freeze(Object);
+Object.freeze(Object.prototype);
 Object.freeze(Boolean);
+Object.freeze(Boolean.prototype);
 Object.freeze(Number);
+Object.freeze(Number.prototype);
 Object.freeze(BigInt);
+Object.freeze(BigInt.prototype);
 Object.freeze(Math);
 Object.freeze(Date);
+Object.freeze(Date.prototype);
 Object.freeze(String);
+Object.freeze(String.prototype);
 Object.freeze(RegExp);
+Object.freeze(RegExp.prototype);
 Object.freeze(Array);
+Object.freeze(Array.prototype);
 Object.freeze(Map);
+Object.freeze(Map.prototype);
 Object.freeze(Set);
+Object.freeze(Set.prototype);
 Object.freeze(ArrayBuffer);
+Object.freeze(ArrayBuffer.prototype);
 Object.freeze(JSON);
 Object.freeze(Error);
+Object.freeze(Error.prototype);
 delete globalThis;
 delete eval;
-const getData = ()=>{return this.data;}`, context)
+delete Function;
+let data;`, context)
 
 setInterval(()=>{
     for (let k in context) {
