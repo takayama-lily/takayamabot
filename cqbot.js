@@ -120,7 +120,7 @@ class Session {
                 command = data.message.substr(7)
             }
             command = `timeout 10 bash -c "./exec ${encodeURIComponent(command)}"`
-            if (data.user_id !== master || data.message.substr(2, 5) === "nordo") {
+            if (!isMaster(data.user_id) || data.message.substr(2, 5) === "nordo") {
                 command = `runuser www -c '${command}'`
             }
             proc.exec(command, (error, stdout, stderr) => {
