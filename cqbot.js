@@ -150,6 +150,9 @@ class Session {
             if (command === "test") {
                 this._send('test')
             }
+            if (command === "uptime") {
+                ws.send(process.uptime() + '秒前启动')
+            }
             if ((command === "雀魂" || command === "qh") && param) {
                 mjutil.shuibiao(param).then((res)=>{this._send(res)})
             }
@@ -234,7 +237,8 @@ https://github.com/takayama-lily/riichi`
     ①输入代码直接执行，如var a=1;无报错信息。
     ②代码放在斜杠后，如/var a=1;有报错信息。
     ※进程有时会重启，常量和function类型变量在重启后无法还原
-2.危险指令暂时不写在这里了`)
+2.查看进程启动时间:
+    -uptime`)
             }
             if (command === "疫情" || command === "yq") {
                 let gbl = []
