@@ -70,16 +70,16 @@ delete globalThis;
 delete eval;
 delete Function;
 let data;`, context)
-vm.runInContext(`const 帮助=\`固定指令:
--雀魂 nickname ※查雀魂id，缩写-qh
--雀魂日服 nickname ※查雀魂日服id
--牌谱 paipu_id ※查牌谱
--国服排名 ※查雀魂排名，查三麻排名输入-国服排名 3
--日服排名 ※查雀魂日服排名
--新番 ※新番时间表
--anime name ※查动漫(加双引号可获得精确结果)，同类指令:book,music,game,real
--疫情 ※查询即时疫情信息，缩写-yq
--牌理 ※和牌点数計算，缩写-pl
+vm.runInContext(`const 帮助=\`固定指令(前面加-):
+-雀魂(qh) nickname ※查询雀魂战绩
+-雀魂日服(qhjp) nickname ※查询雀魂日服战绩
+-牌谱(pp) paipu_id ※查询牌谱
+-国服排名(rank) ※查询雀魂排名(三麻:-rank 3)
+-日服排名(rankjp) ※查询雀魂日服排名(三麻:-rankjp 3)
+-新番(bgm) ※查询新番时间表
+-anime name ※查询动漫，同类指令:book,music,game,real
+-疫情(yq) ※查询疫情信息
+-牌理(pl) ※和牌点数計算
 高级 ※查看高级指令\``, context)
 vm.runInContext(`const help=帮助;
 const 高级=\`高级指令:
@@ -87,16 +87,17 @@ const 高级=\`高级指令:
     ①输入代码直接执行，如var a=1;无报错信息。
     ②代码放在斜杠后，如/var a=1;有报错信息。
     ※进程有时会重启，常量和function类型变量在重启后无法还原
-2.查看进程启动时间:
+2.查看开机时间:
     -uptime\``, context)
 
 setInterval(()=>{
     for (let k in context) {
         if (typeof context[k] !== 'string') {
             try {
-                JSON.stringify(context[k])
+                if (JSON.stringify(context[k]).length > 524288)
+                    delete context[k]
             } catch (e) {
-                context[k] = []
+                delete context[k]
             }
         }
     }

@@ -98,7 +98,7 @@ class Session {
         ws.send(JSON.stringify(res))
     }
     receive(data) {
-        if ((data.message.includes("this") || data.message.includes("constructor")) && !isMaster(data.user_id)) {
+        if (data.message.includes("this") && !isMaster(data.user_id)) {
             return
         }
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
@@ -106,7 +106,7 @@ class Session {
         if (data.message.substr(0, 1) === "/") {
             let result
             try {
-                result = vm.runInContext(data.message.substr(1), context, {timeout: 50})
+                result = vm.runInContext(data.message.substr(1), context, {timeout: 10})
             } catch(e) {
                 result = e.message
             }
@@ -148,24 +148,24 @@ class Session {
                 this._send('test')
             }
             if (command === "uptime") {
-                this._send(process.uptime() + '秒前启动')
+                this._send(process.uptime() + '秒前开机')
             }
             if ((command === "雀魂" || command === "qh") && param) {
                 mjutil.shuibiao(param).then((res)=>{this._send(res)})
             }
-            if (command === "雀魂日服" && param) {
+            if ((command === "雀魂日服" || command === "qhjp") && param) {
                 mjutil.shuibiao(param, true).then((res)=>{this._send(res)})
             }
-            if (command === "国服排名") {
+            if (command === "国服排名" || command === "rank") {
                 mjutil.ranking(param).then((res)=>{this._send(res)})
             }
-            if (command === "日服排名") {
+            if (command === "日服排名" || command === "rankjp") {
                 mjutil.ranking(param, true).then((res)=>{this._send(res)})
             }
-            if (command === "牌谱" && param) {
+            if ((command === "牌谱" || command === "pp") && param) {
                 mjutil.paipu(param).then((res)=>{this._send(res)})
             }
-            if (command === "新番") {
+            if (command === "新番" || command === "bgm") {
                 bgm.getCalendar(param).then((res)=>{this._send(res)})
             }
             if (["book","anime","music","game","real"].includes(command)) {
@@ -194,7 +194,7 @@ class Session {
     21=南場東家  22=南場南家  23=南場西家  24=南場北家
  ※其他
     m=萬子 p=筒子 s=索子 z=字牌 1234567z=東南西北白發中 0=赤dora
------Github-----
+-----Code Github-----
 https://github.com/takayama-lily/riichi`
                     this._send(s)
                     return
@@ -216,17 +216,17 @@ https://github.com/takayama-lily/riichi`
                 }
             }
             if (command === "帮助" || command === "help") {
-                this._send(`固定指令:
--雀魂 nickname ※查雀魂id，缩写-qh
--雀魂日服 nickname ※查雀魂日服id
--牌谱 paipu_id ※查牌谱
--国服排名 ※查雀魂排名，查三麻排名输入-国服排名 3
--日服排名 ※查雀魂日服排名
--新番 ※新番时间表
--anime name ※查动漫(加双引号可获得精确结果)，同类指令:book,music,game,real
--疫情 ※查询即时疫情信息，缩写-yq
--牌理 ※和牌点数計算，缩写-pl
--高级 ※查看高级指令`)
+                this._send(`固定指令(前面加-):
+-雀魂(qh) nickname ※查询雀魂战绩
+-雀魂日服(qhjp) nickname ※查询雀魂日服战绩
+-牌谱(pp) paipu_id ※查询牌谱
+-国服排名(rank) ※查询雀魂排名(三麻:-rank 3)
+-日服排名(rankjp) ※查询雀魂日服排名(三麻:-rankjp 3)
+-新番(bgm) ※查询新番时间表
+-anime name ※查询动漫，同类指令:book,music,game,real
+-疫情(yq) ※查询疫情信息
+-牌理(pl) ※和牌点数計算
+高级 ※查看高级指令`)
             }
             if (command === "高级") {
                 this._send(`高级指令:
@@ -234,7 +234,7 @@ https://github.com/takayama-lily/riichi`
     ①输入代码直接执行，如var a=1;无报错信息。
     ②代码放在斜杠后，如/var a=1;有报错信息。
     ※进程有时会重启，常量和function类型变量在重启后无法还原
-2.查看进程启动时间:
+2.查看开机时间:
     -uptime`)
             }
             if (command === "疫情" || command === "yq") {
@@ -262,7 +262,7 @@ https://github.com/takayama-lily/riichi`
 
         } else {
             try {
-                let result = vm.runInContext(data.message, context, {timeout: 50})
+                let result = vm.runInContext(data.message, context, {timeout: 10})
                 this._send(result)
             } catch(e) {}
         }

@@ -1,8 +1,10 @@
 "use strict"
 const mjutil = {}
 const http = require("http")
+const url = require("url")
+const querystring = require("querystring")
 const seat = ["東","南","西","北"]
-const rank = ["初心","雀士","杰","豪","圣","魂天"]
+const rank = ["初心","雀士","雀杰","雀豪","雀圣","魂天"]
 const getRank = id=>{
     id = id.toString()
     let res = rank[id[2]-1] + id[4]
@@ -16,6 +18,8 @@ const shuibiao = async (words, jp = false)=>{
             result = data, resolve()
         }, {pattern: words})
     })
+    if (data.error !== undefined)
+        return "暂时无法查询，可能在维护或别的原因。"
     if (result.match_accounts.length === 0) 
         return `玩家 ${words} 不存在`
     let account_id = result.match_accounts.shift()
@@ -68,11 +72,13 @@ const ranking = async(type = 0, jp = false)=>{
     let client = jp ? mjsoulJP : mjsoul
     await new Promise(resolve=>{
         client.send("fetchLevelLeaderboard", (data)=>{
-            result = data.items.slice(0,10), resolve()
+            result = data, resolve()
         }, {type: type ? 2 : 1})
     })
+    if (data.error !== undefined)
+        return "暂时无法查询，可能在维护或别的原因。"
+    result = result.items.slice(0,20)
     let accounts = []
-
     for (let v of result) {
         accounts.push(v.account_id)
     }
@@ -94,6 +100,9 @@ const ranking = async(type = 0, jp = false)=>{
 }
 
 const paipu = async(id)=>{
+    let paipu = querystring.parse(url.parse(id).query).paipu
+    if (!paipu)
+        paipu = id
     let data = ""
     await new Promise(resolve=>{
         http.get("http://localhost/record?id="+id.replace("https://www.majsoul.com/1/?paipu=", ""), (res)=>{
@@ -104,11 +113,14 @@ const paipu = async(id)=>{
                 data = JSON.parse(data)
                 resolve()
             })
+        }).on("error", err=>{
+            data = {"error":""}
+            resolve()
         })
     })
 
     if (data.error)
-        return "牌谱编号错误"
+        return "牌譜id不正確: " + paipu
     let result = data.head.accounts
     for (let i in result) {
         for (let v of data.head.result.players) {
@@ -161,11 +173,11 @@ const paipu = async(id)=>{
                 break;
         }
     }
-    let format = "雀魂牌谱" + id
+    let format = "雀魂牌譜" + id
     for (let i in result) {
         result[i].ptChange.push(result[i].part_point_1)
         let v = result[i]
-        format += `\n${v.wind}起:${v.nickname}(${v.rank}) / 摸${v.tsumo}次:+${v.tsumoPt} / 胡${v.ron}次:+${v.ronPt} / 铳${v.furikomi}次:${v.furikomiPt}
+        format += `\n${v.wind}起:${v.nickname}(${v.rank}) / 自摸${v.tsumo}次:+${v.tsumoPt} / 栄和${v.ron}次:+${v.ronPt} / 放銃${v.furikomi}次:${v.furikomiPt}
 ${result[i].ptChange.join("->")}`
     }
     return format
@@ -175,6 +187,8 @@ mjutil.shuibiao = shuibiao
 mjutil.paipu = paipu
 mjutil.ranking = ranking
 module.exports = mjutil
+
+// console.log(querystring.parse(url.parse("雀魂牌譜: https://game.mahjongsoul.com/?paipu=200103-167092ea-1767-498a-ab78-05a89d558c1c_a454378763").query))
 
 // paipu("191120-4fc0d53c-1d5b-4186-9f16-7011f7f366f5").then(data=>console.log(data))
 
