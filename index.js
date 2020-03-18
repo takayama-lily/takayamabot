@@ -112,9 +112,11 @@ const changelog=\`changelog(2020/3/18):
 
 setInterval(saveContext, 300000)
 
+process.on('exit', (code)=>{
+    saveContext()
+})
 process.on("uncaughtException", (e)=>{
     fs.appendFile("err.log", Date() + " " + e.stack + "\n", ()=>{})
-    saveContext()
     process.exit(1)
 })
 
