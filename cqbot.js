@@ -245,19 +245,23 @@ https://github.com/takayama-lily/riichi`
                     https.get("https://view.inews.qq.com/g2/getOnsInfo?name=disease_other", res=>{
                         res.on('data', d=>gbl.push(d))
                         res.on("end", ()=>resolve())
-                    })
+                    }).on("error", err=>{})
                 }).then(()=>{
-                    gbl = Buffer.concat(gbl).toString()
-                    gbl = JSON.parse(JSON.parse(gbl.replace("undefined", "")).data).foreignList
-                    let msg = '国外主要疫情:\n'
-                    for (let v of gbl) {
-                        if (v.confirm < 100 && !v.dead)
-                            continue
-                        msg += v.name + `(${v.date.substr(1)}): 確` + v.confirm
-                        msg += v.confirmAdd ? `(+${v.confirmAdd})` : ''
-                        msg += ' 亡' + v.dead + ' 癒' + v.heal + '\n'
+                    try {
+                        gbl = Buffer.concat(gbl).toString()
+                        gbl = JSON.parse(JSON.parse(gbl.replace("undefined", "")).data).foreignList
+                        let msg = '国外主要疫情:\n'
+                        for (let v of gbl) {
+                            if (v.confirm < 100 && !v.dead)
+                                continue
+                            msg += v.name + `(${v.date.substr(1)}): 確` + v.confirm
+                            msg += v.confirmAdd ? `(+${v.confirmAdd})` : ''
+                            msg += ' 亡' + v.dead + ' 癒' + v.heal + '\n'
+                        }
+                        this._send(msg)
+                    } catch (e) {
+                        this._send("疫情服务暂时不可用")
                     }
-                    this._send(msg)
                 })
             }
         } else if (data.message.substr(0, 1) === "!") {
