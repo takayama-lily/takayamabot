@@ -18,28 +18,36 @@ const getCalendar = async (day)=>{
                 json += d
             })
             res.on("end", ()=>{
-                json = JSON.parse(json)
-                let result = []
-                if (json[day-1]) {
-                    day = json[day-1]
-                    result.push(day.weekday.cn+"放送：")
-                    for (let v of day.items) {
-                        v.name_cn = v.name_cn ? v.name_cn : v.name
-                        result.push(`${v.name_cn} (${v.name}) / 放送开始${v.air_date} / 评分${v.rating ? v.rating.score : "未知"}`)
+                try {
+                    json = JSON.parse(json)
+                    let result = []
+                    if (json[day-1]) {
+                        day = json[day-1]
+                        result.push(day.weekday.cn+"放送：")
+                        for (let v of day.items) {
+                            v.name_cn = v.name_cn ? v.name_cn : v.name
+                            result.push(`${v.name_cn} (${v.name}) / 放送开始${v.air_date} / 评分${v.rating ? v.rating.score : "未知"}`)
+                        }
+                    } else {
+                        for (let v of json) {
+                            result.push(`${v.weekday.cn} 放送 ${v.items.length} 部`)
+                        }
                     }
-                } else {
-                    for (let v of json) {
-                        result.push(`${v.weekday.cn} 放送 ${v.items.length} 部`)
-                    }
+                    r(result.join("\n") + (day ? "" : `\n输入"-新番 1-7"查看周一～周日具体放送表`))
+                } catch (e) {
+                    r("服务暂时不可用")
                 }
-                r(result.join("\n") + (day ? "" : `\n输入"-新番 1-7"查看周一～周日具体放送表`))
             })
+        }).on("error", err=>{
+            r("服务暂时不可用")
         })
     })
 }
 
 const getBangumi = async (t, name)=>{
     t = type[t] ? t : type.anime
+    if (!name.includes(`"`))
+        name = `"` + name + `"`
     const weekday = ["一","二","三","四","五","六","日"]
     return new Promise(r=>{
         https.get(api.search+encodeURIComponent(name)+"?responseGroup=large&max_results=2&type="+type[t], (res)=>{
@@ -48,20 +56,26 @@ const getBangumi = async (t, name)=>{
                 json += d
             })
             res.on('end', ()=>{
-                json = JSON.parse(json)
-                let result = []
-                if (!json.list) {
-                    r("没找到")
-                } else {
-                    let v = json.list[0]
-                    v.name_cn = v.name_cn ? v.name_cn : v.name
-                    result.push(`${v.name_cn} (${v.name})`)
-                    result.push(`发行(放送)日${v.air_date}(周${weekday[v.air_weekday-1]}) / 全${parseInt(v.eps)}话 / 评分${v.rating ? v.rating.score : "未知"}\n`)
-                    result.push(v.summary)
+                try {
+                    json = JSON.parse(json)
+                    let result = []
+                    if (!json.list) {
+                        r("没找到")
+                    } else {
+                        let v = json.list[0]
+                        v.name_cn = v.name_cn ? v.name_cn : v.name
+                        result.push(`${v.name_cn} (${v.name})`)
+                        result.push(`发行(放送)日${v.air_date}(周${weekday[v.air_weekday-1]}) / 全${!isNaN(v.eps) ? parseInt(v.eps) : "?"}话 / 评分${v.rating ? v.rating.score : "未知"}\n`)
+                        result.push(v.summary)
+                    }
+                    r(result.join("\n"))
+                } catch (e) {
+                    r("服务暂时不可用")
                 }
-                r(result.join("\n"))
             })
-        }).on("error",(e)=>{})
+        }).on("error", err=>{
+            r("服务暂时不可用")
+        })
     })
 }
 
@@ -75,6 +89,6 @@ module.exports = bgm
 //     console.log(data)
 // })
 
-// getBangumi("anime","缘之空").then((data)=>{
+// getBangumi("anime","名侦探柯南").then((data)=>{
 //     console.log(data)
 // })
