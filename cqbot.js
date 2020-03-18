@@ -98,10 +98,7 @@ class Session {
         ws.send(JSON.stringify(res))
     }
     receive(data) {
-        if ((data.message.includes("this")) && !isMaster(data.user_id)) {
-            return
-        }
-        if (data.message.replace('constructor', '').includes("constructor")) {
+        if ((data.message.includes("this") || data.message.includes("constructor")) && !isMaster(data.user_id)) {
             return
         }
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
