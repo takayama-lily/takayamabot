@@ -1,16 +1,26 @@
 const fs = require("fs")
-process.on("uncaughtException", (e)=>{
-    fs.appendFile("err.log", Date() + " " + e.stack + "\n", ()=>{})
-})
 const WebSocket = require("ws")
 const http = require("http")
 const zlib = require("zlib")
 const vm = require("vm")
+
 mjsoul = null
 mjsoulJP = null
-const api = require("./api.js")
-
 context = {}
+saveContext = ()=>{
+    for (let k in context) {
+        if (typeof context[k] !== 'string') {
+            try {
+                if (JSON.stringify(context[k]).length > 524288)
+                    delete context[k]
+            } catch (e) {
+                delete context[k]
+            }
+        }
+    }
+    fs.writeFileSync("./context", JSON.stringify(context))
+}
+
 if (fs.existsSync("./context")) {
     context = JSON.parse(fs.readFileSync("./context"))
 }
@@ -65,10 +75,10 @@ Object.freeze(ArrayBuffer.prototype);
 Object.freeze(JSON);
 Object.freeze(Error);
 Object.freeze(Error.prototype);
-delete data;
 delete globalThis;
 delete eval;
 delete Function;
+delete console;
 let data;`, context)
 vm.runInContext(`const 帮助=\`固定指令(前面加-):
 -雀魂(qh) nickname ※查询雀魂战绩
@@ -80,30 +90,36 @@ vm.runInContext(`const 帮助=\`固定指令(前面加-):
 -anime name ※查询动漫，同类指令:book,music,game,real
 -疫情(yq) ※查询疫情信息
 -牌理(pl) ※和牌点数計算
-高级 ※查看高级指令\``, context)
+帮助(help) ※查看帮助
+高级(advance) ※查看高级指令\``, context)
 vm.runInContext(`const help=帮助;
 const 高级=\`高级指令:
 1.执行js代码: 
-    ①输入代码直接执行，如var a=1;无报错信息。
-    ②代码放在斜杠后，如/var a=1;有报错信息。
-    ※进程有时会重启，常量和function类型变量在重启后无法还原
+  ①输入代码直接执行，如var a=1;无报错信息。
+  ②代码放在斜杠后，如/var a=1;有报错信息。
+  ※进程有时会重启，常量和function类型变量在重启后无法还原
 2.查看开机时间:
-    -uptime\``, context)
+  -uptime
+3.查看最新changlog:
+  changlog\``, context)
+vm.runInContext(`const advance=高级;
+const changelog=\`changelog(2020/3/18):
+1.增加了changelog常量。帮助和help现在也是常量。
+2.所有固定指令现在都有英文简写。
+3.内置js对象现在不能删除和修改。
+4.沙盒中的代码最大执行时间从50ms改为10ms。
+  ※js沙盒无法做到100%安全，大家要爱护公共环境\``, context)
 
-setInterval(()=>{
-    for (let k in context) {
-        if (typeof context[k] !== 'string') {
-            try {
-                if (JSON.stringify(context[k]).length > 524288)
-                    delete context[k]
-            } catch (e) {
-                delete context[k]
-            }
-        }
-    }
-    fs.writeFileSync("./context", JSON.stringify(context))
-}, 300000)
+setInterval(saveContext, 300000)
 
+process.on("uncaughtException", (e)=>{
+    fs.appendFile("err.log", Date() + " " + e.stack + "\n", ()=>{})
+    saveContext()
+    process.exit(1)
+})
+
+const api = require("./api.js")
+const mid = require("./mid.js")
 const server = http.createServer((req, res)=>{
     api.resolve(req, res).then(data=>{
         res.setHeader('Content-Type', 'application/json; charset=utf-8')
@@ -120,13 +136,10 @@ const server = http.createServer((req, res)=>{
         }
     }, data=>{})
 })
-
 const ws = new WebSocket.Server({server})
-const mid = require("./mid.js")
 ws.on('connection', (conn)=>{
     conn.on('message', (data)=>{
         mid(conn, data)
     })   
 })
-
 server.listen(3000)

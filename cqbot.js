@@ -231,11 +231,13 @@ https://github.com/takayama-lily/riichi`
             if (command === "高级") {
                 this._send(`高级指令:
 1.执行js代码: 
-    ①输入代码直接执行，如var a=1;无报错信息。
-    ②代码放在斜杠后，如/var a=1;有报错信息。
-    ※进程有时会重启，常量和function类型变量在重启后无法还原
+  ①输入代码直接执行，如var a=1;无报错信息。
+  ②代码放在斜杠后，如/var a=1;有报错信息。
+  ※进程有时会重启，常量和function类型变量在重启后无法还原
 2.查看开机时间:
-    -uptime`)
+  -uptime
+3.查看最新changlog:
+  changlog`)
             }
             if (command === "疫情" || command === "yq") {
                 let gbl = []
