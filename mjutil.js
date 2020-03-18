@@ -18,7 +18,7 @@ const shuibiao = async (words, jp = false)=>{
             result = data, resolve()
         }, {pattern: words})
     })
-    if (data.error !== undefined)
+    if (result.error !== undefined)
         return "暂时无法查询，可能在维护或别的原因。"
     if (result.match_accounts.length === 0) 
         return `玩家 ${words} 不存在`
@@ -75,7 +75,7 @@ const ranking = async(type = 0, jp = false)=>{
             result = data, resolve()
         }, {type: type ? 2 : 1})
     })
-    if (data.error !== undefined)
+    if (result.error !== undefined)
         return "暂时无法查询，可能在维护或别的原因。"
     result = result.items.slice(0,20)
     let accounts = []
@@ -193,28 +193,30 @@ module.exports = mjutil
 // paipu("191120-4fc0d53c-1d5b-4186-9f16-7011f7f366f5").then(data=>console.log(data))
 
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
-// const MJSoul = require("mjsoul")
-// const mjsoul = new MJSoul({
-//     "url": "wss://mj-srv-6.majsoul.com:4501",
-//     // "proxy": "http://B051925:lw58613669CP@10.39.74.38:50080/"
-// })
-// mjutil.mjsoul = mjsoul
-// new Promise(resolve=>{
-//     mjsoul.open(()=>{
-//         mjsoul.send("login", (data)=>{
-//             // console.log(data)
-//             resolve()
-//         }, mjsoul.jsonForLogin("takayama@foxmail.com", "552233"))
-//     })
-// })
-// .then(()=>{
-//     return ranking(3)
-//     // return mjsoul.send("fetchAccountState", data=>{
-//     //     console.log(data.states[0].is_online)
-//     //     mjsoul.close()
-//     // }, {account_id_list: [367278]})
-// })
-// .then((data)=>{
-//     console.log(data)
-//     mjsoul.close()
-// })
+const MJSoul = require("mjsoul")
+const mjsoul = new MJSoul({
+    "url": "wss://mj-srv-6.majsoul.com:4501",
+    // "proxy": "http://B051925:lw58613669CP@10.39.74.38:50080/"
+})
+mjutil.mjsoul = mjsoul
+new Promise(resolve=>{
+    mjsoul.open(()=>{
+        mjsoul.send("login", (data)=>{
+            // console.log(data)
+            resolve()
+        }, {account: "takayama@foxmail.com", password: mjsoul.hash("552233")})
+    })
+})
+.then(()=>{
+    return shuibiao("高山")
+    // return ranking(3)
+    // return mjsoul.send("fetchAccountState", data=>{
+    //     resolve(data)
+    //     // console.log(data.states[0].is_online)
+    //     // mjsoul.close()
+    // }, {account_id_list: [367278]})
+})
+.then((data)=>{
+    console.log(data)
+    mjsoul.close()
+})
