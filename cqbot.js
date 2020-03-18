@@ -236,8 +236,8 @@ https://github.com/takayama-lily/riichi`
   ※进程有时会重启，常量和function类型变量在重启后无法还原
 2.查看开机时间:
   -uptime
-3.查看最新changlog:
-  changlog`)
+3.查看最新changelog:
+  changelog`)
             }
             if (command === "疫情" || command === "yq") {
                 let gbl = []

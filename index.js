@@ -100,8 +100,8 @@ const 高级=\`高级指令:
   ※进程有时会重启，常量和function类型变量在重启后无法还原
 2.查看开机时间:
   -uptime
-3.查看最新changlog:
-  changlog\``, context)
+3.查看最新changelog:
+  changelog\``, context)
 vm.runInContext(`const advance=高级;
 const changelog=\`changelog(2020/3/18):
 1.增加了changelog常量。帮助和help现在也是常量。
