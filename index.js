@@ -7,7 +7,7 @@ const vm = require("vm")
 mjsoul = null
 mjsoulJP = null
 context = {}
-saveContext = ()=>{
+const saveContext = ()=>{
     for (let k in context) {
         if (typeof context[k] !== 'string') {
             try {
@@ -24,8 +24,14 @@ saveContext = ()=>{
 if (fs.existsSync("./context")) {
     context = JSON.parse(fs.readFileSync("./context"))
 }
-vm.createContext(context)
-vm.runInContext(`const Object = this.Object;
+vm.createContext(context, {
+    codeGeneration: {
+        strings: false,
+        wasm: false
+    }
+})
+vm.runInContext(`const Function = this.Function;
+const Object = this.Object;
 const Boolean = this.Boolean;
 const Number = this.Number;
 const BigInt = this.BigInt;
@@ -37,8 +43,18 @@ const Array = this.Array;
 const Map = this.Map;
 const Set = this.Set;
 const ArrayBuffer = this.ArrayBuffer;
+const SharedArrayBuffer = this.SharedArrayBuffer;
 const JSON = this.JSON;
 const Error = this.Error;
+const WeakSet = this.WeakSet;
+const WeakMap = this.WeakMap;
+const Promise = this.Promise;
+const Symbol = this.Symbol;
+const Proxy = this.Proxy;
+const Reflect = this.Reflect;
+const DataView = this.DataView;
+const Atomics = this.Atomics;
+
 const isFinite = this.isFinite;
 const isNaN = this.isNaN;
 const parseFloat = this.parseFloat;
@@ -49,6 +65,10 @@ const encodeURI = this.encodeURI;
 const encodeURIComponent = this.encodeURIComponent;
 const escape = this.escape;
 const unescape = this.unescape;
+const eval = this.eval;
+
+Object.freeze(Function);
+Object.freeze(Function.prototype);
 Object.freeze(Object);
 Object.freeze(Object.prototype);
 Object.freeze(Boolean);
@@ -72,12 +92,25 @@ Object.freeze(Set);
 Object.freeze(Set.prototype);
 Object.freeze(ArrayBuffer);
 Object.freeze(ArrayBuffer.prototype);
+Object.freeze(SharedArrayBuffer);
+Object.freeze(SharedArrayBuffer.prototype);
 Object.freeze(JSON);
 Object.freeze(Error);
 Object.freeze(Error.prototype);
+Object.freeze(WeakSet);
+Object.freeze(WeakSet.prototype);
+Object.freeze(WeakMap);
+Object.freeze(WeakMap.prototype);
+Object.freeze(Promise);
+Object.freeze(Promise.prototype);
+Object.freeze(Symbol);
+Object.freeze(Symbol.prototype);
+Object.freeze(Proxy);
+Object.freeze(Reflect);
+Object.freeze(DataView);
+Object.freeze(DataView.prototype);
+Object.freeze(Atomics);
 delete globalThis;
-delete eval;
-delete Function;
 delete console;
 let data;`, context)
 vm.runInContext(`const 帮助=\`固定指令(前面加-):
@@ -108,7 +141,7 @@ const changelog=\`changelog(2020/3/18):
 2.所有固定指令现在都有英文简写。
 3.内置js对象现在不能删除和修改。
 4.沙盒中的代码最大执行时间从50ms改为10ms。
-  ※js沙盒无法做到100%安全，大家要爱护公共环境\``, context)
+※js沙盒无法做到100%安全，大家要爱护公共环境\``, context)
 
 setInterval(saveContext, 300000)
 
