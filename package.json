@@ -10,9 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "https-proxy-agent": "^3.0.1",
-    "mjsoul": "^2.0.0",
+    "mjsoul": "^2.0.1",
     "riichi": "0.0.1",
     "vm2": "^3.8.4",
-    "ws": "^7.2.2"
+    "ws": "^7.2.3"
   }
 }
