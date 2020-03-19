@@ -13,11 +13,11 @@ let sessions = {
 }
 let ws = null
 
-delete require.cache[require.resolve('./mjutil')]
+// delete require.cache[require.resolve('./mjutil')]
 const mjutil = require("./mjutil")
-delete require.cache[require.resolve('./bgm')]
+// delete require.cache[require.resolve('./bgm')]
 const bgm = require("./bgm")
-delete require.cache[require.resolve('riichi')]
+// delete require.cache[require.resolve('riichi')]
 const MJ = require('riichi')
 
 const restart = function() {
@@ -72,8 +72,8 @@ class Session {
         }
     }
     _send(msg) {
-        if (msg === undefined)
-            msg = 'undefined'
+        // if (msg === undefined)
+        //     msg = 'undefined'
         if (typeof msg === 'function')
             msg = `[Function: ${msg.name?msg.name:'anonymous'}]`
         if (typeof msg !== "string") {
@@ -106,7 +106,7 @@ class Session {
         if (data.message.substr(0, 1) === "/") {
             let result
             try {
-                result = vm.runInContext(data.message.substr(1), context, {timeout: 10})
+                result = vm.runInContext(data.message.substr(1), context, {timeout: 20})
             } catch(e) {
                 result = e.message
             }
@@ -220,15 +220,16 @@ https://github.com/takayama-lily/riichi`
 -雀魂(qh) nickname ※查询雀魂战绩
 -雀魂日服(qhjp) nickname ※查询雀魂日服战绩
 -牌谱(pp) paipu_id ※查询牌谱
--国服排名(rank) ※查询雀魂排名(三麻:-rank 3)
--日服排名(rankjp) ※查询雀魂日服排名(三麻:-rankjp 3)
+-国服排名(rank) ※查询雀魂排名(三麻: -rank 3)
+-日服排名(rankjp) ※查询雀魂日服排名(三麻: -rankjp 3)
 -新番(bgm) ※查询新番时间表
 -anime name ※查询动漫，同类指令:book,music,game,real
 -疫情(yq) ※查询疫情信息
 -牌理(pl) ※和牌点数計算
-高级 ※查看高级指令`)
+帮助(help) ※查看帮助
+高级(advance) ※查看高级指令`)
             }
-            if (command === "高级") {
+            if (command === "高级" || command === "advance") {
                 this._send(`高级指令:
 1.执行js代码: 
   ①输入代码直接执行，如var a=1;无报错信息。
@@ -268,7 +269,7 @@ https://github.com/takayama-lily/riichi`
 
         } else {
             try {
-                let result = vm.runInContext(data.message, context, {timeout: 10})
+                let result = vm.runInContext(data.message, context, {timeout: 20})
                 this._send(result)
             } catch(e) {}
         }

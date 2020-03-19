@@ -112,13 +112,15 @@ Object.freeze(DataView.prototype);
 Object.freeze(Atomics);
 delete globalThis;
 delete console;
+const 草 = undefined;
+const 艹 = undefined;
 let data;`, context)
 vm.runInContext(`const 帮助=\`固定指令(前面加-):
 -雀魂(qh) nickname ※查询雀魂战绩
 -雀魂日服(qhjp) nickname ※查询雀魂日服战绩
 -牌谱(pp) paipu_id ※查询牌谱
--国服排名(rank) ※查询雀魂排名(三麻:-rank 3)
--日服排名(rankjp) ※查询雀魂日服排名(三麻:-rankjp 3)
+-国服排名(rank) ※查询雀魂排名(三麻: -rank 3)
+-日服排名(rankjp) ※查询雀魂日服排名(三麻: -rankjp 3)
 -新番(bgm) ※查询新番时间表
 -anime name ※查询动漫，同类指令:book,music,game,real
 -疫情(yq) ※查询疫情信息
@@ -140,10 +142,10 @@ const changelog=\`changelog(2020/3/18):
 1.增加了changelog常量。帮助和help现在也是常量。
 2.所有固定指令现在都有英文简写。
 3.内置js对象现在不能删除和修改。
-4.沙盒中的代码最大执行时间从50ms改为10ms。
+4.沙盒中的代码最大执行时间从50ms改为20ms。
 ※js沙盒无法做到100%安全，大家要爱护公共环境\``, context)
 
-setInterval(saveContext, 300000)
+setInterval(saveContext, 1800000)
 
 process.on('exit', (code)=>{
     saveContext()
