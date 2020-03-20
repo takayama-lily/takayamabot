@@ -116,9 +116,9 @@ class Session {
             if (data.message.substr(2, 5) === "nordo") {
                 command = data.message.substr(7)
             }
-            command = `timeout 10 bash -c "./exec ${encodeURIComponent(command)}"`
+            command = `timeout 1 bash -c "./exec ${encodeURIComponent(command)}"`
             if (!isMaster(data.user_id) || data.message.substr(2, 5) === "nordo") {
-                command = `runuser www -c '${command}'`
+                command = `runuser bot -c '${command}'`
             }
             proc.exec(command, (error, stdout, stderr) => {
                 stdout ? this._send(stdout) : 0
