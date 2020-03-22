@@ -245,12 +245,13 @@ https://github.com/takayama-lily/riichi`
         } else if (prefix === "!") {
 
         } else {
+            let code = data.message
             if (prefix === "/") {
                 if (data.message.includes("this") && !isMaster(data.user_id)) {
                     this._send('安全原因，代码不要包含this关键字。')
                     return
                 }
-                let code = data.message.substr(1)
+                code = code.substr(1)
             }
             try {
                 vm.runInContext("data="+JSON.stringify(data), context)
