@@ -208,11 +208,11 @@ https://github.com/takayama-lily/riichi`
                         this._send(msg + s)
                     } else {
                         let s = ''
-                        if (!res.ten)
-                            s = '無役'
                         for (let k in res.yaku)
                             s += k + ' ' + res.yaku[k] + '\n'
                         s += res.text
+                        if (!res.ten)
+                            s = '無役'
                         this._send(msg + s)
                     }
                 } catch(e) {
