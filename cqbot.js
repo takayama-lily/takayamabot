@@ -260,7 +260,7 @@ https://github.com/takayama-lily/riichi`
             } catch(e) {
                 if (prefix === "/") {
                     let stack = e.stack.split('\n')
-                    this._send(stack[0] + '\n' + stack[1] + stack[2] + stack[3] + stack[4] + stack[5])
+                    this._send(stack[0] + '\n' + stack[1])
                 }
             }
         }
