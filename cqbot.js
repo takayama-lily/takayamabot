@@ -230,7 +230,7 @@ https://github.com/takayama-lily/riichi`
                         gbl = JSON.parse(JSON.parse(gbl.replace("undefined", "")).data).foreignList
                         let msg = '国外主要疫情:\n'
                         for (let v of gbl) {
-                            if (v.confirm < 100 && !v.dead)
+                            if (v.confirm < 100 || !v.dead)
                                 continue
                             msg += v.name + `(${v.date.substr(1)}): 確` + v.confirm
                             msg += v.confirmAdd ? `(+${v.confirmAdd})` : ''
