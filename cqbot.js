@@ -2,22 +2,19 @@ const fs = require("fs")
 const vm = require("vm")
 const proc = require('child_process')
 const https = require("https")
+const master = [372914165]
 const isMaster = (uid)=>{
-    const master = [372914165]
     return master.includes(uid)
 }
-let sessions = {
+const sessions = {
     "private": {},
     "group": {},
     "discuss": {}
 }
 let ws = null
 
-// delete require.cache[require.resolve('./mjutil')]
 const mjutil = require("./mjutil")
-// delete require.cache[require.resolve('./bgm')]
 const bgm = require("./bgm")
-// delete require.cache[require.resolve('riichi')]
 const MJ = require('riichi')
 
 const restart = function() {
@@ -25,8 +22,9 @@ const restart = function() {
     ws.send(JSON.stringify(res))
 }
 
-const deal = function(data) {
-    if (!data) return
+const main = (conn, data)=>{
+    ws = conn
+    data = JSON.parse(data)
     if (data.post_type === "message") {
         if (!sessions[data.message_type]) return
         if (data.message_type === "private") {
@@ -36,7 +34,7 @@ const deal = function(data) {
             sessions[data.message_type][data[data.message_type + "_id"]] = new Session(data)
         }
         let session = sessions[data.message_type][data[data.message_type + "_id"]]
-        session.receive(data)
+        session.onMessage(data)
     }
     if (data.post_type === "request") {
         if (data.request_type === "friend") {
@@ -59,11 +57,6 @@ const deal = function(data) {
     }
 }
 
-const main = (conn, data)=>{
-    ws = conn
-    deal(JSON.parse(data))
-}
-
 class Session {
     constructor(data) {
         this.action = "send_" + data.message_type + "_msg"
@@ -72,8 +65,6 @@ class Session {
         }
     }
     _send(msg) {
-        // if (msg === undefined)
-        //     msg = 'undefined'
         if (typeof msg === 'function')
             msg = `[Function: ${msg.name?msg.name:'anonymous'}]`
         if (typeof msg !== "string") {
@@ -97,45 +88,33 @@ class Session {
         }
         ws.send(JSON.stringify(res))
     }
-    receive(data) {
-        if (data.message.includes("this") && !isMaster(data.user_id)) {
-            return
-        }
+    onMessage(data) {
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
-        vm.runInContext("data="+JSON.stringify(data), context)
-        if (data.message.substr(0, 1) === "/") {
-            let result
-            try {
-                result = vm.runInContext(data.message.substr(1), context, {timeout: 20})
-            } catch(e) {
-                result = e.message
-            }
-            this._send(result)
-        } else if (data.message.substr(0, 2) === "# ") {
-            let command = data.message.substr(2)
-            if (data.message.substr(2, 5) === "nordo") {
-                command = data.message.substr(7)
-            }
+        let prefix = data.message.substr(0, 1)
+        if (prefix === "#") {
+            let command = data.message.substr(1)
+            if (command.substr(0, 5) === "nordo")
+                command = command.substr(5)
             command = `timeout 1 bash -c "./exec ${encodeURIComponent(command)}"`
-            if (!isMaster(data.user_id) || data.message.substr(2, 5) === "nordo") {
-                command = `runuser bot -c '${command}'`
+            if (!isMaster(data.user_id) || data.message.substr(1, 5) === "nordo") {
+                command = `runuser www -c '${command}'`
             }
             proc.exec(command, (error, stdout, stderr) => {
                 stdout ? this._send(stdout) : 0
                 stderr ? this._send(stderr) : 0
             })
-        } else if (data.message.substr(0, 1) === "-") {
+        } else if (prefix === "-") {
             let split = data.message.substr(1).trim().split(" ")
             let command = split.shift()
             let param = split.join(" ")
-            if (command === "raw" && param) {
+            if (command === "raw" && param.length) {
                 ws.send(param)
             }
             if (isMaster(data.user_id) && command === "re") {
                 this._send("重启插件")
                 restart()
             }
-            if (isMaster(data.user_id) && command === "run") {
+            if (isMaster(data.user_id) && command === "run" && param.length) {
                 let result
                 try {
                     result = eval(data.message.substr(5))
@@ -144,16 +123,13 @@ class Session {
                 }
                 this._send(result)
             }
-            if (command === "test") {
-                this._send('test')
-            }
             if (command === "uptime") {
                 this._send(process.uptime() + '秒前开机')
             }
-            if ((command === "雀魂" || command === "qh") && param) {
+            if ((command === "雀魂" || command === "qh") && param.length) {
                 mjutil.shuibiao(param).then((res)=>{this._send(res)})
             }
-            if ((command === "雀魂日服" || command === "qhjp") && param) {
+            if ((command === "雀魂日服" || command === "qhjp") && param.length) {
                 mjutil.shuibiao(param, true).then((res)=>{this._send(res)})
             }
             if (command === "国服排名" || command === "rank") {
@@ -162,7 +138,7 @@ class Session {
             if (command === "日服排名" || command === "rankjp") {
                 mjutil.ranking(param, true).then((res)=>{this._send(res)})
             }
-            if ((command === "牌谱" || command === "pp") && param) {
+            if ((command === "牌谱" || command === "pp") && param.length) {
                 mjutil.paipu(param).then((res)=>{this._send(res)})
             }
             if (command === "新番" || command === "bgm") {
@@ -235,6 +211,7 @@ https://github.com/takayama-lily/riichi`
   ①输入代码直接执行，如var a=1;无报错信息。
   ②代码放在斜杠后，如/var a=1;有报错信息。
   ※进程有时会重启，常量和function类型变量在重启后无法还原
+  data ※环境变量
 2.查看开机时间:
   -uptime
 3.查看最新changelog:
@@ -265,13 +242,25 @@ https://github.com/takayama-lily/riichi`
                     }
                 })
             }
-        } else if (data.message.substr(0, 1) === "!") {
+        } else if (prefix === "!") {
 
         } else {
+            if (prefix === "/") {
+                if (data.message.includes("this") && !isMaster(data.user_id)) {
+                    this._send('安全原因，代码不要包含this关键字。')
+                    return
+                }
+                let code = data.message.substr(1)
+            }
             try {
-                let result = vm.runInContext(data.message, context, {timeout: 20})
+                vm.runInContext("data="+JSON.stringify(data), context)
+                let result = vm.runInContext(code, context, {timeout: 20})
                 this._send(result)
-            } catch(e) {}
+            } catch(e) {
+                if (prefix === "/") {
+                    this._send(e.message)
+                }
+            }
         }
     }
 }

@@ -133,6 +133,7 @@ const 高级=\`高级指令:
   ①输入代码直接执行，如var a=1;无报错信息。
   ②代码放在斜杠后，如/var a=1;有报错信息。
   ※进程有时会重启，常量和function类型变量在重启后无法还原
+  data ※环境变量
 2.查看开机时间:
   -uptime
 3.查看最新changelog:
@@ -156,7 +157,7 @@ process.on("uncaughtException", (e)=>{
 })
 
 const api = require("./api.js")
-const mid = require("./mid.js")
+const cqbot = require("./cqbot.js")
 const server = http.createServer((req, res)=>{
     api.resolve(req, res).then(data=>{
         res.setHeader('Content-Type', 'application/json; charset=utf-8')
@@ -176,7 +177,7 @@ const server = http.createServer((req, res)=>{
 const ws = new WebSocket.Server({server})
 ws.on('connection', (conn)=>{
     conn.on('message', (data)=>{
-        mid(conn, data)
+        cqbot(conn, data)
     })   
 })
 server.listen(3000)
