@@ -208,6 +208,8 @@ https://github.com/takayama-lily/riichi`
                         this._send(msg + s)
                     } else {
                         let s = ''
+                        if (!res.ten)
+                            s = '無役'
                         for (let k in res.yaku)
                             s += k + ' ' + res.yaku[k] + '\n'
                         s += res.text
@@ -260,7 +262,7 @@ https://github.com/takayama-lily/riichi`
             } catch(e) {
                 if (prefix === "/") {
                     let stack = e.stack.split('\n')
-                    this._send(stack[0] + '\n' + stack[1])
+                    this._send(stack[0] + '\n' + stack[1] + '\n' + stack[1])
                 }
             }
         }
