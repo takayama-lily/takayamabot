@@ -125,8 +125,7 @@ vm.runInContext(`const 帮助=\`-----固定指令(前面加"-"):
 -牌理 ★牌理点数計算，缩写-pl
 -新番 ★查询新番时间表，缩写-bgm
 -anime 动漫名 ★查询动漫，同类指令:book,music,game,real
-帮助(help) ★查看帮助
-高级(advance) ★查看高级指令\``, context)
+高级 ★查看高级指令，缩写advance\``, context)
 vm.runInContext(`const help=帮助;
 const 高级=\`-----高级指令:
 1.执行js代码: 
