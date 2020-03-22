@@ -178,9 +178,28 @@ https://github.com/takayama-lily/riichi`
                 try {
                     let msg = param + '\n'
                     let res = new MJ(param).calc()
-                    if (!res.isAgari)
-                        this._send(msg + '未和或無役')
-                    else {
+                    if (res.error) {
+                        this._send(param + '\n输入有误')
+                    } else if (!res.isAgari) {
+                        let s = ''
+                        if (res.syanten.hasOwnProperty('wait')) {
+                            s += '聴牌\n待 '
+                            for (let i in res.syanten.wait) {
+                                s += i + res.syanten.wait[i] + '枚 '
+                            }
+                        } else {
+                            s += res.syanten.now + '向聴'
+                            for (let i in res.syanten) {
+                                if (i !== 'now' && Object.keys(res.syanten[i]).length > 0) {
+                                    s += '\n打' + i + ' 待 '
+                                    for (let ii in res.syanten[i]) {
+                                        s += ii + res.syanten[i][ii] + '枚 '
+                                    }
+                                }
+                            }
+                        }
+                        this._send(msg + s)
+                    } else {
                         let s = ''
                         for (let k in res.yaku)
                             s += k + ' ' + res.yaku[k] + '\n'
