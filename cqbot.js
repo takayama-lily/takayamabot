@@ -182,7 +182,7 @@ https://github.com/takayama-lily/riichi`
                     let msg = param + '\n'
                     let res = new MJ(param).calc()
                     if (res.error) {
-                        this._send(param + '\n输入有误')
+                        this._send(param + '\n手牌数量不正确或输入有误')
                     } else if (!res.isAgari) {
                         let s = ''
                         if (!res.syanten.now) {
@@ -214,7 +214,7 @@ https://github.com/takayama-lily/riichi`
                         this._send(msg + s)
                     }
                 } catch(e) {
-                    this._send(param + '\n输入有误')
+                    this._send(param + '\n手牌数量不正确或输入有误')
                 }
             }
             if (command === "疫情" || command === "yq") {
