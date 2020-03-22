@@ -120,7 +120,7 @@ class Session {
                 try {
                     result = eval(data.message.substr(5))
                 } catch(e) {
-                    result = e.message
+                    result = e.stack
                 }
                 this._send(result)
             }
@@ -258,7 +258,8 @@ https://github.com/takayama-lily/riichi`
                 this._send(result)
             } catch(e) {
                 if (prefix === "/") {
-                    this._send(e.message)
+                    let stack = e.stack.split('\n')
+                    this._send(stack[0] + '\n' + stack[1])
                 }
             }
         }
