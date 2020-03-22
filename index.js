@@ -115,25 +115,25 @@ delete console;
 const 草 = undefined;
 const 艹 = undefined;
 let data;`, context)
-vm.runInContext(`const 帮助=\`固定指令(前面加-):
--雀魂(qh) nickname ※查询雀魂战绩
--雀魂日服(qhjp) nickname ※查询雀魂日服战绩
--牌谱(pp) paipu_id ※查询牌谱
--国服排名(rank) ※查询雀魂排名(三麻: -rank 3)
--日服排名(rankjp) ※查询雀魂日服排名(三麻: -rankjp 3)
--新番(bgm) ※查询新番时间表
--anime name ※查询动漫，同类指令:book,music,game,real
--疫情(yq) ※查询疫情信息
--牌理(pl) ※和牌点数計算
-帮助(help) ※查看帮助
-高级(advance) ※查看高级指令\``, context)
+vm.runInContext(`const 帮助=\`-----固定指令(前面加"-"):
+-雀魂 昵称 ★查询雀魂战绩，缩写-qh
+-雀魂日服 昵称 ★查询雀魂日服战绩，缩写-qhjp
+-国服排名 ★查询雀魂排名，缩写-rank(三麻: -rank 3)
+-日服排名 ★查询雀魂日服排名，缩写-rankjp(三麻: -rankjp 3)
+-牌谱 牌谱链接或ID ★查询牌谱，缩写-pp
+-疫情 ★查询疫情信息，缩写-yq
+-牌理 ★牌理点数計算，缩写-pl
+-新番 ★查询新番时间表，缩写-bgm
+-anime 动漫名 ★查询动漫，同类指令:book,music,game,real
+帮助(help) ★查看帮助
+高级(advance) ★查看高级指令\``, context)
 vm.runInContext(`const help=帮助;
-const 高级=\`高级指令:
+const 高级=\`-----高级指令:
 1.执行js代码: 
   ①输入代码直接执行，如var a=1;无报错信息。
   ②代码放在斜杠后，如/var a=1;有报错信息。
-  ※进程有时会重启，常量和function类型变量在重启后无法还原
-  data ※环境变量
+  ★进程有时会重启，常量和function类型变量在重启后无法还原
+  data ★查看环境变量
 2.查看开机时间:
   -uptime
 3.查看最新changelog:

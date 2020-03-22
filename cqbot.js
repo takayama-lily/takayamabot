@@ -2,9 +2,10 @@ const fs = require("fs")
 const vm = require("vm")
 const proc = require('child_process')
 const https = require("https")
-const master = [372914165]
+const owner = 372914165
+const master = []
 const isMaster = (uid)=>{
-    return master.includes(uid)
+    return uid === owner || master.includes(uid)
 }
 const sessions = {
     "private": {},
@@ -151,25 +152,27 @@ class Session {
                 if (!param) {
                     let s = `-----"-牌理(-pl)"指令紹介-----
 例①自摸 "-pl 1112345678999m9m"
- ※ 手牌: 1112345678999m / 自摸: 9m
+ ★手牌: 1112345678999m / 自摸: 9m
 例②栄和 "-pl 1112345678999m+9m"
- ※ 手牌: 1112345678999m / 栄和: 9m
+ ★手牌: 1112345678999m / 栄和: 9m
 例③副露&dora "-pl 33m+456p99s6666z777z+d56z"
- ※ 副露: 456p順子、9s暗槓、発明槓、中明刻 / dora: 白発
+ ★副露: 456p順子、9s暗槓、発明槓、中明刻 / dora: 白発
 例④付属役 "-pl 11123456789999m+rih21"
- ※ 付属役: 立直一発海底(南場東家)
+ ★付属役: 立直一発海底(南場東家)
 -----詳細説明-----
 使用方法: -pl 手牌[+栄和牌][+副露][+dora牌][+付属役]
- ※付属役一覧
+ ★付属役一覧
     t=天和/地和/人和
     w=w立直  l(r)=立直  y(i)=一発
     h=海底/河底  k=槍槓/嶺上
     o=古役有効 (目前只有人和,大七星)
- ※場風自風設定 (default: 東場南家)
+ ★場風自風設定 (default: 東場南家)
     1=11=東場東家  2=12=東場南家  3=13=東場西家  4=14=東場北家
     21=南場東家  22=南場南家  23=南場西家  24=南場北家
- ※其他
+ ★其他
     m=萬子 p=筒子 s=索子 z=字牌 1234567z=東南西北白發中 0=赤dora
+ ★向聴牌理計算
+    未和牌的时候会自动计算
 -----Code Github-----
 https://github.com/takayama-lily/riichi`
                     this._send(s)
@@ -182,13 +185,17 @@ https://github.com/takayama-lily/riichi`
                         this._send(param + '\n输入有误')
                     } else if (!res.isAgari) {
                         let s = ''
+                        if (!res.syanten.now) {
+                            s += '聴牌'
+                        } else {
+                            s += res.syanten.now + '向聴'
+                        }
                         if (res.syanten.hasOwnProperty('wait')) {
-                            s += '聴牌\n待 '
+                            s += '\n待 '
                             for (let i in res.syanten.wait) {
                                 s += i + res.syanten.wait[i] + '枚 '
                             }
                         } else {
-                            s += res.syanten.now + '向聴'
                             for (let i in res.syanten) {
                                 if (i !== 'now' && Object.keys(res.syanten[i]).length > 0) {
                                     s += '\n打' + i + ' 待 '
@@ -209,32 +216,6 @@ https://github.com/takayama-lily/riichi`
                 } catch(e) {
                     this._send(param + '\n输入有误')
                 }
-            }
-            if (command === "帮助" || command === "help") {
-                this._send(`固定指令(前面加-):
--雀魂(qh) nickname ※查询雀魂战绩
--雀魂日服(qhjp) nickname ※查询雀魂日服战绩
--牌谱(pp) paipu_id ※查询牌谱
--国服排名(rank) ※查询雀魂排名(三麻: -rank 3)
--日服排名(rankjp) ※查询雀魂日服排名(三麻: -rankjp 3)
--新番(bgm) ※查询新番时间表
--anime name ※查询动漫，同类指令:book,music,game,real
--疫情(yq) ※查询疫情信息
--牌理(pl) ※和牌点数計算
-帮助(help) ※查看帮助
-高级(advance) ※查看高级指令`)
-            }
-            if (command === "高级" || command === "advance") {
-                this._send(`高级指令:
-1.执行js代码: 
-  ①输入代码直接执行，如var a=1;无报错信息。
-  ②代码放在斜杠后，如/var a=1;有报错信息。
-  ※进程有时会重启，常量和function类型变量在重启后无法还原
-  data ※环境变量
-2.查看开机时间:
-  -uptime
-3.查看最新changelog:
-  changelog`)
             }
             if (command === "疫情" || command === "yq") {
                 let gbl = []
