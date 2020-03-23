@@ -254,6 +254,8 @@ https://github.com/takayama-lily/riichi`
                     return
                 }
                 code = code.substr(1)
+                if (code.length >= 600)
+                    fs.appendFile("debug.log", code + "\n", ()=>{})
             }
             try {
                 vm.runInContext("data="+JSON.stringify(data), context)
