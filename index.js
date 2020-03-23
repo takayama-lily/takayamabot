@@ -22,8 +22,8 @@ const saveContext = ()=>{
             }
         }
     }
-    fs.writeFile("./context.fn", JSON.stringify(functions), {mode: 0o600}, ()=>{})
-    fs.writeFile("./context", JSON.stringify(context), {mode: 0o600}, ()=>{})
+    fs.writeFileSync("./context.fn", JSON.stringify(functions))
+    fs.writeFileSync("./context", JSON.stringify(context))
 }
 
 if (fs.existsSync("./context")) {
