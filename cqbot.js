@@ -26,8 +26,6 @@ const restart = function() {
 const main = (conn, data)=>{
     ws = conn
     data = JSON.parse(data)
-    if (data.user_id === 372914165)
-        fs.appendFile("debug.log", JSON.stringify(data) + "\n", ()=>{})
     if (data.post_type === "message") {
         if (!sessions[data.message_type]) return
         if (data.message_type === "private") {
