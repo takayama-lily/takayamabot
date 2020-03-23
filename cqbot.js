@@ -230,13 +230,13 @@ https://github.com/takayama-lily/riichi`
                     try {
                         gbl = Buffer.concat(gbl).toString()
                         gbl = JSON.parse(JSON.parse(gbl.replace("undefined", "")).data).foreignList
-                        let msg = '国外主要疫情:\n'
+                        let msg = `国外主要疫情(${gbl[0].date.substr(1)}):\n`
                         for (let v of gbl) {
                             if (v.confirm < 100 || !v.dead)
                                 continue
-                            msg += v.name + `(${v.date.substr(1)}): 確` + v.confirm
+                            msg += v.name + `: 確` + v.confirm
                             msg += v.confirmAdd ? `(+${v.confirmAdd})` : ''
-                            msg += ' 亡' + v.dead + ' 癒' + v.heal + '\n'
+                            msg += '亡' + v.dead + '癒' + v.heal + '\n'
                         }
                         this._send(msg)
                     } catch (e) {
@@ -248,7 +248,7 @@ https://github.com/takayama-lily/riichi`
 
         } else {
             let code = data.message
-            if (prefix === "/") {
+            if (prefix === "/" || prefix === "\\") {
                 if (data.message.includes("this") && !isMaster(data.user_id)) {
                     this._send('安全原因，代码不要包含this关键字。')
                     return
@@ -260,9 +260,9 @@ https://github.com/takayama-lily/riichi`
                 let result = vm.runInContext(code, context, {timeout: 20})
                 this._send(result)
             } catch(e) {
-                if (prefix === "/") {
+                if (prefix === "/" || prefix === "\\") {
                     let line = e.stack.split('\n')[0].split(':').pop()
-                    this._send(e.name + ': ' + e.message + ' (line: ' + line + ')')
+                    this._send(e.name + ': ' + e.message + ' (line: ' + parseInt(line) + ')')
                 }
             }
         }
