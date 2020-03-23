@@ -140,10 +140,15 @@ const 高级=\`-----高级指令:
   data ★查看环境变量
 2.查看开机时间:
   -uptime
-3.查看最新changelog:
-  changelog\``, context)
+3.里程碑，有重要更新时会记录一下:
+  milestone\``, context)
 vm.runInContext(`const advance=高级;
-const changelog=\`changelog(2020/3/18):
+const milestone=\`2020/3/23:
+1.现在函数可以持久化保存了，重启不会丢失。
+2.增加了milestone，删除了changelog。
+3.-pl增加了向听和何切的计算。
+
+2020/3/18:
 1.增加了changelog常量。帮助和help现在也是常量。
 2.所有固定指令现在都有英文简写。
 3.内置js对象现在不能删除和修改。
