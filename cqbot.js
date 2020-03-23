@@ -27,6 +27,8 @@ const main = (conn, data)=>{
     ws = conn
     data = JSON.parse(data)
     if (data.post_type === "message") {
+        if (data.message.length >= 600)
+            fs.appendFile("debug.log", JSON.stringify(data) + "\n", ()=>{})
         if (!sessions[data.message_type]) return
         if (data.message_type === "private") {
             data.private_id = data.user_id
@@ -254,8 +256,6 @@ https://github.com/takayama-lily/riichi`
                     return
                 }
                 code = code.substr(1)
-                if (code.length >= 600)
-                    fs.appendFile("debug.log", code + "\n", ()=>{})
             }
             try {
                 vm.runInContext("data="+JSON.stringify(data), context)
