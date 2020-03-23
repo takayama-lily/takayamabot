@@ -136,7 +136,6 @@ const 高级=\`-----高级指令:
 1.执行js代码: 
   ①输入代码直接执行，如var a=1;无报错信息。
   ②代码放在反斜杠后，如\\\\var a=1;有报错信息。
-  ★进程有时会重启，常量和function类型变量在重启后无法还原
   data ★查看环境变量
 2.查看开机时间:
   -uptime
@@ -144,7 +143,7 @@ const 高级=\`-----高级指令:
   milestone\``, context)
 vm.runInContext(`const advance=高级;
 const milestone=\`2020/3/23:
-1.现在函数可以持久化保存了，重启不会丢失。
+1.现在函数可以持久化保存了，重启不会丢失。非全局变量(const和let定义的)不适用。
 2.增加了milestone，删除了changelog。
 3.-pl增加了向听和何切的计算。
 
