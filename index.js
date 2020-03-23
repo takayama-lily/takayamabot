@@ -8,8 +8,12 @@ mjsoul = null
 mjsoulJP = null
 context = {}
 const saveContext = ()=>{
+    let functions = {}
     for (let k in context) {
-        if (typeof context[k] !== 'string') {
+        if (typeof context[k] === 'function') {
+            functions[k] = context[k].toString()
+        }
+        if (typeof context[k] === 'object') {
             try {
                 if (JSON.stringify(context[k]).length > 524288)
                     delete context[k]
@@ -18,7 +22,8 @@ const saveContext = ()=>{
             }
         }
     }
-    fs.writeFileSync("./context", JSON.stringify(context))
+    fs.writeFile("./context.fn", JSON.stringify(functions), {mode: 0o600}, ()=>{})
+    fs.writeFile("./context", JSON.stringify(context), {mode: 0o600}, ()=>{})
 }
 
 if (fs.existsSync("./context")) {
@@ -144,6 +149,14 @@ const changelog=\`changelog(2020/3/18):
 3.内置js对象现在不能删除和修改。
 4.沙盒中的代码最大执行时间从50ms改为20ms。
 ※js沙盒无法做到100%安全，大家要爱护公共环境\``, context)
+if (fs.existsSync("./context.fn")) {
+    let functions = JSON.parse(fs.readFileSync("./context.fn"))
+    for (let k in functions) {
+        try {
+            vm.runInContext(k + '=' + functions[k], context)
+        } catch (e) {}
+    }
+}
 
 setInterval(saveContext, 1800000)
 
