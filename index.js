@@ -4,8 +4,6 @@ const http = require("http")
 const zlib = require("zlib")
 const vm = require("vm")
 
-try {
-
 mjsoul = null
 mjsoulJP = null
 context = {}
@@ -162,9 +160,6 @@ if (fs.existsSync("./context.fn")) {
             vm.runInContext(k + '=' + functions[k], context)
         } catch (e) {}
     }
-}
-} catch (e) {
-    fs.appendFile("err.log", Date() + " " + e.stack + "\n", ()=>{})
 }
 
 setInterval(saveContext, 1800000)
