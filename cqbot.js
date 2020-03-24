@@ -71,7 +71,7 @@ class Session {
             msg = msg.toString()
         if (typeof msg === 'function')
             msg = `[Function: ${msg.name?msg.name:'anonymous'}]`
-        if (typeof msg === "object") {
+        if (typeof msg !== "string") {
             try {
                 msg = JSON.stringify(msg)
             } catch (e) {
