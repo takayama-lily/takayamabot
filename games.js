@@ -108,24 +108,24 @@ jrz=(q=qq())=>{return at(q) + ' 今天的字是"' + String.fromCodePoint(seed(q)
     if (!q || isNaN(q) || msg === undefined) {
         return `写信使用方法: 
 ●第一个参数是对方的qq号
-●第二个参数是写信内容(放在反引号中间)
+●第二个参数是写信内容(放在反引号或引号中间，反引号支持换行引号不支持)
 例:
-写信(429245111, \`你好\`)
+写信(429245111, \`我喜欢你\`)
 ★收信输入: 收信() 、删信输入: 删信()`
     }
     q = parseInt(q)
     if (!letters) letters = {}
     if (!letters[q]) letters[q]=[]
-    letters[q].unshift({from:qq(),time:Date.now(),msg:msg})
-    return '已送信'
+    letters[q].unshift({from:qq(),time:Date.now(),msg:encodeURIComponent(msg)})
+    return at() + ' 已送信'
 }
 收信=()=>{
     let q = qq()
     if (!letters) letters = {}
     if (!letters[q]) letters[q]=[]
     if (!letters[q].length)
-        return "你的信箱是空的"
-    let res = ""
+        return at() + " 你的信箱是空的"
+    let res = at() + '\n'
     for (let v of letters[q]) {
         let time = Math.floor((Date.now() - v.time)/1000)
         if (time >= 86400)
@@ -136,12 +136,12 @@ jrz=(q=qq())=>{return at(q) + ' 今天的字是"' + String.fromCodePoint(seed(q)
             time = Math.floor(time / 60) + "分钟"
         else
             time = Math.floor(time) + "秒"
-        res += `发信人: ${v.from+at(v.from)} / 时间: ${time}前 / 正文:\n${v.msg}\n\n`
+        res += `发信人: ${v.from+at(v.from)} / 时间: ${time}前 / 正文:\n${decodeURIComponent(v.msg)}\n\n`
     }
     return res
 }
 删信=()=>{
     if (!letters) letters = {}
     letters[qq()]=[]
-    return "信箱已清空"
+    return at() + " 信箱已清空"
 }
