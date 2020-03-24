@@ -29,6 +29,7 @@ const saveContext = ()=>{
 if (fs.existsSync("./context")) {
     context = JSON.parse(fs.readFileSync("./context"))
 }
+context["向听"] = require('syanten')
 vm.createContext(context, {
     codeGeneration: {
         strings: false,
