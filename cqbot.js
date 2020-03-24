@@ -7,6 +7,7 @@ const master = []
 const isMaster = (uid)=>{
     return uid === owner || master.includes(uid)
 }
+let timeout = 50
 const sessions = {
     "private": {},
     "group": {},
@@ -66,18 +67,19 @@ class Session {
         }
     }
     _send(msg) {
+        if ([NaN, Infinity, -Infinity].includes(msg))
+            msg = msg.toString()
         if (typeof msg === 'function')
             msg = `[Function: ${msg.name?msg.name:'anonymous'}]`
-        if (typeof msg !== "string") {
+        if (typeof msg === "object") {
             try {
                 msg = JSON.stringify(msg)
             } catch (e) {
-                return
+                msg = "对象过大无法保存，将被丢弃。"
             }
         }
-        if (typeof msg === 'string' && msg.length > 4500) {
+        if (typeof msg === 'string' && msg.length > 4500)
             msg = msg.substr(0, 4495) + "\n..."
-        }
         let res = {
             "action": this.action,
             "params": {
@@ -257,7 +259,8 @@ https://github.com/takayama-lily/riichi`
             }
             try {
                 vm.runInContext("data="+JSON.stringify(data), context)
-                let result = vm.runInContext(code, context, {timeout: 20})
+                vm.runInContext("Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);", context)
+                let result = vm.runInContext(code, context, {timeout: timeout})
                 this._send(result)
             } catch(e) {
                 if (prefix === "/" || prefix === "\\") {

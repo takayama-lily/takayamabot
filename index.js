@@ -115,6 +115,7 @@ Object.freeze(Atomics);
 delete Promise;
 delete globalThis;
 delete console;
+const constructor = undefined;
 const 草 = undefined;
 const 艹 = undefined;
 let data;`, context)
@@ -128,28 +129,33 @@ vm.runInContext(`const 帮助=\`-----固定指令(前面加"-"):
 -牌理 ★牌理点数計算，缩写-pl
 -新番 ★查询新番时间表，缩写-bgm
 -anime 动漫名 ★查询动漫，同类指令:book,music,game,real
-高级 ★查看高级指令，缩写advance\``, context)
-vm.runInContext(`const help=帮助;
-const 高级=\`-----高级指令:
-1.执行js代码: 
-  ①输入代码直接执行，如var a=1;无报错信息。
-  ②代码放在反斜杠后，如\\\\var a=1;有报错信息。
-  data ★查看环境变量
-2.查看开机时间:
-  -uptime
-3.里程碑，有重要更新时会记录一下:
-  milestone\``, context)
-vm.runInContext(`const advance=高级;
-const milestone=\`2020/3/23:
+高级 ★查看高级指令，缩写advance\`;
+const help=帮助;`, context)
+vm.runInContext(`const 高级=\`-----高级指令:
+1.执行js代码(可以用来教我说话): 
+  ①直接输入，例: 你好="你也好"
+  ②调试模式，前面添加反斜杠，例: \\\\a=b ★调试模式下输入有错我会反馈错误信息
+  data ★环境变量(里面存放了发言人的qq号昵称群号等信息)
+2.其他:
+  milestone ★里程碑，有重要更新时会记录一下
+  about ★关于我\`;
+const advance=高级;`, context)
+vm.runInContext(`const 关于=\`-----关于我:
+以下操作可能以会让我不再理睬你
+  ● 任何攻击我的行为: 写大量死循环、内存泄露式攻击等
+  ● 教我说涉及暴恐、反动、迷信等政治不正确的话
+  ● 利用我传播谣言，或对他人进行侮辱诽谤、人身攻击
+有bug或者建议可以联系我的主人\`;
+const about=关于;`, context)
+vm.runInContext(`const milestone=\`2020/3/23:
 1.现在函数可以持久化保存了，重启不会丢失。非全局变量(const和let定义的)不适用。
 2.增加了milestone，删除了changelog。
 3.-pl增加了向听和何切的计算。
-
 2020/3/18:
 1.增加了changelog常量。帮助和help现在也是常量。
 2.所有固定指令现在都有英文简写。
 3.内置js对象现在不能删除和修改。
-4.沙盒中的代码最大执行时间从50ms改为20ms。
+4.沙盒中的代码最大执行时间从50ms改为20ms。(又改回50ms了)
 ※js沙盒无法做到100%安全，大家要爱护公共环境\``, context)
 if (fs.existsSync("./context.fn")) {
     let functions = JSON.parse(fs.readFileSync("./context.fn"))
@@ -166,9 +172,12 @@ process.on('exit', (code)=>{
     saveContext()
 })
 process.on("uncaughtException", (e)=>{
-    fs.appendFile("err.log", Date() + " " + e.stack + "\n", ()=>{})
+    fs.appendFileSync("err.log", Date() + " " + e.stack + "\n")
     process.exit(1)
 })
+process.on('unhandledRejection', (reason, promise)=>{
+    fs.appendFileSync('err.log', Date() + ' Unhandled Rejection at:' + promise + 'reason:' + reason + '\n')
+});
 
 const api = require("./api.js")
 const cqbot = require("./cqbot.js")
