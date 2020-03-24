@@ -7,6 +7,9 @@ const master = []
 const isMaster = (uid)=>{
     return uid === owner || master.includes(uid)
 }
+const reboot = ()=>{
+    process.exit(1)
+}
 let timeout = 50
 const sessions = {
     "private": {},
