@@ -129,8 +129,11 @@ class Session {
             if (command === "uptime") {
                 this._send(process.uptime() + '秒前开机')
             }
-            if ((command === "雀魂" || command === "qh") && param.length) {
-                mjutil.shuibiao(param).then((res)=>{this._send(res)})
+            if ((command === "雀魂" || command === "qh")) {
+                if (!param.length)
+                    this._send("你没有输入昵称。输入例:\n-qh 金发同盟")
+                else
+                    mjutil.shuibiao(param).then((res)=>{this._send(res)})
             }
             if ((command === "雀魂日服" || command === "qhjp") && param.length) {
                 mjutil.shuibiao(param, true).then((res)=>{this._send(res)})

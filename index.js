@@ -29,7 +29,6 @@ const saveContext = ()=>{
 if (fs.existsSync("./context")) {
     context = JSON.parse(fs.readFileSync("./context"))
 }
-context["向听"] = require('syanten')
 vm.createContext(context, {
     codeGeneration: {
         strings: false,
@@ -130,6 +129,7 @@ vm.runInContext(`const 帮助=\`-----固定指令(前面加"-"):
 -牌理 ★牌理点数計算，缩写-pl
 -新番 ★查询新番时间表，缩写-bgm
 -anime 动漫名 ★查询动漫，同类指令:book,music,game,real
+小游戏 ★查看小游戏列表
 高级 ★查看高级指令，缩写advance\`;
 const help=帮助;`, context)
 vm.runInContext(`const 高级=\`-----高级指令:
@@ -141,8 +141,13 @@ vm.runInContext(`const 高级=\`-----高级指令:
   milestone ★里程碑，有重要更新时会记录一下
   about ★关于我\`;
 const advance=高级;`, context)
+vm.runInContext(`const 小游戏=\`-----小游戏列表:
+1. 猜拳游戏，在群里输入: 猜拳()
+2. 给别人写信，输入: 写信()
+★不断制作添加中\`;
+const about=关于;`, context)
 vm.runInContext(`const 关于=\`-----关于我:
-以下操作可能以会让我不再理睬你
+以下操作可能会让我不再理睬你
   ● 任何攻击我的行为: 写大量死循环、内存泄露式攻击等
   ● 教我说涉及暴恐、反动、迷信等政治不正确的话
   ● 利用我传播谣言，或对他人进行侮辱诽谤、人身攻击
@@ -166,6 +171,7 @@ if (fs.existsSync("./context.fn")) {
         } catch (e) {}
     }
 }
+context["向听"] = require('syanten')
 
 setInterval(saveContext, 1800000)
 
