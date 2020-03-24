@@ -249,8 +249,8 @@ https://github.com/takayama-lily/riichi`
         } else {
             let code = data.message
             if (prefix === "/" || prefix === "\\") {
-                if (data.message.includes("this") && !isMaster(data.user_id)) {
-                    this._send('安全原因，代码不要包含this关键字。')
+                if ((data.message.includes("this") || data.message.includes("async")) && !isMaster(data.user_id)) {
+                    this._send('安全原因，代码不要包含this和async关键字。')
                     return
                 }
                 code = code.substr(1)
