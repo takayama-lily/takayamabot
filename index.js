@@ -7,8 +7,8 @@ const vm = require("vm")
 mjsoul = null
 mjsoulJP = null
 context = {}
+let functions = {}
 const saveContext = ()=>{
-    let functions = {}
     for (let k in context) {
         if (typeof context[k] === 'function') {
             functions[k] = context[k].toString()
@@ -22,8 +22,6 @@ const saveContext = ()=>{
             }
         }
     }
-    fs.writeFileSync("./context.fn", JSON.stringify(functions))
-    fs.writeFileSync("./context", JSON.stringify(context))
 }
 
 if (fs.existsSync("./context")) {
@@ -170,19 +168,29 @@ vm.runInContext(`const milestone=\`2020/3/23:
 4.沙盒中的代码最大执行时间从50ms改为20ms。(又改回50ms了)
 ※js沙盒无法做到100%安全，大家要爱护公共环境\``, context)
 if (fs.existsSync("./context.fn")) {
-    let functions = JSON.parse(fs.readFileSync("./context.fn"))
-    for (let k in functions) {
+    let fns = JSON.parse(fs.readFileSync("./context.fn"))
+    for (let k in fns) {
         try {
-            vm.runInContext(k + '=' + functions[k], context)
+            vm.runInContext(k + '=' + fns[k], context)
         } catch (e) {}
     }
 }
 context["向听"] = require('syanten')
 
-setInterval(saveContext, 1800000)
+setInterval(()=>{
+    saveContext()
+    fs.writeFile("./context.fn", JSON.stringify(functions), (err)=>{
+        if (!err) fs.copyFile("./context.fn", "./bk/context.fn", ()=>{})
+    })
+    fs.writeFile("./context", JSON.stringify(context), (err)=>{
+        if (!err) fs.copyFile("./context", "./bk/context.fn", ()=>{})
+    })
+}, 1800000)
 
 process.on('exit', (code)=>{
     saveContext()
+    fs.writeFileSync("./context.fn", JSON.stringify(functions))
+    fs.writeFileSync("./context", JSON.stringify(context))
 })
 process.on("uncaughtException", (e)=>{
     fs.appendFileSync("err.log", Date() + " " + e.stack + "\n")
