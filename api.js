@@ -74,9 +74,14 @@ api.resolve = async(req, res)=>{
 	    } else if (r.pathname === "/api" && query.m && deny.indexOf(query.m) === -1) {
 	    	mjsoul.send(query.m, cb, query)
 	    } else if (r.pathname === "/youShouldPull") {
-	    	proc.exec('./up', (error, stdout, stderr) => {})
-	    	res.end()
-	        reject()
+	    	proc.exec('./up', (error, stdout, stderr) => {
+	    		let output = JSON.stringify({
+	    			"stdout": stdout,
+	    			"stderr": stderr,
+	    			"error": error
+	    		})
+	    		resolve(output)
+	    	})
 	    } else {
 	        res.writeHead(302, {'Location': '/index.html'});
 	        res.end()
