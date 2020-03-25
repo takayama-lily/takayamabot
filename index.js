@@ -183,7 +183,7 @@ setInterval(()=>{
         if (!err) fs.copyFile("./context.fn", "./bk/context.fn", ()=>{})
     })
     fs.writeFile("./context", JSON.stringify(context), (err)=>{
-        if (!err) fs.copyFile("./context", "./bk/context.fn", ()=>{})
+        if (!err) fs.copyFile("./context", "./bk/context", ()=>{})
     })
 }, 1800000)
 
