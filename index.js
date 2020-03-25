@@ -35,7 +35,14 @@ vm.createContext(context, {
         wasm: false
     }
 })
-vm.runInContext(`const Function = this.Function;
+vm.runInContext(`this.Function.prototype.view = function() {
+    return this.toString().replace(/[&\\[\\]]/g, (s)=>{
+        if (s === "&") return "&amp;";
+        if (s === "[") return "&#91;";
+        if (s === "]") return "&#93;";
+    });
+};
+const Function = this.Function;
 const Object = this.Object;
 const Boolean = this.Boolean;
 const Number = this.Number;
