@@ -98,6 +98,7 @@ class Session {
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
         let prefix = data.message.substr(0, 1)
         if (prefix === "#") {
+            return
             let command = data.message.substr(1)
             if (command.substr(0, 5) === "nordo")
                 command = command.substr(5)
