@@ -266,7 +266,12 @@ https://github.com/takayama-lily/riichi`
             try {
                 vm.runInContext("data="+JSON.stringify(data), context)
                 vm.runInContext("Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);", context)
-                code = code.replace(/[（）]/g, (s)=>String.fromCharCode(s.charCodeAt(0) - 65248))
+                code = code.replace(/[（），″“”‘’]/g, (s)=>{
+                    if (["″","“","”"].includes(s)) return '"'
+                    if (["‘","’"].includes(s)) return "'"
+                    if (s === "，") return ", "
+                    return String.fromCharCode(s.charCodeAt(0) - 65248)
+                })
                 let result = vm.runInContext(code, context, {timeout: timeout})
                 this._send(result)
             } catch(e) {
