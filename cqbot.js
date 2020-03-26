@@ -257,11 +257,12 @@ https://github.com/takayama-lily/riichi`
 
         } else {
             let code = data.message
-            if (prefix === "/" || prefix === "\\") {
-                if ((data.message.includes("this") || data.message.includes("async")) && !isMaster(data.user_id)) {
+            if ((data.message.includes("this") || data.message.includes("async")) && !isMaster(data.user_id)) {
+                if (prefix === "/" || prefix === "\\")
                     this._send('安全原因，代码不要包含this和async关键字。')
-                    return
-                }
+                return
+            }
+            if (prefix === "/" || prefix === "\\") {
                 code = code.substr(1)
             }
             try {
