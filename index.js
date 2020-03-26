@@ -147,8 +147,9 @@ vm.runInContext(`const 高级=\`-----高级指令:
   about ★关于我\`;
 const advance=高级;`, context)
 vm.runInContext(`const 小游戏=\`-----小游戏列表:
-1. 猜拳游戏，在群里输入: 猜拳()
-2. 给别人写信，输入: 写信()
+1. jrrp() , jrqs() , jrz()
+2. 猜拳游戏，在群里输入: 猜拳()
+3. 给别人写信，输入: 写信()
 ★不断制作添加中\`;`, context)
 vm.runInContext(`const 关于=\`-----关于我:
 以下操作可能会让我不再理睬你

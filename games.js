@@ -17,6 +17,97 @@ jrrp=(q=qq())=>{return at(q) + " 今天的人品是: " + seed(q)%101}
 // jrz=()=>{return at()+' 你今天的字是"'+JSON.parse(`["\\u${(seed()%(0x9fa5-0x4e00)+0x4e00).toString(16)}"]`)[0]+'"\n快去找算命先生算一卦吧！'}
 jrz=(q=qq())=>{return at(q) + ' 今天的字是"' + String.fromCodePoint(seed(q) % (0x9fa5 - 0x4e00) + 0x4e00) + '"\n快去找算命先生算一卦吧！'}
 
+conv = (h)=>{
+    let r = [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
+    let mpsz = ["m","p","s","z"]
+    let k
+    for (let i=h.length-1;i>=0;i--){
+        if(isNaN(h[i]) && mpsz.includes(h[i])) {
+            k=mpsz.indexOf(h[i])
+        } else{
+            if(h[i]==0)
+                h[i]=5;
+            r[k][h[i]-1]++
+        }
+    }
+    return r
+}
+
+麻将格式化 = (t)=>{
+    var str2unicode = {};
+    str2unicode["1z"] = String.fromCodePoint(126976);
+    str2unicode["2z"] = String.fromCodePoint(126977);
+    str2unicode["3z"] = String.fromCodePoint(126978);
+    str2unicode["4z"] = String.fromCodePoint(126979);
+    str2unicode["7z"] = String.fromCodePoint(126980);
+    str2unicode["6z"] = String.fromCodePoint(126981);
+    str2unicode["5z"] = String.fromCodePoint(126982);
+    str2unicode["8z"] = String.fromCodePoint(127019); //牌背
+    str2unicode["0z"] = " ";//空格
+
+    var mjUnicode = 126983;
+
+    for (let j = 0, mjType = ["m", "s", "p"]; j < 3; j++) {
+        for (let i = 1; i < 10; i++, mjUnicode++) {
+            str2unicode[i + mjType[j]] = String.fromCodePoint(mjUnicode);
+        }
+    }
+    t = t
+        .replace(/\s/g, "0z")
+        .replace(/[#＃]/g, "8z")
+        .replace(/[东東]/g, "1z")
+        .replace(/南/g, "2z")
+        .replace(/西/g, "z")
+        .replace(/北/g, "4z")
+        .replace(/白/g, "5z")
+        .replace(/[发發発]/g, "6z")
+        .replace(/中/g, "7z")
+        .replace(/(\d)(\d{0,8})(\d{0,8})(\d{0,8})(\d{0,8})(\d{0,8})(\d{0,8})(\d{8})(m|p|s|z)/g, "$1$9$2$9$3$9$4$9$5$9$6$9$7$9$8$9")
+        .replace(/(\d?)(\d?)(\d?)(\d?)(\d?)(\d?)(\d)(\d)(m|p|s|z)/g, "$1$9$2$9$3$9$4$9$5$9$6$9$7$9$8$9")
+        .replace(/(m|p|s|z)(m|p|s|z)+/g, "$1")
+        .replace(/^[^\d]/, "");
+    var returnStr = "";
+    for (let i = 0; i < t.length; i += 2) {
+        let hai = t.substr(i, 2);
+        if (hai == "0m" || hai == "0p" || hai == "0s") {
+            returnStr += "[赤" + str2unicode[hai.replace("0", "5")] + "]";
+        } else {
+            returnStr += (typeof str2unicode[hai] == 'undefined') ? '' : str2unicode[hai];
+        }
+    }
+    return returnStr;
+}
+
+jrqs = (q=qq())=>{
+    let sd = seed(q).toString()
+    while (sd.length < 16) {
+        sd += sd
+    }
+    const mpsz = ['m','p','s','z']
+    let t = []
+    let h = []
+    for (let i = 0; h.length < 14; i++) {
+        let a = sd.substr(i) % 136
+        if (t.includes(a))
+            a = Math.floor(a/4) === Math.floor((a+1)/4) ? a+1 : a-1
+        t.push(a)
+        let b = Math.floor(a / 4)
+        let c = Math.floor(b / 9)
+        let d = b%9+1
+        if ([16, 52, 88].includes(a)) d=0
+        h.push(mpsz[c]+d)
+    }
+    h.sort()
+    let res = ''
+    for (let i in h) {
+        i = parseInt(i)
+        res += h[i][1]
+        if (h[i+1] && h[i][0]===h[i+1][0]) continue
+        res += h[i][0]
+    }
+    return at(q) + " 今天的起手是:\n" + res + " (" + 向听(conv(res)) + "向听)\n" + 麻将格式化(res)
+}
+
 猜拳结束=()=>{
     let gid = qun()
     let uid = qq()
