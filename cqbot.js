@@ -231,7 +231,7 @@ https://github.com/takayama-lily/riichi`
             if (command === "疫情" || command === "yq") {
                 let gbl = []
                 new Promise(resolve=>{
-                    https.get("https://view.inews.qq.com/g2/getOnsInfo?name=disease_other", res=>{
+                    https.get("https://view.inews.qq.com/g2/getOnsInfo?name=disease_foreign", res=>{
                         res.on('data', d=>gbl.push(d))
                         res.on("end", ()=>resolve())
                     }).on("error", err=>{})
