@@ -100,6 +100,7 @@ const ranking = async(type = 0, jp = false)=>{
 }
 
 const paipu = async(id)=>{
+    return '暂时无法查询'
     let paipu = querystring.parse(url.parse(id).query).paipu
     if (!paipu)
         paipu = id
