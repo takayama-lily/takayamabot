@@ -200,17 +200,23 @@ https://github.com/takayama-lily/riichi`
                             s += res.syanten.now + '向聴'
                         }
                         if (res.syanten.hasOwnProperty('wait')) {
-                            s += '\n待 '
+                            s += ' 待'
+                            let c = 0
                             for (let i in res.syanten.wait) {
-                                s += i + res.syanten.wait[i] + '枚 '
+                                s += i
+                                c += parseInt(res.syanten.wait[i])
                             }
+                            s += `共${c}枚`
                         } else {
                             for (let i in res.syanten) {
                                 if (i !== 'now' && Object.keys(res.syanten[i]).length > 0) {
-                                    s += '\n打' + i + ' 待 '
+                                    s += '\n打' + i + ' 摸'
+                                    let c = 0
                                     for (let ii in res.syanten[i]) {
-                                        s += ii + res.syanten[i][ii] + '枚 '
+                                        s += ii
+                                        c += parseInt(res.syanten[i][ii])
                                     }
+                                    s += `共${c}枚`
                                 }
                             }
                         }

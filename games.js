@@ -25,9 +25,10 @@ conv = (h)=>{
         if(isNaN(h[i]) && mpsz.includes(h[i])) {
             k=mpsz.indexOf(h[i])
         } else{
-            if(h[i]==0)
-                h[i]=5;
-            r[k][h[i]-1]++
+            let ttt = h[i]
+            if(ttt==0)
+                ttt=5;
+            r[k][ttt-1]++
         }
     }
     return r
@@ -78,8 +79,8 @@ conv = (h)=>{
     return returnStr;
 }
 
-jrqs = (q=qq())=>{
-    let sd = seed(q).toString()
+起手=(sd)=>{
+    sd = sd.toString()
     while (sd.length < 16) {
         sd += sd
     }
@@ -105,6 +106,18 @@ jrqs = (q=qq())=>{
         if (h[i+1] && h[i][0]===h[i+1][0]) continue
         res += h[i][0]
     }
+    return res
+}
+
+sjqs=()=>{
+    let sd = Math.floor(Math.random()*10**16)
+    let res = 起手(sd)
+    return at() + " 你随机得到了以下的手牌:\n" + res + " (" + 向听(conv(res)) + "向听)\n" + 麻将格式化(res)
+}
+
+jrqs = (q=qq())=>{
+    let sd = seed(q).toString()
+    let res = 起手(sd)
     return at(q) + " 今天的起手是:\n" + res + " (" + 向听(conv(res)) + "向听)\n" + 麻将格式化(res)
 }
 

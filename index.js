@@ -124,7 +124,7 @@ const constructor = undefined;
 const 草 = undefined;
 const 艹 = undefined;
 let data;`, context)
-vm.runInContext(`const 帮助=\`-----固定指令(前面加"-"):
+vm.runInContext(`const 帮助=\`-----固定指令:
 -雀魂 昵称 ★查询雀魂战绩，缩写"-qh"
 -雀魂日服 昵称 ★查询雀魂日服战绩，缩写"-qhjp"
 -国服排名 ★查询雀魂排名，缩写"-rank" (三麻: -rank 3)
@@ -134,6 +134,7 @@ vm.runInContext(`const 帮助=\`-----固定指令(前面加"-"):
 -牌理 ★牌理点数計算，缩写"-pl"
 -新番 ★查询新番时间表，缩写"-bgm"
 -anime 动漫名 ★查询动漫，同类指令:book,music,game,real
+dhs ★雀魂大会室后台管理功能
 小游戏 ★查看小游戏列表
 高级 ★查看高级指令，缩写advance\`;
 const help=帮助;`, context)
@@ -147,7 +148,7 @@ vm.runInContext(`const 高级=\`-----高级指令:
   about ★关于我\`;
 const advance=高级;`, context)
 vm.runInContext(`const 小游戏=\`-----小游戏列表:
-1. jrrp() , jrqs() , jrz()
+1. jrrp() , jrqs() , sjqs() , jrz()
 2. 猜拳游戏，在群里输入: 猜拳()
 3. 给别人写信，输入: 写信()
 ★不断制作添加中\`;`, context)
@@ -158,7 +159,9 @@ vm.runInContext(`const 关于=\`-----关于我:
   ● 利用我传播谣言，或对他人进行侮辱诽谤、人身攻击
 有bug或者建议可以联系我的主人\`;
 const about=关于;`, context)
-vm.runInContext(`const milestone=\`2020/3/23:
+vm.runInContext(`const milestone=\`2020/3/28:
+添加了雀魂大会室管理功能
+2020/3/23:
 1.现在函数可以持久化保存了，重启不会丢失。非全局变量(const和let定义的)不适用。
 2.增加了milestone，删除了changelog。
 3.-pl增加了向听和何切的计算。
