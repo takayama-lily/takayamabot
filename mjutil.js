@@ -73,7 +73,7 @@ const ranking = async(type = 0, jp = false)=>{
     await new Promise(resolve=>{
         client.send("fetchLevelLeaderboard", (data)=>{
             result = data, resolve()
-        }, {type: type ? 2 : 1})
+        }, {type: type == 3 ? 2 : 1})
     })
     if (result.error !== null && result.error !== undefined)
         return "暂时无法查询，可能在维护或别的原因。"
