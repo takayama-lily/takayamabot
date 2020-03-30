@@ -124,34 +124,25 @@ const constructor = undefined;
 const 草 = undefined;
 const 艹 = undefined;
 let data;`, context)
-vm.runInContext(`const 帮助=\`-----固定指令:
--雀魂 昵称 ★查询雀魂战绩，缩写"-qh"
--雀魂日服 昵称 ★查询雀魂日服战绩，缩写"-qhjp"
--国服排名 ★查询雀魂排名，缩写"-rank" (三麻: -rank 3)
--日服排名 ★查询雀魂日服排名，缩写"-rankjp" (三麻: -rankjp 3)
--牌谱 牌谱链接或ID ★查询牌谱，缩写"-pp"
--疫情 ★查询疫情信息，缩写"-yq"
--牌理 ★牌理点数計算，缩写"-pl"
--新番 ★查询新番时间表，缩写"-bgm"
--anime 动漫名 ★查询动漫，同类指令:book,music,game,real
+vm.runInContext(`const 帮助=\`-----指令列表:
+-qh ★查询雀魂战绩(-qhjp可查询日服)
+-rank ★查询雀魂排名(三麻: -rank 3)(日服: -rankjp)
+-yq ★查询疫情信息
+-pl ★牌理点数計算
 dhs ★雀魂大会室后台管理功能
 小游戏 ★查看小游戏列表
 高级 ★查看高级指令，缩写advance\`;
 const help=帮助;`, context)
 vm.runInContext(`const 高级=\`-----高级指令:
-1.执行js代码(可以用来教我说话): 
+执行js代码(可以用来教我说话): 
   ①直接输入，例: 你好="你也好"
   ②调试模式，前面添加反斜杠，例: \\\\a=b ★调试模式下输入有错我会反馈错误信息
-  data ★环境变量(里面存放了发言人的qq号昵称群号等信息)
-2.其他:
-  milestone ★里程碑，有重要更新时会记录一下
-  about ★关于我\`;
+  data ★环境变量(里面存放了发言人的qq号昵称群号等信息)\`;
 const advance=高级;`, context)
 vm.runInContext(`const 小游戏=\`-----小游戏列表:
 1. jrrp() , jrqs() , sjqs() , jrz()
 2. 猜拳游戏，在群里输入: 猜拳()
-3. 给别人写信，输入: 写信()
-★不断制作添加中\`;`, context)
+3. 给别人写信，输入: 写信()\`;`, context)
 vm.runInContext(`const 关于=\`-----关于我:
 以下操作可能会让我不再理睬你
   ● 任何攻击我的行为: 写大量死循环、内存泄露式攻击等
