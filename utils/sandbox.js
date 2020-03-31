@@ -1,9 +1,15 @@
 const fs = require("fs")
 const vm = require("vm")
+const contextSavePath = '../data/'
+const contextFile = contextSavePath + 'context'
+const fnFile = contextSavePath + 'context.fn'
+if (!fs.existsSync(contextSavePath)) {
+    fs.mkdirSync(contextSavePath, {recursive: true, mode: 0o700})
+}
 
 let context = {}
-if (fs.existsSync("./context")) {
-    context = JSON.parse(fs.readFileSync("./context"))
+if (fs.existsSync(contextFile)) {
+    context = JSON.parse(fs.readFileSync(contextFile))
 }
 vm.createContext(context, {
     codeGeneration: {
@@ -11,8 +17,8 @@ vm.createContext(context, {
         wasm: false
     }
 })
-if (fs.existsSync("./context.fn")) {
-    let fn = JSON.parse(fs.readFileSync("./context.fn"))
+if (fs.existsSync(fnFile)) {
+    let fn = JSON.parse(fs.readFileSync(fnFile))
     for (let k in fn) {
         vm.runInContext(k + '=' + fn[k], context)
     }
@@ -168,17 +174,13 @@ const beforeSaveContext = ()=>{
 process.on('exit', (code)=>{
     if (code === 0) return
     beforeSaveContext()
-    fs.writeFileSync("./context.fn", JSON.stringify(functions))
-    fs.writeFileSync("./context", JSON.stringify(context))
+    fs.writeFileSync(fnFile, JSON.stringify(functions))
+    fs.writeFileSync(contextFile, JSON.stringify(context))
 })
 setInterval(()=>{
     beforeSaveContext()
-    fs.writeFile("./context.fn", JSON.stringify(fn), (err)=>{
-        if (!err) fs.copyFile("./context.fn", "./bk/context.fn", ()=>{})
-    })
-    fs.writeFile("./context", JSON.stringify(context), (err)=>{
-        if (!err) fs.copyFile("./context", "./bk/context", ()=>{})
-    })
+    fs.writeFile(fnFile, JSON.stringify(fn), (err)=>{})
+    fs.writeFile(contextFile, JSON.stringify(context), (err)=>{})
 }, 1800000)
 
 const run = (code, timeout = 0, debug = false)=>{

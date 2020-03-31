@@ -2,6 +2,7 @@
 const http = require('http')
 const url = require('url')
 const querystring = require('querystring')
+const zlib = require('zlib')
 const MJSoul = require('mjsoul')
 const config = require('./majsoul.config')
 const mjsoul = new MJSoul({
@@ -210,11 +211,23 @@ ${result[i].ptChange.join('->')}`
     return format
 }
 
+const recordCachePath = '../data/record/'
+if (!fs.existsSync(recordCachePath)) {
+    fs.mkdirSync(recordCachePath, {recursive: true, mode: 0o700})
+}
 const getParsedRecord = async(id)=>{
+    if (!id)
+        return {"error": "id required"}
+    id = id.split("_").shift()
+    const filePath = recordCachePath + id
+    if (fs.existsSync(filePath)) {
+        const buf = fs.readFileSync(filePath)
+        return zlib.brotliDecompressSync(buf)
+    }
     let data = await mjsoul.sendAsync("fetchGameRecord", {game_uuid: id})
     let record = {...data}
     if (record.data_url) {
-        return new Promise((resolve, reject)=>{
+        record = await new Promise((resolve, reject)=>{
             MJSoul.record.parseById(id, (data)=>{
                 record.data = data, record.data_url = ""
                 resolve(record)
@@ -222,8 +235,12 @@ const getParsedRecord = async(id)=>{
         })
     } else {
         record.data = MJSoul.record.parse(data.data)
-        return record
     }
+    if (!record.error) {
+        let cache = zlib.brotliCompressSync(Buffer.from(JSON.stringify(record)), {params: {[zlib.constants.BROTLI_PARAM_QUALITY]: 9}})
+        fs.writeFile(filePath, cache, ()=>{})
+    }
+    return record
 }
 
 module.exports = {
