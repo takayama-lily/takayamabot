@@ -3,11 +3,12 @@ const http = require('http')
 const url = require('url')
 const querystring = require('querystring')
 const MJSoul = require('mjsoul')
+const config = require('./majsoul.config')
 const mjsoul = new MJSoul({
     'url': 'wss://mj-srv-6.majsoul.com:4501'
 })
 const login = ()=>{
-    mjsoul.send('login', {account: '372914165@qq.com', password: mjsoul.hash('552233')})
+    mjsoul.send('login', {account: config.cn.account, password: mjsoul.hash(config.cn.password)})
 }
 mjsoul.on('NotifyAccountLogout', login)
 mjsoul.on('NotifyAnotherLogin', login)
@@ -20,7 +21,7 @@ const mjsoulJP = new MJSoul({
 const loginJP = ()=>{
 	let req = {
 		type: 10,
-		access_token: 'eff72bfc-b1a9-4006-ae54-db36cbd65ccb'
+		access_token: config.jp.token
 	}
     mjsoulJP.send('oauth2Login', req)
 }
