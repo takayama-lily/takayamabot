@@ -17,6 +17,56 @@ jrrp=(q=qq())=>{return at(q) + " 今天的人品是: " + seed(q)%101}
 // jrz=()=>{return at()+' 你今天的字是"'+JSON.parse(`["\\u${(seed()%(0x9fa5-0x4e00)+0x4e00).toString(16)}"]`)[0]+'"\n快去找算命先生算一卦吧！'}
 jrz=(q=qq())=>{return at(q) + ' 今天的字是"' + String.fromCodePoint(seed(q) % (0x9fa5 - 0x4e00) + 0x4e00) + '"\n快去找算命先生算一卦吧！'}
 
+
+cjly=(str)=>{
+    str = str.toString()
+    let res = ''
+    let i = 0
+    while (i<str.length) {
+        res += str.charCodeAt(i).toString(36) + ' '
+        i++
+    }
+    return "jly(\""+res.trim()+"\")"
+}
+jly=(str)=>{
+    let res = ''
+    str = str.split(' ')
+    let i = 0
+    while (i<str.length) {
+        if (isNaN(parseInt(str[i],36))) 
+            return at()+"刚才好像使用了精灵语, 但是语法不对, 不知道在说什么"
+        res += String.fromCharCode(parseInt(str[i],36))
+        i++
+    }
+    if (!res.trim().length)
+        return at()+"刚才好像使用了精灵语, 但是语法不对, 不知道在说什么"
+    return at()+"刚才使用了精灵语, 大意是：\n"+res
+}
+c精灵语=(str)=>{
+    str = str.toString()
+    let res = ''
+    let i = 0
+    while (i<str.length) {
+        res += str.charCodeAt(i).toString(36) + ' '
+        i++
+    }
+    return "精灵语(\""+res.trim()+"\")"
+}
+精灵语=(str)=>{
+    let res = ''
+    str = str.split(' ')
+    let i = 0
+    while (i<str.length) {
+        if (isNaN(parseInt(str[i],36))) 
+            return at()+"刚才好像使用了精灵语, 但是语法不对, 不知道在说什么"
+        res += String.fromCharCode(parseInt(str[i],36))
+        i++
+    }
+    if (!res.trim().length)
+        return at()+"刚才好像使用了精灵语, 但是语法不对, 不知道在说什么"
+    return at()+"刚才使用了精灵语, 大意是：\n"+res
+}
+
 conv = (h)=>{
     let r = [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
     let mpsz = ["m","p","s","z"]
