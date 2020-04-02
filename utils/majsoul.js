@@ -1,4 +1,5 @@
 'use strict'
+const fs = require('fs')
 const http = require('http')
 const url = require('url')
 const querystring = require('querystring')
@@ -9,7 +10,7 @@ const mjsoul = new MJSoul({
     'url': 'wss://mj-srv-6.majsoul.com:4501'
 })
 const login = ()=>{
-    mjsoul.send('login', {account: config.cn.account, password: mjsoul.hash(config.cn.password)})
+    mjsoul.send('login', {account: config['cn.account'], password: mjsoul.hash(config['cn.password'])})
 }
 mjsoul.on('NotifyAccountLogout', login)
 mjsoul.on('NotifyAnotherLogin', login)
@@ -22,7 +23,7 @@ const mjsoulJP = new MJSoul({
 const loginJP = ()=>{
 	let req = {
 		type: 10,
-		access_token: config.jp.token
+		access_token: config['jp.token']
 	}
     mjsoulJP.send('oauth2Login', req)
 }
@@ -211,7 +212,7 @@ ${result[i].ptChange.join('->')}`
     return format
 }
 
-const recordCachePath = '../data/record/'
+const recordCachePath = './data/record/'
 if (!fs.existsSync(recordCachePath)) {
     fs.mkdirSync(recordCachePath, {recursive: true, mode: 0o700})
 }
@@ -237,7 +238,8 @@ const getParsedRecord = async(id)=>{
         record.data = MJSoul.record.parse(data.data)
     }
     if (!record.error) {
-        let cache = zlib.brotliCompressSync(Buffer.from(JSON.stringify(record)), {params: {[zlib.constants.BROTLI_PARAM_QUALITY]: 9}})
+        record = JSON.stringify(record)
+        let cache = zlib.brotliCompressSync(Buffer.from(record), {params: {[zlib.constants.BROTLI_PARAM_QUALITY]: 9}})
         fs.writeFile(filePath, cache, ()=>{})
     }
     return record

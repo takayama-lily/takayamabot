@@ -1,6 +1,6 @@
 const fs = require("fs")
 const vm = require("vm")
-const contextSavePath = '../data/'
+const contextSavePath = './data/'
 const contextFile = contextSavePath + 'context'
 const fnFile = contextSavePath + 'context.fn'
 if (!fs.existsSync(contextSavePath)) {
@@ -174,7 +174,7 @@ const beforeSaveContext = ()=>{
 process.on('exit', (code)=>{
     if (code === 0) return
     beforeSaveContext()
-    fs.writeFileSync(fnFile, JSON.stringify(functions))
+    fs.writeFileSync(fnFile, JSON.stringify(fn))
     fs.writeFileSync(contextFile, JSON.stringify(context))
 })
 setInterval(()=>{

@@ -1,6 +1,7 @@
 'use strict'
 const fs = require('fs')
 const url = require("url")
+const querystring = require("querystring")
 const http = require('http')
 const WebSocket = require('ws')
 const zlib = require('zlib')
@@ -62,7 +63,8 @@ const server = http.createServer(async(req, res)=>{
     } catch(e) {
         result = e
     }
-    result = JSON.stringify(result)
+    if (!result instanceof Buffer && typeof result !== 'string')
+        result = JSON.stringify(result)
     res.setHeader('Content-Type', 'application/json; charset=utf-8')
 
     //开启gzip
