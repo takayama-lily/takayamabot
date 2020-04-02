@@ -69,8 +69,11 @@ class Session {
         }
     }
     _send(msg) {
-        if ([NaN, Infinity, -Infinity].includes(msg))
-            msg = msg.toString()
+        if (typeof msg === 'undefined')
+            return
+        if (typeof msg === 'number')
+            return
+            // msg = msg.toString()
         if (typeof msg === 'function')
             msg = `[Function: ${msg.name?msg.name:'anonymous'}]`
         if (typeof msg !== "string") {
