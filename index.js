@@ -63,7 +63,7 @@ const server = http.createServer(async(req, res)=>{
     } catch(e) {
         result = e
     }
-    if (!result instanceof Buffer && typeof result !== 'string')
+    if (!(result instanceof Buffer) && typeof result !== 'string')
         result = JSON.stringify(result)
     res.setHeader('Content-Type', 'application/json; charset=utf-8')
 
