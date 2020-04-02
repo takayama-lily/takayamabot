@@ -5,7 +5,7 @@ module.exports = {
     'cn.token': '',
     'jp.account': '',
     'jp.password': '',
-    'jp.token': 'eff72bfc-b1a9-4006-ae54-db36cbd65ccb',
+    'jp.token': '40458568-b119-47e9-97d0-2f389f423308',
     'int.account': '',
     'int.password': '',
     'int.token': '',
