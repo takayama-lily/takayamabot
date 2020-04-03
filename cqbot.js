@@ -253,7 +253,9 @@ https://github.com/takayama-lily/riichi`
             let code = data.message
             let debug = prefix === "\\"
             if (data.message.includes("const") && !isMaster(data.user_id)) {
-                this._send('const被禁止使用了')
+                if (debug)
+                    this._send('const被禁止使用了')
+                return
             }
             if ((data.message.includes("this") || data.message.includes("async")) && !isMaster(data.user_id)) {
                 if (debug)
