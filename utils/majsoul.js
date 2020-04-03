@@ -72,8 +72,8 @@ const shuibiao = async(words, jp = false)=>{
                 }
             }
         let format = `${name}${sign} -${state}-
-    四麻: ${rank4} ${pt4}pt (南${p.sum2}戦:${p[2].join(' ')}|東${p.sum1}戦:${p[1].join(' ')})
-    三麻: ${rank3} ${pt3}pt (南${p.sum12}戦:${p[12].slice(0,3).join(' ')}|東${p.sum11}戦:${p[11].slice(0,3).join(' ')})`
+四麻: ${rank4} ${pt4}pt (南${p.sum2}戦:${p[2].join(' ')}|東${p.sum1}戦:${p[1].join(' ')})
+三麻: ${rank3} ${pt3}pt (南${p.sum12}戦:${p[12].slice(0,3).join(' ')}|東${p.sum11}戦:${p[11].slice(0,3).join(' ')})`
         return format
     } catch (e) {
         return '暂时无法查询，可能在维护或别的原因。'
