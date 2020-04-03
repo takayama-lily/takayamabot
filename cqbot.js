@@ -1,10 +1,10 @@
 'use strict'
-const vm = require("vm")
 const https = require("https")
 const MJ = require('riichi')
 const mjutil = require("./utils/majsoul")
 const bgm = require("./utils/bgm")
 const sandbox = require("./utils/sandbox")
+const blacklist = []
 const owner = 372914165
 const master = []
 const isMaster = (uid)=>{
@@ -248,8 +248,13 @@ https://github.com/takayama-lily/riichi`
         } else if (prefix === "!") {
 
         } else {
+            if (blacklist.includes(data.user_id))
+                return
             let code = data.message
             let debug = prefix === "\\"
+            if (data.message.includes("const") && !isMaster(data.user_id)) {
+                this._send('const被禁止使用了')
+            }
             if ((data.message.includes("this") || data.message.includes("async")) && !isMaster(data.user_id)) {
                 if (debug)
                     this._send('安全原因，代码不要包含this和async关键字。')
