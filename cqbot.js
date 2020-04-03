@@ -270,8 +270,8 @@ https://github.com/takayama-lily/riichi`
                 if (s === "，") return ", "
                 return String.fromCharCode(s.charCodeAt(0) - 65248)
             })
-            sandbox.run("data="+JSON.stringify(data))
-            sandbox.run("Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);")
+            sandbox.run("data="+JSON.stringify(data), 50)
+            sandbox.run("Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);", 50)
             let result = sandbox.run(code, timeout, debug)
             this._send(result)
         }
