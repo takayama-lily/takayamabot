@@ -251,7 +251,7 @@ https://github.com/takayama-lily/riichi`
             if (blacklist.includes(data.user_id))
                 return
             let code = data.message
-            let debug = prefix === "\\"
+            let debug = ["\\", '/'].includes(prefix)
             if (data.message.includes("const") && !isMaster(data.user_id)) {
                 if (debug)
                     this._send('const被禁止使用了')
