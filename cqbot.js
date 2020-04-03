@@ -71,17 +71,16 @@ class Session {
     _send(msg) {
         if (typeof msg === 'undefined')
             return
-        if (typeof msg === 'number')
-            return
-            // msg = msg.toString()
         if (typeof msg === 'function')
             msg = `[Function: ${msg.name?msg.name:'anonymous'}]`
-        if (typeof msg !== "string") {
+        if (typeof msg === "object") {
             try {
                 msg = JSON.stringify(msg)
             } catch (e) {
                 msg = "对象过大无法保存，将被丢弃。"
             }
+        } else if (typeof msg !== 'string') {
+            msg = msg.toString()
         }
         if (typeof msg === 'string' && msg.length > 4500)
             msg = msg.substr(0, 4495) + "\n..."
