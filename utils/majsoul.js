@@ -40,92 +40,68 @@ const getRank = id=>{
     return res ===  '魂天1' ? '魂天' : res
 }
 const shuibiao = async(words, jp = false)=>{
-    let result
-    let client = jp ? mjsoulJP : mjsoul
-    await new Promise(resolve=>{
-        client.send('searchAccountByPattern', (data)=>{
-            result = data, resolve()
-        }, {pattern: words})
-    })
-    if (result.error !== null && result.error !== undefined)
-        return '暂时无法查询，可能在维护或别的原因。'
-    if (result.match_accounts.length === 0) 
-        return `玩家 ${words} 不存在`
-    let account_id = result.match_accounts.shift()
+    try {
+        let client = jp ? mjsoulJP : mjsoul
+        let result = await client.sendAsync('searchAccountByPattern', {pattern: words})
+        if (result.match_accounts.length === 0) 
+            return `玩家 ${words} 不存在`
+        let account_id = result.match_accounts.shift()
+        let [account, statistic, state] = await Promise.all([
+            client.sendAsync('fetchAccountInfo', {account_id: account_id}),
+            client.sendAsync('fetchAccountStatisticInfo', {account_id: account_id}),
+            client.sendAsync('fetchAccountState', {account_id_list: [account_id]})
+        ])
+        account = account.account
+        state = state.states[0].is_online ? '在线' : '离线'
 
-    let account, statistic, state
-
-    await Promise.all([
-        new Promise(resolve=>{
-            client.send('fetchAccountInfo', (data)=>{
-                account = data.account, resolve()
-            }, {account_id: account_id})
-        }),
-        new Promise(resolve=>{
-            client.send('fetchAccountStatisticInfo', (data)=>{
-                statistic = data, resolve()
-            }, {account_id: account_id})
-        }),
-        new Promise(resolve=>{
-            client.send('fetchAccountState', (data)=>{
-                state = data.states[0].is_online ? '在线' : '离线', resolve()
-            }, {account_id_list: [account_id]})
-        })
-    ])
-
-    let id = account.account_id
-    let name = account.nickname
-    let sign = account.signature ? ` (${account.signature})` : ''
-    let rank4 = getRank(account.level.id)
-    let rank3 = getRank(account.level3.id)
-    let pt4 = account.level.score
-    let pt3 = account.level3.score
-    statistic = statistic.detail_data.rank_statistic.total_statistic.all_level_statistic.game_mode
-    let p = {1:[],2:[],11:[],12:[],sum1:0,sum2:0,sum11:0,sum12:0}
-    if (statistic)
-        for (let v of statistic) {
-            if (![1,2,11,12].includes(v.mode)) continue;
-            p['sum'+v.mode] = v.game_count_sum
-            for (let v2 of v.game_final_position) {
-                p[v.mode].push(Math.round(v2/v.game_count_sum*100)+'%')
+        let id = account.account_id
+        let name = account.nickname
+        let sign = account.signature ? ` (${account.signature})` : ''
+        let rank4 = getRank(account.level.id)
+        let rank3 = getRank(account.level3.id)
+        let pt4 = account.level.score
+        let pt3 = account.level3.score
+        statistic = statistic.detail_data.rank_statistic.total_statistic.all_level_statistic.game_mode
+        let p = {1:[],2:[],11:[],12:[],sum1:0,sum2:0,sum11:0,sum12:0}
+        if (statistic)
+            for (let v of statistic) {
+                if (![1,2,11,12].includes(v.mode)) continue;
+                p['sum'+v.mode] = v.game_count_sum
+                for (let v2 of v.game_final_position) {
+                    p[v.mode].push(Math.round(v2/v.game_count_sum*100)+'%')
+                }
             }
-        }
-    let format = `${name}${sign} -${state}-
-四麻: ${rank4} ${pt4}pt (南${p.sum2}戦:${p[2].join(' ')}|東${p.sum1}戦:${p[1].join(' ')})
-三麻: ${rank3} ${pt3}pt (南${p.sum12}戦:${p[12].slice(0,3).join(' ')}|東${p.sum11}戦:${p[11].slice(0,3).join(' ')})`
-    return format
+        let format = `${name}${sign} -${state}-
+    四麻: ${rank4} ${pt4}pt (南${p.sum2}戦:${p[2].join(' ')}|東${p.sum1}戦:${p[1].join(' ')})
+    三麻: ${rank3} ${pt3}pt (南${p.sum12}戦:${p[12].slice(0,3).join(' ')}|東${p.sum11}戦:${p[11].slice(0,3).join(' ')})`
+        return format
+    } catch (e) {
+        return '暂时无法查询，可能在维护或别的原因。'
+    }
 }
 
 const ranking = async(type = 0, jp = false)=>{
-    let result
-    let client = jp ? mjsoulJP : mjsoul
-    await new Promise(resolve=>{
-        client.send('fetchLevelLeaderboard', (data)=>{
-            result = data, resolve()
-        }, {type: type == 3 ? 2 : 1})
-    })
-    if (result.error !== null && result.error !== undefined)
+    try {
+        let client = jp ? mjsoulJP : mjsoul
+        let result = await client.sendAsync('fetchLevelLeaderboard', {type: type == 3 ? 2 : 1})
+        result = result.items.slice(0, 15)
+        let accounts = []
+        for (let v of result) {
+            accounts.push(v.account_id)
+        }
+        let players = (await client.sendAsync('fetchMultiAccountBrief', {account_id_list: accounts})).players
+        for (let k in players) {
+            result[k].nickname = players[k].nickname
+        }
+        let format = `雀魂${jp?'日':'国'}服${type?'三':'四'}麻排名:`
+        for (let k in result) {
+            let v = result[k]
+            format += `\n${k*1+1}. ${v.nickname} ${getRank(v.level.id)} ${v.level.score}pt`
+        }
+        return format
+    } catch (e) {
         return '暂时无法查询，可能在维护或别的原因。'
-    result = result.items.slice(0,20)
-    let accounts = []
-    for (let v of result) {
-        accounts.push(v.account_id)
     }
-    await new Promise(resolve=>{
-        client.send('fetchMultiAccountBrief', (data)=>{
-            for (let k in data.players) {
-                result[k].nickname = data.players[k].nickname
-            }
-            resolve()
-        }, {account_id_list: accounts})
-    })
-
-    let format = `雀魂${jp?'日':'国'}服${type?'三':'四'}麻排名:`
-    for (let k in result) {
-        let v = result[k]
-        format += `\n${k*1+1}. ${v.nickname} ${getRank(v.level.id)} ${v.level.score}pt`
-    }
-    return format
 }
 
 const paipu = async(id)=>{
