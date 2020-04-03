@@ -105,24 +105,11 @@ const ranking = async(type = 0, jp = false)=>{
 }
 
 const paipu = async(id)=>{
+    return '该指令不再提供'
     let paipu = querystring.parse(url.parse(id).query).paipu
     if (!paipu)
-        paipu = id
-    let data = ''
-    await new Promise(resolve=>{
-        http.get('http://localhost/record?id='+id.replace('https://www.majsoul.com/1/?paipu=', ''), (res)=>{
-            res.on('data', d=>{
-                data += d
-            })
-            res.on('end', ()=>{
-                data = JSON.parse(data)
-                resolve()
-            })
-        }).on('error', err=>{
-            data = {'error':''}
-            resolve()
-        })
-    })
+        paipu = paipu
+    let data = await getParsedRecord(paipu)
 
     if (data.error)
         return '牌譜id不正確: ' + paipu
