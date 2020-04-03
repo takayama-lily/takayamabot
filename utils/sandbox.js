@@ -154,6 +154,7 @@ vm.runInContext(`const milestone=\`2020/3/28:
 4.沙盒中的代码最大执行时间从50ms改为20ms。(又改回50ms了)
 ※js沙盒无法做到100%安全，大家要爱护公共环境\``, context)
 context["向听"] = require('syanten')
+context["向听"].constructor = undefined
 
 let fn = {}
 const beforeSaveContext = ()=>{
