@@ -129,7 +129,46 @@ conv = (h)=>{
     return returnStr;
 }
 
-起手=(sd)=>{
+起手=(seed = Math.random(), i = 14, aka = true) => {
+    //seed=种子,i=要生成的张数(默认14张)
+    seed = parseFloat(seed);
+    seed = (seed == NaN) ? Math.random() : seed;
+    i = (i > 0) ? parseInt(i) : 14;
+    var mountain = Array(136).fill(0);
+    while (i--) {
+        seed = ('0.' + Math.sin(seed).toString().substr(6));
+        let index = Math.floor(seed * 136);
+        if (mountain[index] === 0) {
+            mountain[index] = 1;
+        } else {
+            i++;
+        }
+    }
+  
+    var i, s = "";
+    for (i = 0; i < 136; ++i)
+        if (mountain[i]) {
+            var hai136 = i;
+            var a = (hai136 >> 2);
+            s += (!aka)
+                ? ((a % 9) + 1) + "mpsz".substr(a / 9, 1)
+                : (a < 27 && (hai136 % 36) == 16
+                    ? "0"
+                    : ((a % 9) + 1)) + "mpsz".substr(a / 9, 1);
+        }
+    let res = []
+    for (let i in s) {
+        if (isNaN(s[i]) && s[i] === s[parseInt(i)+2])
+            continue
+        else
+            res.push(s[i])
+    }
+    return res.join("");
+}
+
+起手2=(sd)=>{
+    if (!sd)
+        sd = Math.floor(Math.random()*10**16)
     sd = sd.toString()
     while (sd.length < 16) {
         sd += sd
