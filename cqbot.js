@@ -1,7 +1,10 @@
-const fs = require("fs")
-const vm = require("vm")
-const proc = require('child_process')
+'use strict'
 const https = require("https")
+const MJ = require('riichi')
+const mjutil = require("./utils/majsoul")
+const bgm = require("./utils/bgm")
+const sandbox = require("./utils/sandbox")
+const blacklist = []
 const owner = 372914165
 const master = []
 const isMaster = (uid)=>{
@@ -17,10 +20,6 @@ const sessions = {
     "discuss": {}
 }
 let ws = null
-
-const mjutil = require("./mjutil")
-const bgm = require("./bgm")
-const MJ = require('riichi')
 
 const restart = function() {
     let res = {"action": "set_restart_plugin"}
@@ -70,16 +69,18 @@ class Session {
         }
     }
     _send(msg) {
-        if ([NaN, Infinity, -Infinity].includes(msg))
-            msg = msg.toString()
+        if (typeof msg === 'undefined')
+            return
         if (typeof msg === 'function')
             msg = `[Function: ${msg.name?msg.name:'anonymous'}]`
-        if (typeof msg !== "string") {
+        if (typeof msg === "object") {
             try {
                 msg = JSON.stringify(msg)
             } catch (e) {
                 msg = "对象过大无法保存，将被丢弃。"
             }
+        } else if (typeof msg !== 'string') {
+            msg = msg.toString()
         }
         if (typeof msg === 'string' && msg.length > 4500)
             msg = msg.substr(0, 4495) + "\n..."
@@ -97,20 +98,7 @@ class Session {
     onMessage(data) {
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
         let prefix = data.message.substr(0, 1)
-        if (prefix === "#") {
-            return
-            let command = data.message.substr(1)
-            if (command.substr(0, 5) === "nordo")
-                command = command.substr(5)
-            command = `timeout 1 bash -c "./exec ${encodeURIComponent(command)}"`
-            if (!isMaster(data.user_id) || data.message.substr(1, 5) === "nordo") {
-                command = `runuser www -c '${command}'`
-            }
-            proc.exec(command, (error, stdout, stderr) => {
-                stdout ? this._send(stdout) : 0
-                stderr ? this._send(stderr) : 0
-            })
-        } else if (prefix === "-") {
+        if (prefix === "-") {
             let split = data.message.substr(1).trim().split(" ")
             let command = split.shift()
             let param = split.join(" ")
@@ -129,9 +117,6 @@ class Session {
                     result = e.stack
                 }
                 this._send(result)
-            }
-            if (command === "uptime") {
-                this._send(process.uptime() + '秒前开机')
             }
             if ((command === "雀魂" || command === "qh")) {
                 if (!param.length)
@@ -262,32 +247,33 @@ https://github.com/takayama-lily/riichi`
         } else if (prefix === "!") {
 
         } else {
+            if (blacklist.includes(data.user_id))
+                return
             let code = data.message
+            let debug = ["\\", '/'].includes(prefix)
+            if (data.message.includes("const") && !isMaster(data.user_id)) {
+                if (debug)
+                    this._send('const被禁止使用了')
+                return
+            }
             if ((data.message.includes("this") || data.message.includes("async")) && !isMaster(data.user_id)) {
-                if (prefix === "/" || prefix === "\\")
+                if (debug)
                     this._send('安全原因，代码不要包含this和async关键字。')
                 return
             }
-            if (prefix === "/" || prefix === "\\") {
+            if (debug) {
                 code = code.substr(1)
             }
-            try {
-                vm.runInContext("data="+JSON.stringify(data), context)
-                vm.runInContext("Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);", context)
-                code = code.replace(/[（），″“”]/g, (s)=>{
-                    if (["″","“","”"].includes(s)) return '"'
-                    // if (["‘","’"].includes(s)) return "'"
-                    if (s === "，") return ", "
-                    return String.fromCharCode(s.charCodeAt(0) - 65248)
-                })
-                let result = vm.runInContext(code, context, {timeout: timeout})
-                this._send(result)
-            } catch(e) {
-                if (prefix === "/" || prefix === "\\") {
-                    let line = e.stack.split('\n')[0].split(':').pop()
-                    this._send(e.name + ': ' + e.message + ' (line: ' + parseInt(line) + ')')
-                }
-            }
+            code = code.replace(/[（），″“”]/g, (s)=>{
+                if (["″","“","”"].includes(s)) return '"'
+                // if (["‘","’"].includes(s)) return "'"
+                if (s === "，") return ", "
+                return String.fromCharCode(s.charCodeAt(0) - 65248)
+            })
+            sandbox.run("data="+JSON.stringify(data), 50)
+            sandbox.run("Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);", 50)
+            let result = sandbox.run(code, timeout, debug)
+            this._send(result)
         }
     }
 }

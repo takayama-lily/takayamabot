@@ -1,5 +1,6 @@
 #!/bin/bash
 cd `dirname $0`
-git pull origin master
+eval `ssh-agent -s`
+ssh-add ~/.ssh/takayama-bot
+git pull
 npm install
-
