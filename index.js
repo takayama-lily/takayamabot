@@ -5,6 +5,7 @@ const querystring = require("querystring")
 const http = require('http')
 const WebSocket = require('ws')
 const zlib = require('zlib')
+const spawn = require('child_process')
 process.on('uncaughtException', (e)=>{
     fs.appendFileSync('err.log', Date() + ' ' + e.stack + '\n')
     process.exit(1)
@@ -38,7 +39,7 @@ const fn = async(req)=>{
     //处理github push请求
     else if (r.pathname === "/youShouldPull") {
         return new Promise((resolve, reject)=>{
-            proc.exec('./up', (error, stdout, stderr) => {
+            spawn.exec('./up', (error, stdout, stderr) => {
                 let output = {
                     "stdout": stdout,
                     "stderr": stderr,
