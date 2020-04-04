@@ -173,7 +173,6 @@ const beforeSaveContext = ()=>{
     }
 }
 process.on('exit', (code)=>{
-    if (code === 0) return
     beforeSaveContext()
     fs.writeFileSync(fnFile, JSON.stringify(fn))
     fs.writeFileSync(contextFile, JSON.stringify(context))
