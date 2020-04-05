@@ -124,7 +124,7 @@ vm.runInContext(`const 帮助=\`-----指令列表:
 -anime 公主连结 ★查询动漫
 dhs ★雀魂大会室后台管理功能
 小游戏 ★查看小游戏列表
-高级 ★查看高级指令，缩写advance\`;
+高级 ★查看高级指令\`;
 const help=帮助;`, context)
 vm.runInContext(`const 高级=\`-----高级指令:
 执行js代码(可以用来教我说话): 
