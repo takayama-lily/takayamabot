@@ -33,7 +33,7 @@ const getCalendar = async (day)=>{
                             result.push(`${v.weekday.cn} 放送 ${v.items.length} 部`)
                         }
                     }
-                    r(result.join('\n') + (day ? '' : `\n输入'-新番 1-7'查看周一～周日具体放送表`))
+                    r(result.join('\n') + (day ? '' : `\n输入"-bgm 1~7"查看周一～周日具体放送表`))
                 } catch (e) {
                     r('bgm服务暂时不可用')
                 }
