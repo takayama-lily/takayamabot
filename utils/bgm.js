@@ -26,7 +26,7 @@ const getCalendar = async (day)=>{
                         result.push(day.weekday.cn+'放送：')
                         for (let v of day.items) {
                             v.name_cn = v.name_cn ? v.name_cn : v.name
-                            result.push(`${v.name_cn} (${v.name}) / 放送开始${v.air_date} / 评分${v.rating ? v.rating.score : '未知'}`)
+                            result.push(`${v.name_cn} / ${v.air_date}开始 / 评分${v.rating ? v.rating.score : '未知'}`)
                         }
                     } else {
                         for (let v of json) {
