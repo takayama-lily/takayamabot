@@ -222,17 +222,17 @@ https://github.com/takayama-lily/riichi`
             if (command === "疫情" || command === "yq") {
                 let gbl = []
                 new Promise(resolve=>{
-                    https.get("https://view.inews.qq.com/g2/getOnsInfo?name=disease_foreign", res=>{
+                    https.get("https://api.inews.qq.com/newsqa/v1/automation/foreign/country/ranklist", res=>{
                         res.on('data', d=>gbl.push(d))
                         res.on("end", ()=>resolve())
                     }).on("error", err=>{})
                 }).then(()=>{
                     try {
                         gbl = Buffer.concat(gbl).toString()
-                        gbl = JSON.parse(JSON.parse(gbl.replace("undefined", "")).data).foreignList
+                        gbl = JSON.parse(gbl).data
                         let msg = `国外主要疫情(${gbl[0].date.substr(1)}):\n`
                         for (let v of gbl) {
-                            if (v.confirm < 100 || !v.dead)
+                            if (v.confirm < 1000)
                                 continue
                             msg += v.name + `: 確` + v.confirm
                             msg += v.confirmAdd ? `(+${v.confirmAdd})` : ''
