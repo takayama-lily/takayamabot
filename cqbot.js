@@ -4,7 +4,7 @@ const MJ = require('riichi')
 const mjutil = require("./utils/majsoul")
 const bgm = require("./utils/bgm")
 const sandbox = require("./utils/sandbox")
-const blacklist = []
+const blacklist = [3507349275,429245111]
 const owner = 372914165
 const master = []
 const isMaster = (uid)=>{
