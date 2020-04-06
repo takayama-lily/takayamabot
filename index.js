@@ -83,11 +83,11 @@ const server = http.createServer(async(req, res)=>{
 })
 
 //开启ws服务器处理bot请求
-const botMain = require('./bot')
+const cqPlugin = require('./cqbot')
 const ws = new WebSocket.Server({server})
 ws.on('connection', (conn)=>{
     conn.on('message', (data)=>{
-        botMain(conn, data)
+        cqPlugin(conn, data)
     })   
 })
 server.listen(3000)
