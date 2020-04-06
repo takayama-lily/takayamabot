@@ -2,6 +2,12 @@
 const parseData = (data)=>{
     return JSON.parse(data)
 }
+
+
+
+
+
+
 const qqs = []
 const connection = null
 
