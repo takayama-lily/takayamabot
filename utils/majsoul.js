@@ -72,7 +72,7 @@ const shuibiao = async(words, jp = false)=>{
         state = state.states[0].is_online ? '在线' : '离线'
 
         let name = account.nickname
-        let sign = account.signature ? `\n(${account.signature})` : ''
+        let sign = account.signature ? `(${account.signature})` : ''
         let rank4 = getRank(account.level.id)
         let rank3 = getRank(account.level3.id)
         let pt4 = account.level.score
@@ -84,18 +84,56 @@ const shuibiao = async(words, jp = false)=>{
         let mode12 = Object.keys(statistic).find((k)=>statistic[k].mode===12)
         let mode3 = deepAdd(mode1, mode2)
         let mode23 = deepAdd(mode11, mode12)
-        let p = {1:[],2:[],11:[],12:[],sum1:0,sum2:0,sum11:0,sum12:0}
-        if (statistic)
-            for (let v of statistic) {
-                if (![1,2,11,12].includes(v.mode)) continue;
-                p['sum'+v.mode] = v.game_count_sum
-                for (let v2 of v.game_final_position) {
-                    p[v.mode].push(Math.round(v2/v.game_count_sum*100)+'%')
-                }
-            }
-        let format = `${name} -${state}- ${sign}
-四麻: ${rank4} ${pt4}pt (南${p.sum2}戦:${p[2].join(' ')}|東${p.sum1}戦:${p[1].join(' ')})
-三麻: ${rank3} ${pt3}pt (南${p.sum12}戦:${p[12].slice(0,3).join(' ')}|東${p.sum11}戦:${p[11].slice(0,3).join(' ')})`
+        let format = `${name} -${state}- ${sign}`
+        //type 0 1 2摸 3荣 4铳 5
+        if (mode3) {
+            let top = Math.round(mode3.game_final_position[0]/mode3.game_count_sum*100)
+            let last = Math.round(mode3.game_final_position[3]/mode3.game_count_sum*100)
+            let fky = Math.round(mode3.fly_count/mode3.game_count_sum*100)
+            let tsumo = Math.round(
+                (mode3.round_end[Object.keys(mode3.round_end).find((k)=>mode3.round_end[k].type===2)].sum)
+                / mode3.round_count_sum*100)
+            let ron = Math.round(
+                (mode3.round_end[Object.keys(mode3.round_end).find((k)=>mode3.round_end[k].type===3)].sum)
+                / mode3.round_count_sum*100)
+            let furikomi = Math.round(
+                (mode3.round_end[Object.keys(mode3.round_end).find((k)=>mode3.round_end[k].type===4)].sum)
+                / mode3.round_count_sum*100)
+            let riichi = Math.round(mode3.liqi_count_sum/mode3.round_count_sum*100)
+            let furo = Math.round(mode3.ming_count_sum/mode3.round_count_sum*100)
+            format += `\n四麻${mode3.game_count_sum}战${pt4}pt${rank4} 一位${top}% 四位${last}% 被飞${fly}%
+　摸${tsumo}% 荣${ron}% 铳${furikomi}% 立${riichi}% 鸣${furo}%`
+        }
+        if (mode23) {
+            let top = Math.round(mode3.game_final_position[0]/mode3.game_count_sum*100)
+            let last = Math.round(mode3.game_final_position[2]/mode3.game_count_sum*100)
+            let fky = Math.round(mode3.fly_count/mode3.game_count_sum*100)
+            let tsumo = Math.round(
+                (mode3.round_end[Object.keys(mode3.round_end).find((k)=>mode3.round_end[k].type===2)].sum)
+                / mode3.round_count_sum*100)
+            let ron = Math.round(
+                (mode3.round_end[Object.keys(mode3.round_end).find((k)=>mode3.round_end[k].type===3)].sum)
+                / mode3.round_count_sum*100)
+            let furikomi = Math.round(
+                (mode3.round_end[Object.keys(mode3.round_end).find((k)=>mode3.round_end[k].type===4)].sum)
+                / mode3.round_count_sum*100)
+            let riichi = Math.round(mode3.liqi_count_sum/mode3.round_count_sum*100)
+            let furo = Math.round(mode3.ming_count_sum/mode3.round_count_sum*100)
+            format += `\n四麻${mode3.game_count_sum}战${pt4}pt${rank4} 一位${top}% 三位${last}% 被飞${fly}%
+　摸${tsumo}% 荣${ron}% 铳${furikomi}% 立${riichi}% 鸣${furo}%`
+        }
+//         let p = {1:[],2:[],11:[],12:[],sum1:0,sum2:0,sum11:0,sum12:0}
+//         if (statistic)
+//             for (let v of statistic) {
+//                 if (![1,2,11,12].includes(v.mode)) continue;
+//                 p['sum'+v.mode] = v.game_count_sum
+//                 for (let v2 of v.game_final_position) {
+//                     p[v.mode].push(Math.round(v2/v.game_count_sum*100)+'%')
+//                 }
+//             }
+//         let format = `${name} -${state}- ${sign}
+// 四麻: ${rank4} ${pt4}pt (南${p.sum2}戦:${p[2].join(' ')}|東${p.sum1}戦:${p[1].join(' ')})
+// 三麻: ${rank3} ${pt3}pt (南${p.sum12}戦:${p[12].slice(0,3).join(' ')}|東${p.sum11}戦:${p[11].slice(0,3).join(' ')})`
         return format
     } catch (e) {
         return '暂时无法查询，可能在维护或别的原因。'
