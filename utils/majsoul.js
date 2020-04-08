@@ -50,6 +50,10 @@ const shuibiao = async(words, jp = false)=>{
                 o1[k] = Math.max(o1[k], o2[k])
                 continue
             }
+            if (k === 'round_end') {
+                o1[k].sort((a,b)=>o1[k][a].type-o1[k][b].type)
+                o2[k].sort((a,b)=>o2[k][a].type-o2[k][b].type)
+            }
             if (typeof o1[k] === 'number')
                 o1[k] += o2[k]
             if (typeof o1[k] === 'object')
@@ -86,6 +90,7 @@ const shuibiao = async(words, jp = false)=>{
         let mode23 = deepAdd(statistic[mode11], statistic[mode12])
         let format = `${name} -${state}- ${sign}`
         //type 0 1 2摸 3荣 4铳 5
+        console.log(mode3)
         if (mode3) {
             let mode = mode3
             let top = Math.round(mode.game_final_position[0]/mode.game_count_sum*100)
@@ -292,7 +297,7 @@ module.exports = {
 
 setTimeout(async()=>{
 
-    console.log(await shuibiao("高山",true))
+    console.log(await shuibiao("ハピリット",true))
 
 }, 3000)
 
