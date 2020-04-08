@@ -51,8 +51,8 @@ const shuibiao = async(words, jp = false)=>{
                 continue
             }
             if (k === 'round_end') {
-                o1[k].sort((a,b)=>o1[k][a].type-o1[k][b].type)
-                o2[k].sort((a,b)=>o2[k][a].type-o2[k][b].type)
+                o1[k].sort((a,b)=>a.type-b.type)
+                o2[k].sort((a,b)=>a.type-b.type)
             }
             if (typeof o1[k] === 'number')
                 o1[k] += o2[k]
