@@ -103,7 +103,7 @@ const shuibiao = async(words, jp = false)=>{
             let riichi = Math.round(mode.liqi_count_sum/mode.round_count_sum*100)
             let furo = Math.round(mode.ming_count_sum/mode.round_count_sum*100)
             format += `\n四麻${mode.game_count_sum}战${pt4}pt${rank4} 一位${top}% 末位${last}% 被飞${fly}%
-　摸${tsumo}% 荣${ron}% 铳${furikomi}% 立${riichi}% 鸣${furo}%`
+　自摸${tsumo}% 荣和${ron}% 放铳${furikomi}% 立直${riichi}% 副露${furo}%`
         }
         if (mode23) {
             let mode = mode23
@@ -122,7 +122,7 @@ const shuibiao = async(words, jp = false)=>{
             let riichi = Math.round(mode.liqi_count_sum/mode.round_count_sum*100)
             let furo = Math.round(mode.ming_count_sum/mode.round_count_sum*100)
             format += `\n三麻${mode.game_count_sum}战${pt3}pt${rank3} 一位${top}% 末位${last}% 被飞${fly}%
-　摸${tsumo}% 荣${ron}% 铳${furikomi}% 立${riichi}% 鸣${furo}%`
+　自摸${tsumo}% 荣和${ron}% 放铳${furikomi}% 立直${riichi}% 副露${furo}%`
         }
 //         let p = {1:[],2:[],11:[],12:[],sum1:0,sum2:0,sum11:0,sum12:0}
 //         if (statistic)
