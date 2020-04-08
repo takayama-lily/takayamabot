@@ -15,6 +15,14 @@ const reboot = ()=>{
 }
 let timeout = 50
 
+
+const qqbot = new CQPlugin({
+
+})
+
+qqbot.on('message.group')
+
+
 const main = (client, data)=>{
     data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
     let prefix = data.message.substr(0, 1)

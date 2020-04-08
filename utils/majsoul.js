@@ -40,6 +40,23 @@ const getRank = id=>{
     return res ===  '魂天1' ? '魂天' : res
 }
 const shuibiao = async(words, jp = false)=>{
+    let deepAdd = (o1, o2)=>{
+        if (o1===undefined) return o2
+        if (o2===undefined) return o1
+        for (let k in o1) {
+            if (['rank','type'].includes(k) || !o2.hasOwnProperty(k))
+                continue
+            if (k === 'highest_lianzhuang') {
+                o1[k] = Math.max(o1[k], o2[k])
+                continue
+            }
+            if (typeof o1[k] === 'number')
+                o1[k] += o2[k]
+            if (typeof o1[k] === 'object')
+                o1[k] = deepAdd(o1[k], o2[k])
+        }
+        return o1
+    }
     try {
         let client = jp ? mjsoulJP : mjsoul
         let result = await client.sendAsync('searchAccountByPattern', {pattern: words})
@@ -54,14 +71,19 @@ const shuibiao = async(words, jp = false)=>{
         account = account.account
         state = state.states[0].is_online ? '在线' : '离线'
 
-        let id = account.account_id
         let name = account.nickname
-        let sign = account.signature ? ` (${account.signature})` : ''
+        let sign = account.signature ? `\n(${account.signature})` : ''
         let rank4 = getRank(account.level.id)
         let rank3 = getRank(account.level3.id)
         let pt4 = account.level.score
         let pt3 = account.level3.score
         statistic = statistic.detail_data.rank_statistic.total_statistic.all_level_statistic.game_mode
+        let mode1 = Object.keys(statistic).find((k)=>statistic[k].mode===1)
+        let mode2 = Object.keys(statistic).find((k)=>statistic[k].mode===2)
+        let mode11 = Object.keys(statistic).find((k)=>statistic[k].mode===11)
+        let mode12 = Object.keys(statistic).find((k)=>statistic[k].mode===12)
+        let mode3 = deepAdd(mode1, mode2)
+        let mode23 = deepAdd(mode11, mode12)
         let p = {1:[],2:[],11:[],12:[],sum1:0,sum2:0,sum11:0,sum12:0}
         if (statistic)
             for (let v of statistic) {
@@ -71,7 +93,7 @@ const shuibiao = async(words, jp = false)=>{
                     p[v.mode].push(Math.round(v2/v.game_count_sum*100)+'%')
                 }
             }
-        let format = `${name}${sign} -${state}-
+        let format = `${name} -${state}- ${sign}
 四麻: ${rank4} ${pt4}pt (南${p.sum2}戦:${p[2].join(' ')}|東${p.sum1}戦:${p[1].join(' ')})
 三麻: ${rank3} ${pt3}pt (南${p.sum12}戦:${p[12].slice(0,3).join(' ')}|東${p.sum11}戦:${p[11].slice(0,3).join(' ')})`
         return format
