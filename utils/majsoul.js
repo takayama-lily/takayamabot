@@ -96,15 +96,12 @@ const shuibiao = async(words, jp = false)=>{
             let top = Math.round(mode.game_final_position[0]/mode.game_count_sum*100)
             let last = Math.round(mode.game_final_position[3]/mode.game_count_sum*100)
             let fly = Math.round(mode.fly_count/mode.game_count_sum*100)
-            let tsumo = Math.round(
-                (mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===2)].sum)
-                / mode.round_count_sum*100)
-            let ron = Math.round(
-                (mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===3)].sum)
-                / mode.round_count_sum*100)
-            let furikomi = Math.round(
-                (mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===4)].sum)
-                / mode.round_count_sum*100)
+            let o = mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===2)]
+            let tsumo = o ? Math.round((o.sum) / mode.round_count_sum * 100) : 0
+            o = mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===3)]
+            let ron = o ? Math.round((o.sum) / mode.round_count_sum * 100) : 0
+            o = mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===4)]
+            let furikomi = o ? Math.round((o.sum) / mode.round_count_sum * 100) : 0
             let riichi = Math.round(mode.liqi_count_sum/mode.round_count_sum*100)
             let furo = Math.round(mode.ming_count_sum/mode.round_count_sum*100)
             format += `\n四麻${mode.game_count_sum}战${pt4}pt${rank4} 一位${top}% 末位${last}% 被飞${fly}%
@@ -113,17 +110,14 @@ const shuibiao = async(words, jp = false)=>{
         if (mode23) {
             let mode = mode23
             let top = Math.round(mode.game_final_position[0]/mode.game_count_sum*100)
-            let last = Math.round(mode.game_final_position[2]/mode.game_count_sum*100)
+            let last = Math.round(mode.game_final_position[3]/mode.game_count_sum*100)
             let fly = Math.round(mode.fly_count/mode.game_count_sum*100)
-            let tsumo = Math.round(
-                (mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===2)].sum)
-                / mode.round_count_sum*100)
-            let ron = Math.round(
-                (mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===3)].sum)
-                / mode.round_count_sum*100)
-            let furikomi = Math.round(
-                (mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===4)].sum)
-                / mode.round_count_sum*100)
+            let o = mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===2)]
+            let tsumo = o ? Math.round((o.sum) / mode.round_count_sum * 100) : 0
+            o = mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===3)]
+            let ron = o ? Math.round((o.sum) / mode.round_count_sum * 100) : 0
+            o = mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===4)]
+            let furikomi = o ? Math.round((o.sum) / mode.round_count_sum * 100) : 0
             let riichi = Math.round(mode.liqi_count_sum/mode.round_count_sum*100)
             let furo = Math.round(mode.ming_count_sum/mode.round_count_sum*100)
             format += `\n三麻${mode.game_count_sum}战${pt3}pt${rank3} 一位${top}% 末位${last}% 被飞${fly}%
@@ -295,11 +289,11 @@ module.exports = {
 //     // 'proxy': 'http://B051925:lw58613669CP@10.39.74.38:50080/'
 // })
 
-setTimeout(async()=>{
+// setTimeout(async()=>{
 
-    console.log(await shuibiao("ハピリット",true))
+//     console.log(await shuibiao("神原かずき",true))
 
-}, 3000)
+// }, 3000)
 
 // mjutil.mjsoul = mjsoul
 // new Promise(resolve=>{
