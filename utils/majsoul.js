@@ -110,7 +110,7 @@ const shuibiao = async(words, jp = false)=>{
         if (mode23) {
             let mode = mode23
             let top = Math.round(mode.game_final_position[0]/mode.game_count_sum*100)
-            let last = Math.round(mode.game_final_position[3]/mode.game_count_sum*100)
+            let last = Math.round(mode.game_final_position[2]/mode.game_count_sum*100)
             let fly = Math.round(mode.fly_count/mode.game_count_sum*100)
             let o = mode.round_end[Object.keys(mode.round_end).find((k)=>mode.round_end[k].type===2)]
             let tsumo = o ? Math.round((o.sum) / mode.round_count_sum * 100) : 0
