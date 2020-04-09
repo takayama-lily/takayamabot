@@ -4,17 +4,6 @@ const QQBot = require('qqbot')
  * implement of QQBot
  */
 class CQHttp extends QQBot {
-    constructor({qq}) {
-        super()
-        this.qq = qq
-        this.queue = {}
-        this.timeout = 10000
-        this.conn = null
-    }
-    setConn(conn) {
-        this.conn = conn
-        this.conn.on('message', this._onMessage)
-    }
     _onMessage(data) {
         data = JSON.parse(data)
         if (!data.self_id || data.self_id != this.qq)
@@ -63,7 +52,7 @@ class CQHttp extends QQBot {
     async sendPrivateMsg(uid, msg) {}
     async sendGroupMsg(gid, msg) {}
     async sendDiscussMsg(did) {}
-    async sendMsg(type, id, msg) {}
+    // async sendMsg(type, id, msg) {}
     deleteMsg(mid) {}
     sendLike(uid) {}
     setGroupKick(gid) {}
@@ -77,10 +66,17 @@ class CQHttp extends QQBot {
     setGroupSpecialTitle(gid) {}
     setDiscussLeave(did) {}
     setFriendAddRequest(flag, approve, remark) {}
-    setGroupAddRequest(flag, type, approve, reason) {}
+    // setGroupAddRequest(flag, type, approve, reason) {}
     setGroupRequest(flag, approve, reason) {}
     setGroupInvitation(flag, approve, reason) {}
+    sendGroupNotice(gid, title, content) {}
     async getLoginInfo() {}
+    async getFriendList() {}
+    async getGroupList() {}
+    async getGroupInfo(gid) {}
+    async getGouupMemberInfo(gid, uid, noCache = true) {}
+    async getGouupMemberList(gid) {}
+    async getGroupNotice(gid) {}
     approve(origin, approve = true, remark = undefined) {
         data = {
             action: '.handle_quick_operation',

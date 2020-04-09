@@ -1,27 +1,27 @@
 'use strict'
 const Events = require('events')
 /**
- * abstract qq api
+ * abstract qqbot api
  * ws only
  */
 class QQBot extends Events {
-    constructor({qq, token}) {
+    constructor({qq}) {
         super()
         this.qq = qq
-        this.token = token
         this.queue = {}
         this.timeout = 10000
         this.conn = null
     }
-    onConn(conn) {
-
+    setConn(conn) {
+        this.conn = conn
+        this.conn.on('message', this._onMessage)
     }
     _onMessage(data) {}
     _send(data) {}
+    async _request(data) {}
     async sendPrivateMsg(uid, msg) {}
     async sendGroupMsg(gid, msg) {}
     async sendDiscussMsg(did) {}
-    async sendMsg() {}
     deleteMsg(mid) {}
     sendLike(uid) {}
     setGroupKick(gid) {}
@@ -34,9 +34,18 @@ class QQBot extends Events {
     setGroupLeave(gid) {}
     setGroupSpecialTitle(gid) {}
     setDiscussLeave(did) {}
-    async _request(data) {}
-    approve(origin, result = true, remark = undefined) {}
+    setFriendAddRequest(flag, approve, reason) {}
+    setGroupRequest(flag, approve, reason) {}
+    setGroupInvitation(flag, approve, reason) {}
+    sendGroupNotice(gid, title, content) {}
+    async getLoginInfo() {}
+    async getFriendList() {}
+    async getGroupList() {}
+    async getGroupInfo(gid) {}
+    async getGouupMemberInfo(gid, uid) {}
+    async getGouupMemberList(gid) {}
+    async getGroupNotice(gid) {}
+    approve(origin, result = true, reason = undefined) {}
     reply(origin, msg, option = {}) {}
 }
-
 module.exports = QQBot
