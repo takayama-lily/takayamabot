@@ -4,6 +4,7 @@ const MJ = require('riichi')
 const mjutil = require("./utils/majsoul")
 const bgm = require("./utils/bgm")
 const sandbox = require("./utils/sandbox")
+const ero = require('./ero')
 const blacklist = [3507349275,429245111]
 const owner = 372914165
 const master = []
@@ -82,8 +83,11 @@ class Session {
         } else if (typeof msg !== 'string') {
             msg = msg.toString()
         }
-        if (typeof msg === 'string' && msg.length > 4500)
-            msg = msg.substr(0, 4495) + "\n..."
+        if (typeof msg === 'string') {
+            msg = msg.replace(ero, '**')
+            if (msg.length > 4500)
+                msg = msg.substr(0, 4495) + "\n..."
+        }
         let res = {
             "action": this.action,
             "params": {
