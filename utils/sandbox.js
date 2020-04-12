@@ -122,7 +122,6 @@ vm.runInContext(`const 帮助=\`-----指令列表:
 -pl ★牌理点数計算
 -bgm ★新番时间表
 -anime 公主连结 ★查询动漫
-dhs ★雀魂大会室后台管理(雀魂已死)
 小游戏 ★查看小游戏列表
 高级 ★查看高级指令\`;
 const help=帮助;`, context)
