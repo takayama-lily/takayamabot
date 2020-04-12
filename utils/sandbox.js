@@ -116,13 +116,13 @@ const 草 = undefined;
 const 艹 = undefined;
 let data;`, context)
 vm.runInContext(`const 帮助=\`-----指令列表:
--qh ★查询雀魂战绩(-qhjp可查询日服)
--rank ★查询雀魂排名(三麻: -rank 3)(日服: -rankjp)
+-qh ★查询雀魂日服战绩
+-rank ★查询雀魂日服排名(三麻: -rank 3)
 -yq ★查询疫情信息
 -pl ★牌理点数計算
 -bgm ★新番时间表
 -anime 公主连结 ★查询动漫
-dhs ★雀魂大会室后台管理功能
+dhs ★雀魂大会室后台管理(雀魂已死)
 小游戏 ★查看小游戏列表
 高级 ★查看高级指令\`;
 const help=帮助;`, context)
