@@ -3,21 +3,21 @@ const https = require("https")
 const MJ = require("riichi")
 const mjutil = require("./utils/majsoul")
 const bgm = require("./utils/bgm")
-module.exports = {
+const extras = {
 	"qh": async function(param) {
 		if (!param.length)
             return "你没有输入昵称。输入例:\n-qh 千羽黒乃"
         else
         	return await mjutil.shuibiao(param)
 	},
-	"雀魂": this.qh,
+	"雀魂": extras.qh,
 	"qhjp": async function(param) {
 		if (!param.length)
             return "你没有输入昵称。输入例:\n-qh 千羽黒乃"
         else
         	return await mjutil.shuibiao(param, true)
 	},
-	"雀魂日服": this.qhjp,
+	"雀魂日服": extras.qhjp,
 	"rank": async function(param) {
 		return await mjutil.ranking(param)
 	},
@@ -27,7 +27,7 @@ module.exports = {
 	"bgm": async function(param) {
 		return await bgm.getCalendar(param)
 	},
-	"新番": this.bgm,
+	"新番": extras.bgm,
 	"anime": async function(param) {
 		return await bgm.getBangumi("anime", param)
 	},
@@ -56,7 +56,7 @@ module.exports = {
             }
         })
 	},
-	"疫情": this.yq,
+	"疫情": extras.yq,
 	"pl": async function(param) {
 		if (!param) {
             let s = `-----牌理指令紹介-----
@@ -132,5 +132,7 @@ https://github.com/takayama-lily/riichi`
             return param + '\n手牌数量不正确或输入有误'
         }
 	},
-	"牌理": this.pl
+	"牌理": extras.pl
 }
+
+module.exports = extras
