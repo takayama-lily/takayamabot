@@ -1,8 +1,5 @@
 'use strict'
-const https = require("https")
-const MJ = require('riichi')
-const mjutil = require("./utils/majsoul")
-const bgm = require("./utils/bgm")
+const extras = require('./extras')
 const sandbox = require("./utils/sandbox")
 const ero = require('./ero')
 const blacklist = [3507349275,429245111]
@@ -99,9 +96,10 @@ class Session {
         }
         ws.send(JSON.stringify(res))
     }
-    onMessage(data) {
+    async onMessage(data) {
         data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
         let prefix = data.message.substr(0, 1)
+        if (prefix === "!") return
         if (prefix === "-") {
             let split = data.message.substr(1).trim().split(" ")
             let command = split.shift()
@@ -142,134 +140,9 @@ class Session {
                 }
                 this._send(result)
             }
-            if ((command === "雀魂" || command === "qh")) {
-                if (!param.length)
-                    this._send("你没有输入昵称。输入例:\n-qh 金发同盟")
-                else
-                    mjutil.shuibiao(param).then((res)=>{this._send(res)})
+            if (extras.hasOwnProperty(command)) {
+                this._send(extras[command](param))
             }
-            if ((command === "雀魂日服" || command === "qhjp") && param.length) {
-                mjutil.shuibiao(param, true).then((res)=>{this._send(res)})
-            }
-            if (command === "国服排名" || command === "rank") {
-                mjutil.ranking(param).then((res)=>{this._send(res)})
-            }
-            if (command === "日服排名" || command === "rankjp") {
-                mjutil.ranking(param, true).then((res)=>{this._send(res)})
-            }
-            if ((command === "牌谱" || command === "pp") && param.length) {
-                mjutil.paipu(param).then((res)=>{this._send(res)})
-            }
-            if (command === "新番" || command === "bgm") {
-                bgm.getCalendar(param).then((res)=>{this._send(res)})
-            }
-            if (["book","anime","music","game","real"].includes(command)) {
-                bgm.getBangumi(command, param).then((res)=>{this._send(res)})
-            }
-            if (command === "牌理" || command === "pl") {
-                if (!param) {
-                    let s = `-----牌理指令紹介-----
-自摸例: -pl 111m234p567s1122z2z
-栄和例: -pl 111m234p567s1122z+2z
-★mpsz=萬筒索字 1-7z=東南西北白發中 0=赤
-★未和牌的时候会自动计算向听数牌理
-★查看高级用法输入: -pl 高级`
-                    this._send(s)
-                    return
-                }
-                if (param === '高级') {
-                    let s = `-----牌理指令紹介-----
-★副露&dora "-pl 33m+456p99s6666z777z+d56z"
-  ※副露: 456p順子、9s暗槓、発明槓、中明刻 / dora: 白発
-★付属役 "-pl 11123456789999m+rih21"
-  ※付属役: 立直一発海底(南場東家)
-★付属役一覧
-  t=天和/地和/人和
-  w=w立直  l(r)=立直  y(i)=一発
-  h=海底/河底  k=槍槓/嶺上
-  o=古役有効 (目前只有人和,大七星)
-★場風自風設定 (default: 東場南家)
-  1=11=東場東家  2=12=東場南家  3=13=東場西家  4=14=東場北家
-  21=南場東家  22=南場南家  23=南場西家  24=南場北家
------Code Github-----
-https://github.com/takayama-lily/riichi`
-                    this._send(s)
-                    return
-                }
-                try {
-                    let msg = param + '\n'
-                    let res = new MJ(param).calc()
-                    if (res.error) {
-                        this._send(param + '\n手牌数量不正确或输入有误')
-                    } else if (!res.isAgari) {
-                        let s = ''
-                        if (!res.syanten.now) {
-                            s += '聴牌'
-                        } else {
-                            s += res.syanten.now + '向聴'
-                        }
-                        if (res.syanten.hasOwnProperty('wait')) {
-                            s += ' 待'
-                            let c = 0
-                            for (let i in res.syanten.wait) {
-                                s += i
-                                c += parseInt(res.syanten.wait[i])
-                            }
-                            s += `共${c}枚`
-                        } else {
-                            for (let i in res.syanten) {
-                                if (i !== 'now' && Object.keys(res.syanten[i]).length > 0) {
-                                    s += '\n打' + i + ' 摸'
-                                    let c = 0
-                                    for (let ii in res.syanten[i]) {
-                                        s += ii
-                                        c += parseInt(res.syanten[i][ii])
-                                    }
-                                    s += `共${c}枚`
-                                }
-                            }
-                        }
-                        this._send(msg + s)
-                    } else {
-                        let s = ''
-                        for (let k in res.yaku)
-                            s += k + ' ' + res.yaku[k] + '\n'
-                        s += res.text
-                        if (!res.ten)
-                            s = '無役'
-                        this._send(msg + s)
-                    }
-                } catch(e) {
-                    this._send(param + '\n手牌数量不正确或输入有误')
-                }
-            }
-            if (command === "疫情" || command === "yq") {
-                let gbl = []
-                new Promise(resolve=>{
-                    https.get("https://api.inews.qq.com/newsqa/v1/automation/foreign/country/ranklist", res=>{
-                        res.on('data', d=>gbl.push(d))
-                        res.on("end", ()=>resolve())
-                    }).on("error", err=>{})
-                }).then(()=>{
-                    try {
-                        gbl = Buffer.concat(gbl).toString()
-                        gbl = JSON.parse(gbl).data
-                        let msg = `国外主要疫情(${gbl[0].date.substr(1)}):\n`
-                        for (let v of gbl) {
-                            if (v.confirm < 1000)
-                                continue
-                            msg += v.name + `: 確` + v.confirm
-                            msg += v.confirmAdd ? `(+${v.confirmAdd})` : ''
-                            msg += '亡' + v.dead + '癒' + v.heal + '\n'
-                        }
-                        this._send(msg)
-                    } catch (e) {
-                        this._send("疫情服务暂时不可用")
-                    }
-                })
-            }
-        } else if (prefix === "!") {
-
         } else {
             if (blacklist.includes(data.user_id))
                 return
