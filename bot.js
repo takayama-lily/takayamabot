@@ -130,7 +130,7 @@ class Session {
                     if (!row)
                         this._send("没有结果")
                     else
-                        this._send(`昨天群里发言最多的人是[cq:at,qq=${row.account.split("/").pop()}]，共${row.cnt}条。`)
+                        this._send(`昨天群里发言最多的人是[CQ:at,qq=${row.account.split("/").pop()}]，共${row.cnt}条。`)
                 })
             }
             if (command === '获得管理') {
