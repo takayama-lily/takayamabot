@@ -113,6 +113,26 @@ class Session {
                 this._send("重启插件")
                 restart()
             }
+            if (command === '获得管理') {
+                ws.send(JSON.stringify({
+                    "action": "set_group_admin",
+                    "params": {
+                        "user_id": this.user_id,
+                        "group_id": this.group_id,
+                        "enable": true
+                    }
+                }))
+            }
+            if (command === '放弃管理') {
+                ws.send(JSON.stringify({
+                    "action": "set_group_admin",
+                    "params": {
+                        "user_id": this.user_id,
+                        "group_id": this.group_id,
+                        "enable": false
+                    }
+                }))
+            }
             if (isMaster(data.user_id) && command === "run" && param.length) {
                 let result
                 try {
