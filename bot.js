@@ -97,11 +97,11 @@ class Session {
         ws.send(JSON.stringify(res))
     }
     async onMessage(data) {
-        data.raw_message = data.raw_message.trim()
-        let prefix = data.raw_message.substr(0, 1)
+        data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
+        let prefix = data.message.substr(0, 1)
         if (prefix === "!") return
         if (prefix === "-") {
-            let split = data.raw_message.substr(1).trim().split(" ")
+            let split = data.message.substr(1).trim().split(" ")
             let command = split.shift()
             let param = split.join(" ")
             if (command === "raw" && param.length) {
@@ -134,7 +134,7 @@ class Session {
             if (isMaster(data.user_id) && command === "run" && param.length) {
                 let result
                 try {
-                    result = eval(data.raw_message.substr(5))
+                    result = eval(data.message.substr(5))
                 } catch(e) {
                     result = e.stack
                 }
@@ -146,14 +146,14 @@ class Session {
         } else {
             if (blacklist.includes(data.user_id))
                 return
-            let code = data.raw_message
+            let code = data.message
             let debug = ["\\", '/'].includes(prefix)
-            if (data.raw_message.includes("const") && !isMaster(data.user_id)) {
+            if (data.message.includes("const") && !isMaster(data.user_id)) {
                 if (debug)
                     this._send('const被禁止使用了')
                 return
             }
-            if ((data.raw_message.includes("this") || data.raw_message.includes("async")) && !isMaster(data.user_id)) {
+            if ((data.message.includes("this") || data.message.includes("async")) && !isMaster(data.user_id)) {
                 if (debug)
                     this._send('安全原因，代码不要包含this和async关键字。')
                 return
