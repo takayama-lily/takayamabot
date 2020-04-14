@@ -10,14 +10,12 @@ const extras = {
         else
         	return await mjutil.shuibiao(param)
 	},
-	"雀魂": extras.qh,
 	"qhjp": async function(param) {
 		if (!param.length)
             return "你没有输入昵称。输入例:\n-qh 千羽黒乃"
         else
         	return await mjutil.shuibiao(param, true)
 	},
-	"雀魂日服": extras.qhjp,
 	"rank": async function(param) {
 		return await mjutil.ranking(param)
 	},
@@ -27,7 +25,6 @@ const extras = {
 	"bgm": async function(param) {
 		return await bgm.getCalendar(param)
 	},
-	"新番": extras.bgm,
 	"anime": async function(param) {
 		return await bgm.getBangumi("anime", param)
 	},
@@ -56,7 +53,6 @@ const extras = {
             }
         })
 	},
-	"疫情": extras.yq,
 	"pl": async function(param) {
 		if (!param) {
             let s = `-----牌理指令紹介-----
@@ -131,8 +127,11 @@ https://github.com/takayama-lily/riichi`
         } catch(e) {
             return param + '\n手牌数量不正确或输入有误'
         }
-	},
-	"牌理": extras.pl
+	}
 }
+extras["雀魂"] = extras.qh
+extras["牌理"] = extras.pl
+extras["疫情"] = extras.yq
+extras["新番"] = extras.bgm
 
 module.exports = extras
