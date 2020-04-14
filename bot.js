@@ -97,7 +97,7 @@ class Session {
         ws.send(JSON.stringify(res))
     }
     async onMessage(data) {
-        data.message = data.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]").replace(/&amp;/g, "&").trim()
+        data.message = data.message.trim()
         let prefix = data.message.substr(0, 1)
         if (prefix === "!") return
         if (prefix === "-") {
@@ -161,10 +161,13 @@ class Session {
             if (debug) {
                 code = code.substr(1)
             }
-            code = code.replace(/[（），″“”]/g, (s)=>{
+            code = code.replace(/(（|）|，|″|“|”|&#91;|&#93;|&amp;)/g, (s)=>{
                 if (["″","“","”"].includes(s)) return '"'
                 // if (["‘","’"].includes(s)) return "'"
                 if (s === "，") return ", "
+                if (s === "&#91;") return "["
+                if (s === "&#93;") return "]"
+                if (s === "&amp;") return "&"
                 return String.fromCharCode(s.charCodeAt(0) - 65248)
             })
             sandbox.run("data="+JSON.stringify(data), 50)
