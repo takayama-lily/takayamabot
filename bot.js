@@ -19,6 +19,7 @@ const sessions = {
     "group": {},
     "discuss": {}
 }
+const at = (qq)=>`[CQ:at,qq=${qq}]`
 let ws = null
 
 const main = (conn, data)=>{
@@ -123,15 +124,31 @@ class Session {
                 let offset = new Date().getTimezoneOffset() * 60000
                 let today = (new Date(new Date(Date.now() + offset + 8 * 3600000).toDateString()).getTime() - offset - 8 * 3600000) / 1000
                 let yesterday = today - 86400
-                let sql = `select count(1) as cnt,account from event
-                    where \`group\` = 'qq/group/${this.group_id}' and account !='' and time >= ${yesterday} and time < ${today}
+                let sql1 = `select count(1) as cnt,account from event
+                    where type=2 and \`group\`='qq/group/${this.group_id}' and account!='' and time>=${yesterday} and time<${today}
                     group by account order by cnt desc limit 1`
-                db.get(sql, (err, row)=>{
-                    if (!row)
-                        this._send("没有结果")
-                    else
-                        this._send(`昨天群里发言最多的人是[CQ:at,qq=${row.account.split("/").pop()}]，共${row.cnt}条。`)
-                })
+                let sql2 = `select count(1) as cnt,account from event
+                    where type=2 and \`group\`='qq/group/${this.group_id}' and account!='' and time>=${today}
+                    group by account order by cnt desc limit 1`
+                let [str1, str2] = await Promise.all([
+                    new Promise((resolve, reject)=>{
+                        db.get(sql1, (err, row)=>{
+                            if (!row)
+                                resolve("昨日没有记录")
+                            else
+                                resolve(`昨天群里发言最多的是${at(row.account.split("/").pop())} (${row.cnt}条)`)
+                        })
+                    }),
+                    new Promise((resolve, reject)=>{
+                        db.get(sql2, (err, row)=>{
+                            if (!row)
+                                resolve("昨日没有记录")
+                            else
+                                resolve(`今天截止目前发言最多的是${at(row.account.split("/").pop())} (${row.cnt}条)`)
+                        })
+                    }),
+                ])
+                this._send(str1+"\n"+str2)
             }
             if (command === '获得管理') {
                 ws.send(JSON.stringify({
