@@ -110,7 +110,7 @@ class Session {
             //     ws.send(JSON.stringify(res))
             // }
             if (command === 'query' && param) {
-                db.get(param, function(err, row){
+                db.get(param, (err, row)=>{
                     if (err)
                         this._send(err.message)
                     else if (!row)
