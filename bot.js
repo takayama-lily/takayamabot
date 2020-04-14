@@ -19,11 +19,6 @@ const sessions = {
 }
 let ws = null
 
-const restart = function() {
-    let res = {"action": "set_restart_plugin"}
-    ws.send(JSON.stringify(res))
-}
-
 const main = (conn, data)=>{
     ws = conn
     data = JSON.parse(data)
@@ -104,13 +99,14 @@ class Session {
             let split = data.message.substr(1).trim().split(" ")
             let command = split.shift()
             let param = split.join(" ")
-            if (command === "raw" && param.length) {
+            if (isMaster(data.user_id) && command === "raw" && param.length) {
                 ws.send(param)
             }
-            if (isMaster(data.user_id) && command === "re") {
-                this._send("重启插件")
-                restart()
-            }
+            // if (isMaster(data.user_id) && command === "re") {
+            //     this._send("重启插件")
+            //     let res = {"action": "set_restart_plugin"}
+            //     ws.send(JSON.stringify(res))
+            // }
             if (command === '获得管理') {
                 ws.send(JSON.stringify({
                     "action": "set_group_admin",
