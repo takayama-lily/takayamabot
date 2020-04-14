@@ -141,7 +141,7 @@ class Session {
                 this._send(result)
             }
             if (extras.hasOwnProperty(command)) {
-                this._send(extras[command](param))
+                this._send(await extras[command](param))
             }
         } else {
             if (blacklist.includes(data.user_id))

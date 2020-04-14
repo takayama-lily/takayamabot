@@ -8,28 +8,28 @@ module.exports = {
 		if (!param.length)
             return "你没有输入昵称。输入例:\n-qh 千羽黒乃"
         else
-        	return mjutil.shuibiao(param)
+        	return await mjutil.shuibiao(param)
 	},
 	"雀魂": this.qh,
 	"qhjp": async function(param) {
 		if (!param.length)
             return "你没有输入昵称。输入例:\n-qh 千羽黒乃"
         else
-        	return mjutil.shuibiao(param, true)
+        	return await mjutil.shuibiao(param, true)
 	},
 	"雀魂日服": this.qhjp,
 	"rank": async function(param) {
-		return mjutil.ranking(param)
+		return await mjutil.ranking(param)
 	},
 	"rankjp": async function(param) {
-		return mjutil.ranking(param, true)
+		return await mjutil.ranking(param, true)
 	},
 	"bgm": async function(param) {
-		return bgm.getCalendar(param)
+		return await bgm.getCalendar(param)
 	},
 	"新番": this.bgm,
 	"anime": async function(param) {
-		return bgm.getBangumi("anime", param)
+		return await bgm.getBangumi("anime", param)
 	},
 	"yq": async function() {
 		let gbl = []
