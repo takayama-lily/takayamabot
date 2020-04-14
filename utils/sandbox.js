@@ -122,7 +122,7 @@ vm.runInContext(`const 帮助=\`-----指令列表:
 -pl ★牌理点数計算
 -bgm ★新番时间表
 -anime 公主连结 ★查询动漫
--龙王
+-龙王 , -发言
 小游戏 ★查看小游戏列表
 高级 ★查看高级指令\`;
 const help=帮助;`, context)
