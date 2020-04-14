@@ -1,4 +1,6 @@
 'use strict'
+const sqlite3 = require('sqlite3')
+const db = new sqlite3.Database('/var/www/db/eventv2.db')
 const extras = require('./extras')
 const sandbox = require("./utils/sandbox")
 const ero = require('./ero')
@@ -107,6 +109,16 @@ class Session {
             //     let res = {"action": "set_restart_plugin"}
             //     ws.send(JSON.stringify(res))
             // }
+            if (command === 'query' && param) {
+                db.get(param, function(err, row){
+                    if (err)
+                        this._send(err.message)
+                    else if (!row)
+                        this._send("没有结果")
+                    else
+                        this._send(row)
+                })
+            }
             if (command === '获得管理') {
                 ws.send(JSON.stringify({
                     "action": "set_group_admin",
