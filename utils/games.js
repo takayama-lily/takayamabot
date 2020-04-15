@@ -17,10 +17,9 @@ jrrp=(q=qq())=>{return at(q) + " 今天的人品是: " + seed(q)%101}
 // jrz=()=>{return at()+' 你今天的字是"'+JSON.parse(`["\\u${(seed()%(0x9fa5-0x4e00)+0x4e00).toString(16)}"]`)[0]+'"\n快去找算命先生算一卦吧！'}
 jrz=(q=qq())=>{return at(q) + ' 今天的字是"' + String.fromCodePoint(seed(q) % (0x9fa5 - 0x4e00) + 0x4e00) + '"\n快去找算命先生算一卦吧！'}
 
-current_chess = []
-chess_step = 0
-create_chess = ()=>{
-	current_chess = [
+current_chesses = {}
+create_chess = (gid)=>{
+	current_chesses[gid].chess = [
 		['１','２','３','４','５','６','７','８','９'],
 		['車','馬','象','士','將','士','象','馬','車'],
 		['　','　','　','　','　','　','　','　','　'],
@@ -34,88 +33,75 @@ create_chess = ()=>{
 		['俥','傌','相','仕','帥','仕','相','傌','俥'],
 		["九","八","七","六","五","四","三","二","一"],
 	]
-	chess_step = 1
+	current_chesses[gid].step = 1
 }
 
-象棋 = (step)=>{
+象棋 = (input)=>{
+	let gid = qun()
+	if (!gid) return "此命令只能在群里使用"
+	if (!current_chesses[gid])
+		current_chesses[gid] = {chess:[],step:0}
+	let chess = current_chesses[gid].chess
+	let step = current_chesses[gid].step
 	let str = ''
-	if (step === 1 || !current_chess.length) {
-		if (!qun()) return
-		str += '※新的棋局开始了！红(帥)先\n'
-		create_chess()
-	}
-	if (!step && current_chess.length > 0) {
-		let who = chess_step % 2 ? '红(帥)' : '黑(將)'
-		str += `※当前轮到${who}方走，重开输入: 象棋(1)\n`
-	}
-	if (typeof step === 'string' && current_chess.length) {
-		if (!qun()) return
-		if (step === '仙人指路') step = '兵3进1'
-		step = step.trim()
-		.replace(/(進)/g, '进')
-		.replace(/(後)/g, '后')
-		.replace(/(一)/g, '1')
-		.replace(/(二)/g, '2')
-		.replace(/(三)/g, '3')
-		.replace(/(四)/g, '4')
-		.replace(/(五)/g, '5')
-		.replace(/(六)/g, '6')
-		.replace(/(七)/g, '7')
-		.replace(/(八)/g, '8')
-		.replace(/(九)/g, '9')
-		if (chess_step % 2) {
-			step = step.replace(/(車|车)/g, '俥')
-			.replace(/(馬|马)/g, '傌')
-			.replace(/(炮)/g, '砲')
-			.replace(/(將|将|帅)/g, '帥')
-			.replace(/(士)/g, '仕')
-			.replace(/(象)/g, '相')
-			.replace(/(卒)/g, '兵')
+	if (input === 1 || !chess.length) {
+		str += '※新的棋局开始了！红(帥)方先\n下棋方法是输入: 象棋("炮2平5")\n'
+		create_chess(gid)
+	} else if (!input && chess.length > 0) {
+		let who = step % 2 ? '红(帥)' : '黑(將)'
+		str += `※当前轮到${who}方走，重开输入: 象棋(1)\n下棋方法是输入: 象棋("炮2平5")\n`
+	} else if (typeof input === 'string' && chess.length) {
+		if (input === '仙人指路') input = '兵3进1'
+		input = input.trim().replace(/(進)/g, '进').replace(/(後)/g, '后')
+		.replace(/(一)/g, '1').replace(/(二)/g, '2').replace(/(三)/g, '3')
+		.replace(/(四)/g, '4').replace(/(五)/g, '5').replace(/(六)/g, '6')
+		.replace(/(七)/g, '7').replace(/(八)/g, '8').replace(/(九)/g, '9')
+		if (step % 2) {
+			input = input.replace(/(車|车)/g, '俥').replace(/(馬|马)/g, '傌').replace(/(炮)/g, '砲')
+			.replace(/(將|将|帅)/g, '帥').replace(/(士)/g, '仕').replace(/(象)/g, '相').replace(/(卒)/g, '兵')
 		} else {
-			step = step.replace(/(俥|车)/g, '車')
-			.replace(/(傌|马)/g, '馬')
-			.replace(/(砲)/g, '炮')
-			.replace(/(将|帥|帅)/g, '將')
-			.replace(/(仕)/g, '士')
-			.replace(/(相)/g, '象')
-			.replace(/(兵)/g, '卒')
+			input = input.replace(/(俥|车)/g, '車').replace(/(傌|马)/g, '馬').replace(/(砲)/g, '炮')
+			.replace(/(将|帥|帅)/g, '將').replace(/(仕)/g, '士').replace(/(相)/g, '象').replace(/(兵)/g, '卒')
 		}
-		return chessss(step)
+		return chessss(input)
 	}
-	for (let v of current_chess)
+	for (let v of current_chesses[gid].chess)
 		str += v.join('') + '\n'
 	return str
 }
 
-chessss = (step = '')=>{
+chessss = (input = '')=>{
+	let gid = qun()
+	let chess = current_chesses[gid].chess
+	let step = current_chesses[gid].step
 	let str=''
 	let red=['俥','傌','相','仕','帥','仕','相','傌','俥','砲','兵']
 	let black=['車','馬','象','士','將','士','象','馬','車','炮','卒']
-	let a=step[0]
-	let b=step[1]
-	let c=step[2]
-	let d=parseInt(step[3])
+	let a=input[0]
+	let b=input[1]
+	let c=input[2]
+	let d=parseInt(input[3])
 	let m=-1,n=-1,koma=b,dm,dn
 	let e=new Error(' 你不能这么走')
 	try{
 		if(a==='前') {
 			for(let i=1;1<=10;i++) {
-				if(current_chess[i].includes(b)) {
-					m=current_chess[i].indexOf(b),n=i
+				if(chess[i].includes(b)) {
+					m=chess[i].indexOf(b),n=i
 					break
 				}
 			}
 		} else if(a==='后') {
 			for (let i=10;1>=1;i--) {
-				if(current_chess[i].includes(b)) {
-					m=current_chess[i].indexOf(b),n=i
+				if(chess[i].includes(b)) {
+					m=chess[i].indexOf(b),n=i
 					break
 				}
 			}
 		} else{
 			for(let i=1;1<=10;i++) {
-				let j=chess_step%2?9-b:b-1
-				if(current_chess[i][j]===a){
+				let j=step%2?9-b:b-1
+				if(chess[i][j]===a){
 					m=j,n=i
 					break
 				}
@@ -127,91 +113,91 @@ chessss = (step = '')=>{
 		if(c==='平'){
 			if(['傌','馬','象','士','相','仕'].includes(koma))throw e//这些不能平
 			if(['兵','卒'].includes(koma)) {//兵过河前不能平
-				if(chess_step%2&&n>6)throw e
-				if(!(chess_step%2)&&n<=6)throw e
+				if(step%2&&n>6)throw e
+				if(!(step%2)&&n<=6)throw e
 			}
-			dm=chess_step%2?9-d:d-1,dn=n
+			dm=step%2?9-d:d-1,dn=n
 			if(['將','帥','兵','卒'].includes(koma)&&Math.abs(dm-m)!==1)throw e
 		} else if(c==='进'){
 			if (['象','相'].includes(koma)) {
-				dm = chess_step%2 ? 9-d : d-1
-				dn = chess_step%2 ? n-2 : n+2
+				dm = step%2 ? 9-d : d-1
+				dn = step%2 ? n-2 : n+2
 				let minus = Math.abs(dm-m)
 				if (minus !== 2) throw e
 			}
 			if (['士','仕'].includes(koma)) {
-				dm = chess_step%2 ? 9-d : d-1
-				dn = chess_step%2 ? n-1 : n+1
+				dm = step%2 ? 9-d : d-1
+				dn = step%2 ? n-1 : n+1
 				let minus = Math.abs(dm-m)
 				if (minus !== 1) throw e
 			}
 			if (['傌','馬'].includes(koma)) {
-				dm = chess_step%2 ? 9-d : d-1
+				dm = step%2 ? 9-d : d-1
 				let minus = Math.abs(dm-m)
 				if (!minus || minus > 2) throw e
 				if (minus === 1) {
-					dn = chess_step%2 ? n-2 : n+2
+					dn = step%2 ? n-2 : n+2
 				} else {
-					dn = chess_step%2 ? n-1 : n+1
+					dn = step%2 ? n-1 : n+1
 				}
 			}
 			if (['車','俥','炮','砲','將','帥','兵','卒'].includes(koma)) {
 				dm = m
-				dn = chess_step%2 ? n-d : n+d
+				dn = step%2 ? n-d : n+d
 			}
 		} else if (c === '退') {
 			if (['兵','卒'].includes(koma)) throw e//兵不能退
 			if (['象','相'].includes(koma)) {
-				dm = !(chess_step%2) ? 9-d : d-1
-				dn = !(chess_step%2) ? n-2 : n+2
+				dm = !(step%2) ? 9-d : d-1
+				dn = !(step%2) ? n-2 : n+2
 				let minus = Math.abs(dm-m)
 				if (minus !== 2) throw e
 			}
 			if (['士','仕'].includes(koma)) {
-				dm = !(chess_step%2) ? 9-d : d-1
-				dn = !(chess_step%2) ? n-1 : n+1
+				dm = !(step%2) ? 9-d : d-1
+				dn = !(step%2) ? n-1 : n+1
 				let minus = Math.abs(dm-m)
 				if (minus !== 1) throw e
 			}
 			if (['傌','馬'].includes(koma)) {
-				dm = !(chess_step%2) ? 9-d : d-1
+				dm = !(step%2) ? 9-d : d-1
 				let minus = Math.abs(dm-m)
 				if (!minus || minus > 2) throw e
 				if (minus === 1) {
-					dn = !(chess_step%2) ? n-2 : n+2
+					dn = !(step%2) ? n-2 : n+2
 				} else {
-					dn = !(chess_step%2) ? n-1 : n+1
+					dn = !(step%2) ? n-1 : n+1
 				}
 			}
 			if (['車','俥','炮','砲','將','帥','兵','卒'].includes(koma)) {
 				dm = m
-				dn = !(chess_step%2) ? n-d : n+d
+				dn = !(step%2) ? n-d : n+d
 			}
 		}else throw e
 		if(dm<0||dm>=9)throw e//不能走到棋盘外
 		if(dn<1||dn>=11)throw e
-		if(current_chess[dn][dm]!=='　') {//不能吃自己子
-			if(chess_step%2&&red.includes(current_chess[dn][dm]))throw e
-			if(!(chess_step%2)&&black.includes(current_chess[dn][dm]))throw e
+		if(chess[dn][dm]!=='　') {//不能吃自己子
+			if(step%2&&red.includes(chess[dn][dm]))throw e
+			if(!(step%2)&&black.includes(chess[dn][dm]))throw e
 		}
 		if(['將','帥','士','仕'].includes(koma)){//将士不出九宫
 			if (dm < 3 || dm > 5 || (dn > 4 && dn < 8))throw e
 		}
 		if(['象','相'].includes(koma)) {//士象不能过河
-			if(chess_step%2&&dn<6)throw e
-			if(!(chess_step%2)&&dn>=6)throw e
+			if(step%2&&dn<6)throw e
+			if(!(step%2)&&dn>=6)throw e
 		}
 		if(['車','俥'].includes(koma)){
 			if(dn===n) {//平
 				let i=Math.min(m,dm)+1
 				while (i<Math.max(m,dm)){
-					if(current_chess[dn][i]!=='　')throw e
+					if(chess[dn][i]!=='　')throw e
 					i++
 				}
 			}else{//进退
 				let i=Math.min(n,dn)+1
 				while(i<Math.max(n,dn)){
-					if(current_chess[i][dm]!=='　')throw e
+					if(chess[i][dm]!=='　')throw e
 					i++
 				}
 			}
@@ -220,32 +206,32 @@ chessss = (step = '')=>{
 			if(dn === n){//平
 				let j=0,i=Math.min(m,dm)+1
 				while (i<Math.max(m,dm)){
-					if(current_chess[dn][i]!=='　') j++
+					if(chess[dn][i]!=='　') j++
 					i++
 				}
-				if(j>=2||(j&&current_chess[dn][dm]==='　')||(!j&&current_chess[dn][dm]!=='　'))throw e
+				if(j>=2||(j&&chess[dn][dm]==='　')||(!j&&chess[dn][dm]!=='　'))throw e
 			}else{//进退
 				let j=0,i=Math.min(n,dn)+1
 				while(i<Math.max(n,dn)){
-					if(current_chess[i][dm]!=='　') j++
+					if(chess[i][dm]!=='　') j++
 					i++
 				}
-				if(j>=2||(j&&current_chess[dn][dm]==='　')||(!j&&current_chess[dn][dm]!=='　'))throw e
+				if(j>=2||(j&&chess[dn][dm]==='　')||(!j&&chess[dn][dm]!=='　'))throw e
 			}
 		}
-		if(current_chess[dn][dm]==='帥')
+		if(chess[dn][dm]==='帥')
 			return '游戏结束，黑(將)方胜'
-		if(current_chess[dn][dm]==='將')
+		if(chess[dn][dm]==='將')
 			return '游戏结束，红(帥)方胜'
-		current_chess[n][m]='　'
-		current_chess[dn][dm]=koma
+		chess[n][m]='　'
+		chess[dn][dm]=koma
 	}catch(err){
 		return at()+e.message
 	}
-	let current=chess_step%2?'红(帥)方':'黑(將)方'
-	chess_step++
-	let next=chess_step%2?'红(帥)方':'黑(將)方'
-	str+=current+step+', '+next+'走。查看棋局输入: 象棋()'
+	let current=step%2?'红(帥)方':'黑(將)方'
+	step++,current_chesses[gid].step++
+	let next=step%2?'红(帥)方':'黑(將)方'
+	str+=current+input+', '+next+'走。查看棋局输入: 象棋()'
 	return str
 }
 

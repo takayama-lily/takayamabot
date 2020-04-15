@@ -133,10 +133,12 @@ vm.runInContext(`const 高级=\`-----高级指令:
 data ★环境变量\`;
 const advance=高级;`, context)
 vm.runInContext(`const 小游戏=\`-----小游戏列表:
-1. jrrp() , jrqs() , sjqs() , jrz()
-2. 提问("明天会下雨吗")
-3. cjly("这是一段精灵语")
-4. 猜拳() , 写信()\`;`, context)
+● jrrp() , jrqs() , sjqs() , jrz()
+● 象棋()
+● 提问("明天会下雨吗")
+● cjly("这是一段精灵语")
+● 猜拳() , 写信()
+经常会添加一些奇怪的东西\`;`, context)
 vm.runInContext(`const 关于=\`-----关于我:
 以下操作可能会让我不再理睬你
   ● 任何攻击我的行为: 写大量死循环、内存泄露式攻击等
