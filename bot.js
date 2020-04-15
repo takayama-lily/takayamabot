@@ -136,7 +136,7 @@ class Session {
                             if (!row)
                                 resolve("昨日没有记录")
                             else
-                                resolve(`昨天群里发言最多的是${at(row.account.split("/").pop())}(${row.cnt}条)`)
+                                resolve(`昨天本群发言最多的是${at(row.account.split("/").pop())}(${row.cnt}条)`)
                         })
                     }),
                     new Promise((resolve, reject)=>{
@@ -144,7 +144,7 @@ class Session {
                             if (!row)
                                 resolve("今日没有记录")
                             else
-                                resolve(`今天截止目前最多的是${at(row.account.split("/").pop())}(${row.cnt}条)`)
+                                resolve(`今天截至目前最多的是${at(row.account.split("/").pop())}(${row.cnt}条)`)
                         })
                     }),
                 ])
@@ -160,16 +160,16 @@ class Session {
                 let [str1, str2] = await Promise.all([
                     new Promise((resolve, reject)=>{
                         db.get(sql1, (err, row)=>{
-                            resolve(`${at(data.user_id)} 昨天你在本群发言${row.cnt}条`)
+                            resolve(` 昨天你在本群发言${row.cnt}条`)
                         })
                     }),
                     new Promise((resolve, reject)=>{
                         db.get(sql2, (err, row)=>{
-                            resolve(`${at(data.user_id)} 今天截止目前你在本群发言${row.cnt}条`)
+                            resolve(`今天截至目前你在本群发言${row.cnt}条`)
                         })
                     }),
                 ])
-                this._send(str1+"\n"+str2)
+                this._send(at(data.user_id)+str1+"\n"+str2)
             }
             if (command === '获得管理') {
                 ws.send(JSON.stringify({
