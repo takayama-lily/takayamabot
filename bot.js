@@ -154,18 +154,18 @@ class Session {
                 let today = (new Date(new Date(Date.now() + offset + 8 * 3600000).toDateString()).getTime() - offset - 8 * 3600000) / 1000
                 let yesterday = today - 86400
                 let sql1 = `select count(1) as cnt from event
-                    where type=2 and \`group\`='qq/group/${this.group_id}' and account='qq/user/${this.user_id}' and time>=${yesterday} and time<${today}`
+                    where type=2 and \`group\`='qq/group/${data.group_id}' and account='qq/user/${data.user_id}' and time>=${yesterday} and time<${today}`
                 let sql2 = `select count(1) as cnt from event
-                    where type=2 and \`group\`='qq/group/${this.group_id}' and account='qq/user/${this.user_id}' and time>=${today}`
+                    where type=2 and \`group\`='qq/group/${data.group_id}' and account='qq/user/${data.user_id}' and time>=${today}`
                 let [str1, str2] = await Promise.all([
                     new Promise((resolve, reject)=>{
                         db.get(sql1, (err, row)=>{
-                            resolve(`${at(this.user_id)} 昨天你在本群发言${row.cnt}条`)
+                            resolve(`${at(data.user_id)} 昨天你在本群发言${row.cnt}条`)
                         })
                     }),
                     new Promise((resolve, reject)=>{
                         db.get(sql2, (err, row)=>{
-                            resolve(`${at(this.user_id)} 今天截止目前你在本群发言${row.cnt}条`)
+                            resolve(`${at(data.user_id)} 今天截止目前你在本群发言${row.cnt}条`)
                         })
                     }),
                 ])
