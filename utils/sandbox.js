@@ -116,21 +116,21 @@ const 草 = undefined;
 const 艹 = undefined;
 let data;`, context)
 vm.runInContext(`const 帮助=\`-----指令列表:
--qh ★查询雀魂日服战绩
--rank ★查询雀魂日服排名(三麻: -rank 3)
--yq ★查询疫情信息
--pl ★牌理点数計算
--bgm ★新番时间表
--anime 公主连结 ★查询动漫
+-雀魂 ★查询雀魂日服战绩(-qh)
+-排名 ★雀魂日服排名(-rank 3)
+-疫情 ★查询疫情信息(-qy)
+-牌理 ★牌理点数計算(-pl)
+-新番 ★新番时间表(-bgm)
+-动漫 ★查询动漫(-anime)
 -龙王 , -发言
 小游戏 ★查看小游戏列表
 高级 ★查看高级指令\`;
 const help=帮助;`, context)
 vm.runInContext(`const 高级=\`-----高级指令:
-执行js代码(可以用来教我说话): 
+执行js代码: 
   ①直接输入，例: 你好="你也好"
-  ②调试模式，前面添加反斜杠，例: \\\\a=b ★调试模式下输入有错我会反馈错误信息
-  data ★环境变量(里面存放了发言人的qq号昵称群号等信息)\`;
+  ②调试模式，前面添加反斜杠，例: \\\\a=b ★调试模式下会反馈错误信息
+data ★环境变量\`;
 const advance=高级;`, context)
 vm.runInContext(`const 小游戏=\`-----小游戏列表:
 1. jrrp() , jrqs() , sjqs() , jrz()

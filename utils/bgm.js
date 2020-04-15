@@ -33,13 +33,13 @@ const getCalendar = async (day)=>{
                             result.push(`${v.weekday.cn} 放送 ${v.items.length} 部`)
                         }
                     }
-                    r(result.join('\n') + (day ? '' : `\n输入"-bgm 1~7"查看周一～周日具体放送表`))
+                    r(result.join('\n') + (day ? '' : `\n输入"-新番 1~7"查看周一～周日具体放送表`))
                 } catch (e) {
-                    r('bgm服务暂时不可用')
+                    r('服务暂时不可用')
                 }
             })
         }).on('error', err=>{
-            r('bgm服务暂时不可用')
+            r('服务暂时不可用')
         })
     })
 }
@@ -70,11 +70,11 @@ const getBangumi = async (t, name)=>{
                     }
                     r(result.join('\n'))
                 } catch (e) {
-                    r('bgm服务暂时不可用')
+                    r('服务暂时不可用')
                 }
             })
         }).on('error', err=>{
-            r('bgm服务暂时不可用')
+            r('服务暂时不可用')
         })
     })
 }

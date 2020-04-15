@@ -6,13 +6,13 @@ const bgm = require("./utils/bgm")
 const extras = {
 	"qh": async function(param) {
 		if (!param.length)
-            return "你没有输入昵称。输入例:\n-qh 千羽黒乃"
+            return "没有输入用户名。输入例:\n-雀魂 千羽黒乃"
         else
         	return await mjutil.shuibiao(param)
 	},
 	"qhjp": async function(param) {
 		if (!param.length)
-            return "你没有输入昵称。输入例:\n-qh 千羽黒乃"
+            return "没有输入用户名。输入例:\n-qhjp 千羽黒乃"
         else
         	return await mjutil.shuibiao(param, true)
 	},
@@ -26,7 +26,10 @@ const extras = {
 		return await bgm.getCalendar(param)
 	},
 	"anime": async function(param) {
-		return await bgm.getBangumi("anime", param)
+        if (!param.length)
+            return "没有输入名称。输入例:\n-动漫 公主连结"
+        else
+		  return await bgm.getBangumi("anime", param)
 	},
 	"yq": async function() {
 		let gbl = []
@@ -49,7 +52,7 @@ const extras = {
                 }
                 return msg
             } catch (e) {
-                return "疫情服务暂时不可用"
+                return "服务暂时不可用"
             }
         })
 	},
@@ -130,8 +133,10 @@ https://github.com/takayama-lily/riichi`
 	}
 }
 extras["雀魂"] = extras.qh
+extras["排名"] = extras.rank
 extras["牌理"] = extras.pl
 extras["疫情"] = extras.yq
 extras["新番"] = extras.bgm
+extras["动漫"] = extras.anime
 
 module.exports = extras
