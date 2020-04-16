@@ -59,13 +59,13 @@ const getBangumi = async (t, name)=>{
                 try {
                     json = JSON.parse(json)
                     let result = []
-                    if (!json.list) {
+                    if (!json.list.length) {
                         r('没找到')
                     } else {
                         let v = json.list[0]
                         v.name_cn = v.name_cn ? v.name_cn : v.name
                         result.push(`${v.name_cn} (${v.name})`)
-                        result.push(`发行(放送)日${v.air_date}(周${weekday[v.air_weekday-1]}) / 全${!isNaN(v.eps) ? parseInt(v.eps) : '?'}话 / 评分${v.rating ? v.rating.score : '未知'}\n`)
+                        result.push(`放送日${v.air_date}(周${weekday[v.air_weekday-1]}) / 全${!isNaN(v.eps) ? parseInt(v.eps) : '?'}话 / 评分${v.rating ? v.rating.score : '未知'}`)
                         result.push(v.summary)
                     }
                     r(result.join('\n'))
