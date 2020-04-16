@@ -7,7 +7,8 @@ const zlib = require('zlib')
 const MJSoul = require('mjsoul')
 const config = require('./majsoul.config')
 const mjsoul = new MJSoul({
-    'url': 'wss://mj-srv-6.majsoul.com:4501'
+    // 'url': 'wss://mj-srv-6.majsoul.com:4501'
+    url: 'ws://203.107.42.102:4133'
 })
 const login = ()=>{
     mjsoul.send('login', {account: config['cn.account'], password: mjsoul.hash(config['cn.password'])})
