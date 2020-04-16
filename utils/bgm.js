@@ -70,7 +70,7 @@ const getBangumi = async (t, name)=>{
                     }
                     r(result.join('\n'))
                 } catch (e) {
-                    r('服务暂时不可用')
+                    r('没找到')
                 }
             })
         }).on('error', err=>{
