@@ -8,8 +8,11 @@ const extras = {
 		if (!param.length)
             return "没有输入用户名。输入例:\n-雀魂 千羽黒乃"
         else
-        	return await mjutil.shuibiao(param)
+        	return await mjutil.shuibiao(param, true)
 	},
+    "qhcn": async function(param) {
+        return await mjutil.shuibiao(param)
+    },
 	"qhjp": async function(param) {
 		if (!param.length)
             return "没有输入用户名。输入例:\n-qhjp 千羽黒乃"
@@ -17,7 +20,7 @@ const extras = {
         	return await mjutil.shuibiao(param, true)
 	},
 	"rank": async function(param) {
-		return await mjutil.ranking(param)
+		return await mjutil.ranking(param, true)
 	},
 	"rankjp": async function(param) {
 		return await mjutil.ranking(param, true)

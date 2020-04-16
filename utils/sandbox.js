@@ -132,7 +132,7 @@ vm.runInContext(`const 高级=\`-----高级指令:
   ②调试模式，前面添加反斜杠，例: \\\\a=b ★调试模式下会反馈错误信息
 data ★环境变量\`;
 const advance=高级;`, context)
-vm.runInContext(`const 小游戏=\`-----小游戏列表:
+vm.runInContext(`const 小游戏=\`-----js小游戏列表:
 ● jrrp() , jrqs() , sjqs() , jrz()
 ● 象棋()
 ● 提问("明天会下雨吗")

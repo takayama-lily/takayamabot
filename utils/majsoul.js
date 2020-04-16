@@ -40,7 +40,6 @@ const getRank = id=>{
     return res ===  '魂天1' ? '魂天' : res
 }
 const shuibiao = async(words, jp = false)=>{
-    jp = true
     let deepAdd = (o1, o2)=>{
         if (o1===undefined) return o2
         if (o2===undefined) return o1
@@ -144,7 +143,6 @@ const shuibiao = async(words, jp = false)=>{
 }
 
 const ranking = async(type = 0, jp = false)=>{
-    jp = true
     try {
         let client = jp ? mjsoulJP : mjsoul
         let result = await client.sendAsync('fetchLevelLeaderboard', {type: type == 3 ? 2 : 1})
