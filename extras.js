@@ -60,6 +60,7 @@ const extras = {
         })
 	},
 	"pl": async function(param) {
+        param = param.trim()
 		if (!param) {
             let s = `-----牌理指令紹介-----
 自摸例: -pl 111m234p567s1122z2z
