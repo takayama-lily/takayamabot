@@ -176,8 +176,8 @@ class Session {
                 ws.send(JSON.stringify({
                     "action": "set_group_admin",
                     "params": {
-                        "user_id": this.user_id,
-                        "group_id": this.group_id,
+                        "user_id": data.user_id,
+                        "group_id": data.group_id,
                         "enable": true
                     }
                 }))
@@ -186,8 +186,8 @@ class Session {
                 ws.send(JSON.stringify({
                     "action": "set_group_admin",
                     "params": {
-                        "user_id": this.user_id,
-                        "group_id": this.group_id,
+                        "user_id": data.user_id,
+                        "group_id": data.group_id,
                         "enable": false
                     }
                 }))
