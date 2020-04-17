@@ -113,7 +113,6 @@ delete globalThis;
 delete console;
 const constructor = undefined;
 const 草 = undefined;
-const 艹 = undefined;
 let data;`, context)
 vm.runInContext(`const 帮助=\`-----指令列表:
 -雀魂 ★查询雀魂日服战绩(-qh)

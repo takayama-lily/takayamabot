@@ -3,6 +3,10 @@ const https = require("https")
 const MJ = require("riichi")
 const mjutil = require("./utils/majsoul")
 const bgm = require("./utils/bgm")
+const buildImage = (url)=>{
+    return `[CQ:image,file=${url}]`
+}
+
 const extras = {
 	"qh": async function(param) {
 		if (!param.length)
@@ -134,7 +138,25 @@ https://github.com/takayama-lily/riichi`
         } catch(e) {
             return param + '\n手牌数量不正确或输入有误'
         }
-	}
+	},
+    "setu": async function() {
+        return new Promise(resolve=>{
+            let data = ""
+            https.get("https://api.lolicon.app/setu/", res=>{
+                res.on("data", chunk=>data+=chunk)
+                res.on("end", ()=>{
+                    try {
+                        let url = data.data[0].url
+                        resolve(buildImage(url))
+                    } catch(e) {
+                        resolve("服务暂时不可用")
+                    }
+                })
+            }).on("error", err=>{
+                resolve("服务暂时不可用")
+            })
+        })
+    }
 }
 extras["雀魂"] = extras.qh
 extras["排名"] = extras.rank

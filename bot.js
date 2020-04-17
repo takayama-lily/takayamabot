@@ -4,6 +4,7 @@ const db = new sqlite3.Database('/var/www/db/eventv2.db')
 const extras = require('./extras')
 const sandbox = require("./utils/sandbox")
 const ero = require('./ero')
+const whitelist = [199711085,933269791,331678612,701548657,601691323]
 const blacklist = [3507349275,429245111]
 const owner = 372914165
 const master = []
@@ -199,6 +200,9 @@ class Session {
                     result = e.stack
                 }
                 this._send(result)
+            }
+            if (command === "setu" && !whitelist.includes(data.group_id)) {
+                this._send("此群不够纯洁，无法使用此服务。")
             }
             if (extras.hasOwnProperty(command)) {
                 this._send(await extras[command](param))
