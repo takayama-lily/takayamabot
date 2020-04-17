@@ -142,7 +142,7 @@ https://github.com/takayama-lily/riichi`
     "setu": async function() {
         return new Promise(resolve=>{
             let data = ""
-            https.get("https://api.lolicon.app/setu/", res=>{
+            https.get("https://api.lolicon.app/setu/?apikey=958955415e99d70b61c227&r18=0&size1200=true", res=>{
                 res.on("data", chunk=>data+=chunk)
                 res.on("end", ()=>{
                     try {
