@@ -202,7 +202,8 @@ class Session {
                 this._send(result)
             }
             if (command === "setu" && !whitelist.includes(data.group_id)) {
-                this._send("此群不够纯洁，无法使用此服务。")
+                this._send("这里不够纯洁，无法使用此服务。")
+                return
             }
             if (extras.hasOwnProperty(command)) {
                 this._send(await extras[command](param))

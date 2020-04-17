@@ -146,6 +146,7 @@ https://github.com/takayama-lily/riichi`
                 res.on("data", chunk=>data+=chunk)
                 res.on("end", ()=>{
                     try {
+                        data = JSON.parse(data)
                         let url = data.data[0].url
                         resolve(buildImage(url))
                     } catch(e) {
