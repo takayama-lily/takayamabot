@@ -139,14 +139,15 @@ https://github.com/takayama-lily/riichi`
             return param + '\n手牌数量不正确或输入有误'
         }
 	},
-    "setu": async function() {
+    "setu": async function(param) {
         return new Promise(resolve=>{
             let data = ""
-            https.get("https://api.lolicon.app/setu/?apikey=958955415e99d70b61c227&r18=0&size1200=true", res=>{
+            https.get("https://api.lolicon.app/setu/?apikey=958955415e99d70b61c227&r18=0&size1200=true&keyword"+param, res=>{
                 res.on("data", chunk=>data+=chunk)
                 res.on("end", ()=>{
                     try {
                         data = JSON.parse(data)
+                        if (!data.data.length) resolve("没找到")
                         let url = data.data[0].url
                         resolve(buildImage(url))
                     } catch(e) {

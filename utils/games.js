@@ -16,6 +16,19 @@ seed=(q=qq())=>{return Math.abs(0xffffffffffffffff%q^0xffffffffffffffff%((Date.n
 jrrp=(q=qq())=>{return at(q) + " 今天的人品是: " + seed(q)%101}
 // jrz=()=>{return at()+' 你今天的字是"'+JSON.parse(`["\\u${(seed()%(0x9fa5-0x4e00)+0x4e00).toString(16)}"]`)[0]+'"\n快去找算命先生算一卦吧！'}
 jrz=(q=qq())=>{return at(q) + ' 今天的字是"' + String.fromCodePoint(seed(q) % (0x9fa5 - 0x4e00) + 0x4e00) + '"\n快去找算命先生算一卦吧！'}
+function img(url, cache = true) { return "[CQ:image," + (cache ? "" : "cache=0,") + "file=" + url + "]"; }
+function qqhead(qq = data.user_id, cache = true) {
+	if (qq === false || qq === 0) {
+		cache = false, qq = data.user_id
+	}
+    return img("http://q1.qlogo.cn/g?b=qq&s=640&nk=" + qq, cache)
+}
+function grouphead(group=data.group_id, cache = true){
+	if (group === false || group === 0) {
+		cache = false, group = data.group_id
+	}
+	return img("http://p.qlogo.cn/gh/"+group+"/"+group+"/640", cache)
+}
 
 current_chesses = {}
 create_chess = (gid)=>{
