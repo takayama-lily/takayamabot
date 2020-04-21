@@ -1,34 +1,8 @@
-qq=()=>{return data.user_id}
-qun=()=>{return data.group_id}
-at=function(){
-	if (!arguments.length)
-		return `[CQ:at, qq=${qq()}]`
-	let res = ''
-	for (let v of arguments) {
-		if (!isNaN(v))
-			res += `[CQ:at, qq=${v}]`
-		else
-			res += v
-	}
-	return res
-}
-seed=(q=qq())=>{return Math.abs(0xffffffffffffffff%q^0xffffffffffffffff%((Date.now()+28800000)/864/10**5|0))}
 jrrp=(q=qq())=>{return at(q) + " 今天的人品是: " + seed(q)%101}
 // jrz=()=>{return at()+' 你今天的字是"'+JSON.parse(`["\\u${(seed()%(0x9fa5-0x4e00)+0x4e00).toString(16)}"]`)[0]+'"\n快去找算命先生算一卦吧！'}
 jrz=(q=qq())=>{return at(q) + ' 今天的字是"' + String.fromCodePoint(seed(q) % (0x9fa5 - 0x4e00) + 0x4e00) + '"\n快去找算命先生算一卦吧！'}
 function img(url, cache = true) { return "[CQ:image," + (cache ? "" : "cache=0,") + "file=" + url + "]"; }
-function qqhead(qq = data.user_id, cache = true) {
-	if (qq === false || qq === 0) {
-		cache = false, qq = data.user_id
-	}
-    return img("http://q1.qlogo.cn/g?b=qq&s=640&nk=" + qq, cache)
-}
-function grouphead(group=data.group_id, cache = true){
-	if (group === false || group === 0) {
-		cache = false, group = data.group_id
-	}
-	return img("http://p.qlogo.cn/gh/"+group+"/"+group+"/640", cache)
-}
+
 
 current_chesses = {}
 create_chess = (gid)=>{
@@ -98,7 +72,7 @@ chessss = (input = '')=>{
 	let e=new Error(' 你不能这么走')
 	try{
 		if(['前','后'].includes(a)){
-			for(let i=1;1<=10;i++) {
+			for(let i=1;i<=10;i++) {
 				if(chess[i].includes(b)) {
 					m=chess[i].indexOf(b),n=i
 					if(a==='后'&&step%2===0)
@@ -123,8 +97,8 @@ chessss = (input = '')=>{
 		if(c==='平'){
 			if(['傌','馬','象','士','相','仕'].includes(koma))throw e//这些不能平
 			if(['兵','卒'].includes(koma)) {//兵过河前不能平
-				if(step%2&&n>6)throw e
-				if(!(step%2)&&n<=6)throw e
+				if(step%2&&n>=6)throw e
+				if(!(step%2)&&n<6)throw e
 			}
 			dm=step%2?9-d:d-1,dn=n
 			if(['將','帥','兵','卒'].includes(koma)&&Math.abs(dm-m)!==1)throw e
@@ -193,9 +167,22 @@ chessss = (input = '')=>{
 		if(['將','帥','士','仕'].includes(koma)){//将士不出九宫
 			if (dm < 3 || dm > 5 || (dn > 4 && dn < 8))throw e
 		}
-		if(['象','相'].includes(koma)) {//士象不能过河
+		if(['象','相'].includes(koma)) {//象不能过河
 			if(step%2&&dn<6)throw e
 			if(!(step%2)&&dn>=6)throw e
+			let midm=(dm+m)/2,midn=(dn+n)/2//象眼
+			if(chess[midn][midm]!=='　')throw e
+		}
+		if(['傌','馬'].includes(koma)) {//马脚
+			let midm,midn
+			if(Math.abs(dm-m)===1){
+				midn=(dn+n)/2
+				midm=m
+			}else{
+				midm=(dm+m)/2
+				midn=n
+			}
+			if(chess[midn][midm]!=='　')throw e
 		}
 		if(['車','俥'].includes(koma)){
 			if(dn===n) {//平
