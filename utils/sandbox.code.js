@@ -128,7 +128,7 @@ const doc=`-----js控制台doc-----
  • ghead(群号) ※群头像,默认当前群
 　※头像有缓存，多传个参数0可清
 ● 禁止的关键字: this, async, const
-● 圆括号、双引号、逗号自动转半角
+● 圆括号、双引号、逗号等自动转半角
 ● 支持ECMAScript6语法(非strict)`
 
 const qq=()=>data.user_id

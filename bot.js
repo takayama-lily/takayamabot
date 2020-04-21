@@ -244,10 +244,11 @@ class Session {
             if (debug) {
                 code = code.substr(1)
             }
-            code = code.replace(/(（|）|，|″|“|”)/g, (s)=>{
+            code = code.replace(/(（|）|，|″|“|”|＝)/g, (s)=>{
                 if (["″","“","”"].includes(s)) return '"'
                 // if (["‘","’"].includes(s)) return "'"
                 if (s === "，") return ", "
+                if (s === "＝") return "="
                 return String.fromCharCode(s.charCodeAt(0) - 65248)
             })
             sandbox.run("data="+JSON.stringify(data), 50)
