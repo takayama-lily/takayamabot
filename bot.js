@@ -39,7 +39,7 @@ const main = (conn, data)=>{
         for (let v of data.message) {
             if (v.type === "text")
                 message += v.data.text
-            else {
+            else if (v.type) {
                 message += "[CQ:" + v.type
                 for (let k in v.data)
                     message += `,${k}=${v.data[k]}`
