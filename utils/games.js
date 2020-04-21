@@ -94,23 +94,20 @@ chessss = (input = '')=>{
 	let b=input[1]
 	let c=input[2]
 	let d=parseInt(input[3])
-	let m=-1,n=-1,koma=b,dm,dn
+	let m=-1,n=-1,koma,dm,dn
 	let e=new Error(' 你不能这么走')
 	try{
-		if(a==='前') {
+		if(['前','后'].includes(a)){
 			for(let i=1;1<=10;i++) {
 				if(chess[i].includes(b)) {
 					m=chess[i].indexOf(b),n=i
-					break
+					if(a==='后'&&step%2===0)
+						break
+					if(a==='前'&&step%2===1)
+						break
 				}
 			}
-		} else if(a==='后') {
-			for (let i=10;1>=1;i--) {
-				if(chess[i].includes(b)) {
-					m=chess[i].indexOf(b),n=i
-					break
-				}
-			}
+			koma=b
 		} else{
 			for(let i=1;1<=10;i++) {
 				let j=step%2?9-b:b-1
@@ -161,19 +158,19 @@ chessss = (input = '')=>{
 		} else if (c === '退') {
 			if (['兵','卒'].includes(koma)) throw e//兵不能退
 			if (['象','相'].includes(koma)) {
-				dm = !(step%2) ? 9-d : d-1
+				dm = (step%2) ? 9-d : d-1
 				dn = !(step%2) ? n-2 : n+2
 				let minus = Math.abs(dm-m)
 				if (minus !== 2) throw e
 			}
 			if (['士','仕'].includes(koma)) {
-				dm = !(step%2) ? 9-d : d-1
+				dm = (step%2) ? 9-d : d-1
 				dn = !(step%2) ? n-1 : n+1
 				let minus = Math.abs(dm-m)
 				if (minus !== 1) throw e
 			}
 			if (['傌','馬'].includes(koma)) {
-				dm = !(step%2) ? 9-d : d-1
+				dm = (step%2) ? 9-d : d-1
 				let minus = Math.abs(dm-m)
 				if (!minus || minus > 2) throw e
 				if (minus === 1) {

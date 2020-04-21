@@ -112,13 +112,15 @@ class Session {
             //     ws.send(JSON.stringify(res))
             // }
             if (command === 'query' && param) {
+                let beachmark = Date.now()
                 db.get(param, (err, row)=>{
+                    beachmark = Date.now() - beachmark
                     if (err)
                         this._send(err.message)
                     else if (!row)
-                        this._send("没有结果")
+                        this._send("没有结果("+beachmark+"ms)")
                     else
-                        this._send(row)
+                        this._send(JSON.stringify(row)+`\n(Beachmark: ${beachmark}ms)`)
                 })
             }
             if (command === '龙王') {
