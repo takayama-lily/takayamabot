@@ -35,6 +35,18 @@ const main = (conn, data)=>{
             sessions[data.message_type][data[data.message_type + "_id"]] = new Session(data)
         }
         let session = sessions[data.message_type][data[data.message_type + "_id"]]
+        let message = ""
+        for (let v of data.message) {
+            if (v.type === "text")
+                message += v.data.text
+            else {
+                message += "\"[CQ:" + v.type
+                for (let k in v.data)
+                    message += `,${k}=${v.data[k]}`
+                message += "]\""
+            }
+        }
+        data.message = message
         session.onMessage(data)
     }
     if (data.post_type === "request") {
@@ -228,13 +240,10 @@ class Session {
             if (debug) {
                 code = code.substr(1)
             }
-            code = code.replace(/(（|）|，|″|“|”|&#91;|&#93;|&amp;)/g, (s)=>{
+            code = code.replace(/(（|）|，|″|“|”)/g, (s)=>{
                 if (["″","“","”"].includes(s)) return '"'
                 // if (["‘","’"].includes(s)) return "'"
                 if (s === "，") return ", "
-                if (s === "&#91;") return "["
-                if (s === "&#93;") return "]"
-                if (s === "&amp;") return "&"
                 return String.fromCharCode(s.charCodeAt(0) - 65248)
             })
             sandbox.run("data="+JSON.stringify(data), 50)
