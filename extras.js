@@ -95,7 +95,7 @@ https://github.com/takayama-lily/riichi`
         try {
             let beachmark = Date.now()
             let res = new MJ(param).calc()
-            let msg = param + `(${Date.now()-beachmark}ms)\n`
+            let msg = param + ` (${Date.now()-beachmark}毫秒)\n`
             if (res.error) {
                 return param + '\n手牌数量不正确或输入有误'
             } else if (!res.isAgari) {
