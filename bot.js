@@ -40,10 +40,12 @@ const main = (conn, data)=>{
             if (v.type === "text")
                 message += v.data.text
             else {
-                message += "\"[CQ:" + v.type
+                message += "[CQ:" + v.type
                 for (let k in v.data)
                     message += `,${k}=${v.data[k]}`
-                message += "]\""
+                message += "]"
+                if (v.type === 'at')
+                    message = "\"" + message + "\""
             }
         }
         data.message = message
