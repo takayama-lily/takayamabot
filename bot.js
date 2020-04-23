@@ -72,6 +72,17 @@ const main = (conn, data)=>{
             }))
         }
     }
+    if (data.post_type === "notice") {
+        if (data.notice_type === "notice_type" && data.sub_type === "ban") {
+            if (data.user_id === data.self_id && data.duration > 86400)
+                ws.send(JSON.stringify({
+                    "action": "set_group_leave",
+                    "params": {
+                        "group_id": data.group_id
+                    }
+                }))
+        }
+    }
 }
 
 class Session {
