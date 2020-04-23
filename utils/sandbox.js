@@ -1,11 +1,11 @@
 const fs = require("fs")
 const vm = require("vm")
-const contextSavePath = './data/'
-const contextFile = contextSavePath + 'context'
-const fnFile = contextSavePath + 'context.fn'
-const initCode = './utils/sandbox.code.js'
-if (!fs.existsSync(contextSavePath)) {
-    fs.mkdirSync(contextSavePath, {recursive: true, mode: 0o700})
+const dataPath = module.path + "/../data/"
+const contextFile = dataPath + "context"
+const fnFile = dataPath + "context.fn"
+const initCodeFile = module.path + "/sandbox.code.js"
+if (!fs.existsSync(dataPath)) {
+    fs.mkdirSync(dataPath, {recursive: true, mode: 0o700})
 }
 
 let context = {}
@@ -21,21 +21,19 @@ vm.createContext(context, {
 if (fs.existsSync(fnFile)) {
     let fn = JSON.parse(fs.readFileSync(fnFile))
     for (let k in fn) {
-        vm.runInContext(k + '=' + fn[k], context)
+        vm.runInContext(k + "=" + fn[k], context)
     }
 }
 
-context["向听"] = require('syanten')
-context["向听"].constructor = undefined
-vm.runInContext(fs.readFileSync(initCode), context)
+vm.runInContext(fs.readFileSync(initCodeFile), context)
 
 let fn = {}
 const beforeSaveContext = ()=>{
     for (let k in context) {
-        if (typeof context[k] === 'function') {
+        if (typeof context[k] === "function") {
             fn[k] = context[k].toString()
         }
-        if (typeof context[k] === 'object') {
+        if (typeof context[k] === "object") {
             try {
                 if (JSON.stringify(context[k]).length > 524288)
                     delete context[k]
@@ -45,7 +43,7 @@ const beforeSaveContext = ()=>{
         }
     }
 }
-process.on('exit', (code)=>{
+process.on("exit", (code)=>{
     beforeSaveContext()
     fs.writeFileSync(fnFile, JSON.stringify(fn))
     fs.writeFileSync(contextFile, JSON.stringify(context))
@@ -56,15 +54,34 @@ setInterval(()=>{
     fs.writeFile(contextFile, JSON.stringify(context), (err)=>{})
 }, 1800000)
 
-const run = (code, timeout = 0, debug = false)=>{
+const run = (data, timeout = undefined, isAdmin = false)=>{
+    let code = data.message
+    let debug = ["\\","＼"].includes(code.substr(0, 1))
+    if (code.match(/([^\w]|^)+(this|async|const){1}([^\w]|$)+/) && !isAdmin)
+        return debug ? "代码不要包含this、async、const关键字。" : undefined
+    if (debug)
+        code = code.substr(1)
+    code = code.replace(/(（|）|，|″|“|”|＝)/g, (s)=>{
+        if (["″","“","”"].includes(s)) return "\""
+        if (s === "，") return ","
+        if (s === "＝") return "="
+        return String.fromCharCode(s.charCodeAt(0) - 65248)
+    })
+    vm.runInContext("data="+JSON.stringify(data), context)
+    vm.runInContext("Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);", context)
     try {
         return vm.runInContext(code, context, {timeout: timeout})
     } catch(e) {
         if (debug) {
-            let line = e.stack.split('\n')[0].split(':').pop()
-            return e.name + ': ' + e.message + ' (line: ' + parseInt(line) + ')'
+            let line = e.stack.split("\n")[0].split(":").pop()
+            return e.name + ": " + e.message + " (line: " + parseInt(line) + ")"
         }
     }
 }
 
+module.exports.require = (name, object)=>{
+    if (object.constructor)
+        object.constructor = undefined
+    context[name] = object
+}
 module.exports.run = run

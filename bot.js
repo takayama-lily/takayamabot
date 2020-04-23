@@ -1,9 +1,4 @@
 'use strict'
-const sqlite3 = require('sqlite3')
-const db = new sqlite3.Database('/var/www/db/eventv2.db')
-const extras = require('./extras')
-const sandbox = require("./utils/sandbox")
-const ero = require('./ero')
 const whitelist = [199711085,933269791,331678612,701548657,601691323,231406576]
 const blacklist = [3507349275,429245111]
 const owner = 372914165
@@ -14,7 +9,6 @@ const isMaster = (uid)=>{
 const reboot = ()=>{
     process.exit(1)
 }
-let timeout = 50
 const sessions = {
     "private": {},
     "group": {},
@@ -22,6 +16,21 @@ const sessions = {
 }
 const at = (qq)=>`[CQ:at,qq=${qq}]`
 let ws = null
+
+// CQ数据库初始化
+const sqlite3 = require('sqlite3')
+const db = new sqlite3.Database('/var/www/db/eventv2.db')
+
+// 沙盒初始化
+const sandbox = require("./utils/sandbox")
+sandbox.require("向听", require('syanten'))
+let timeout = 50
+
+// 敏感词
+const ero = require('./ero')
+
+// 功能
+const extras = require('./extras')
 
 const main = (conn, data)=>{
     ws = conn
@@ -110,6 +119,8 @@ class Session {
             msg = msg.replace(ero, '**')
             if (msg.length > 4500)
                 msg = msg.substr(0, 4495) + "\n..."
+            if (!msg.length)
+                return
         }
         let res = {
             "action": this.action,
@@ -231,8 +242,7 @@ class Session {
                 this._send(result)
             }
             if (command === "setu" && !whitelist.includes(data.group_id)) {
-                this._send("这里不够纯洁，无法使用此服务。")
-                return
+                return this._send("这里不够纯洁，无法使用此服务。")
             }
             if (extras.hasOwnProperty(command)) {
                 this._send(await extras[command](param))
@@ -240,32 +250,7 @@ class Session {
         } else {
             if (blacklist.includes(data.user_id))
                 return
-            let code = data.message
-            let debug = ["\\","＼"].includes(prefix)
-            if (data.message.includes("const") && !isMaster(data.user_id)) {
-                if (debug)
-                    this._send('const被禁止使用了')
-                return
-            }
-            if ((data.message.includes("this") || data.message.includes("async")) && !isMaster(data.user_id)) {
-                if (debug)
-                    this._send('安全原因，代码不要包含this和async关键字。')
-                return
-            }
-            if (debug) {
-                code = code.substr(1)
-            }
-            code = code.replace(/(（|）|，|″|“|”|＝)/g, (s)=>{
-                if (["″","“","”"].includes(s)) return '"'
-                // if (["‘","’"].includes(s)) return "'"
-                if (s === "，") return ", "
-                if (s === "＝") return "="
-                return String.fromCharCode(s.charCodeAt(0) - 65248)
-            })
-            sandbox.run("data="+JSON.stringify(data), 50)
-            sandbox.run("Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);", 50)
-            let result = sandbox.run(code, timeout, debug)
-            this._send(result)
+            this._send(sandbox.run(data, timeout, isMaster(data.user_id)))
         }
     }
 }
