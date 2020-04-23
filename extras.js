@@ -3,9 +3,12 @@ const https = require("https")
 const MJ = require("riichi")
 const mjutil = require("./utils/majsoul")
 const bgm = require("./utils/bgm")
-const buildImage = (url)=>{
-    return `[CQ:image,file=${url}]`
-}
+const at = (qq)=>`[CQ:at,qq=${qq}]`
+const buildImage = (url)=>`[CQ:image,file=${encodeURI(url)}]`
+
+// CQ数据库初始化
+const sqlite3 = require('sqlite3')
+const db = new sqlite3.Database('/var/www/db/eventv2.db')
 
 const extras = {
 	"qh": async function(param) {
@@ -159,6 +162,77 @@ https://github.com/takayama-lily/riichi`
                 resolve("服务暂时不可用")
             })
         })
+    },
+    "query": async(param)=>{
+        let beachmark = Date.now()
+        return new Promise((resolve, reject)=>{
+            db.get(param, (err, row)=>{
+                beachmark = Date.now() - beachmark
+                if (err)
+                    resolve(err.message)
+                else if (!row)
+                    resolve("没有结果(" + beachmark + "ms)")
+                else
+                    resolve(JSON.stringify(row) + `\n(Beachmark: ${beachmark}ms)`)
+            })
+        })
+    },
+    "龙王": async(param)=>{
+        let gid = param
+        if (!gid) return "请在群里使用该命令"
+        let offset = new Date().getTimezoneOffset() * 60000
+        let today = (new Date(new Date(Date.now() + offset + 8 * 3600000).toDateString()).getTime() - offset - 8 * 3600000) / 1000
+        let yesterday = today - 86400
+        let sql1 = `select count(1) as cnt,account from event
+            where type=2 and \`group\`='qq/group/${gid}' and account!='' and time>=${yesterday} and time<${today}
+            group by account order by cnt desc limit 1`
+        let sql2 = `select count(1) as cnt,account from event
+            where type=2 and \`group\`='qq/group/${gid}' and account!='' and time>=${today}
+            group by account order by cnt desc limit 1`
+        let [str1, str2] = await Promise.all([
+            new Promise((resolve, reject)=>{
+                db.get(sql1, (err, row)=>{
+                    if (!row)
+                        resolve("昨日没有记录")
+                    else
+                        resolve(`昨天本群发言最多的是${at(row.account.split("/").pop())}(${row.cnt}条)`)
+                })
+            }),
+            new Promise((resolve, reject)=>{
+                db.get(sql2, (err, row)=>{
+                    if (!row)
+                        resolve("今日没有记录")
+                    else
+                        resolve(`今天截至目前最多的是${at(row.account.split("/").pop())}(${row.cnt}条)`)
+                })
+            }),
+        ])
+        return str1 + "\n" + str2
+    },
+    "发言": async(param)=>{
+        let gid = param[0]
+        let uid = param[1]
+        if (!gid) return "请在群里使用该命令"
+        let offset = new Date().getTimezoneOffset() * 60000
+        let today = (new Date(new Date(Date.now() + offset + 8 * 3600000).toDateString()).getTime() - offset - 8 * 3600000) / 1000
+        let yesterday = today - 86400
+        let sql1 = `select count(1) as cnt from event
+            where type=2 and \`group\`='qq/group/${gid}' and account='qq/user/${uid}' and time>=${yesterday} and time<${today}`
+        let sql2 = `select count(1) as cnt from event
+            where type=2 and \`group\`='qq/group/${gid}' and account='qq/user/${uid}' and time>=${today}`
+        let [str1, str2] = await Promise.all([
+            new Promise((resolve, reject)=>{
+                db.get(sql1, (err, row)=>{
+                    resolve(` 昨天你在本群发言${row.cnt}条`)
+                })
+            }),
+            new Promise((resolve, reject)=>{
+                db.get(sql2, (err, row)=>{
+                    resolve(`今天截至目前你在本群发言${row.cnt}条`)
+                })
+            }),
+        ])
+        return at(uid) +str1 + "\n" + str2
     }
 }
 extras["雀魂"] = extras.qh
@@ -167,5 +241,6 @@ extras["牌理"] = extras.pl
 extras["疫情"] = extras.yq
 extras["新番"] = extras.bgm
 extras["动漫"] = extras.anime
+extras["色图"] = extras.setu
 
 module.exports = extras

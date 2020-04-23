@@ -1,5 +1,4 @@
 'use strict'
-const whitelist = [199711085,933269791,331678612,701548657,601691323,231406576]
 const blacklist = [3507349275,429245111]
 const owner = 372914165
 const master = []
@@ -14,12 +13,10 @@ const sessions = {
     "group": {},
     "discuss": {}
 }
-const at = (qq)=>`[CQ:at,qq=${qq}]`
 let ws = null
 
-// CQ数据库初始化
-const sqlite3 = require('sqlite3')
-const db = new sqlite3.Database('/var/www/db/eventv2.db')
+// 固定指令
+const extras = require('./extras')
 
 // 沙盒初始化
 const sandbox = require("./utils/sandbox")
@@ -28,9 +25,6 @@ let timeout = 50
 
 // 敏感词
 const ero = require('./ero')
-
-// 功能
-const extras = require('./extras')
 
 const main = (conn, data)=>{
     ws = conn
@@ -141,79 +135,10 @@ class Session {
             let split = data.message.substr(1).trim().split(" ")
             let command = split.shift()
             let param = split.join(" ")
-            if (isMaster(data.user_id) && command === "raw" && param.length) {
-                ws.send(param)
-            }
-            // if (isMaster(data.user_id) && command === "re") {
-            //     this._send("重启插件")
-            //     let res = {"action": "set_restart_plugin"}
-            //     ws.send(JSON.stringify(res))
-            // }
-            if (command === 'query' && param) {
-                let beachmark = Date.now()
-                db.get(param, (err, row)=>{
-                    beachmark = Date.now() - beachmark
-                    if (err)
-                        this._send(err.message)
-                    else if (!row)
-                        this._send("没有结果("+beachmark+"ms)")
-                    else
-                        this._send(JSON.stringify(row)+`\n(Beachmark: ${beachmark}ms)`)
-                })
-            }
-            if (command === '龙王') {
-                let offset = new Date().getTimezoneOffset() * 60000
-                let today = (new Date(new Date(Date.now() + offset + 8 * 3600000).toDateString()).getTime() - offset - 8 * 3600000) / 1000
-                let yesterday = today - 86400
-                let sql1 = `select count(1) as cnt,account from event
-                    where type=2 and \`group\`='qq/group/${this.group_id}' and account!='' and time>=${yesterday} and time<${today}
-                    group by account order by cnt desc limit 1`
-                let sql2 = `select count(1) as cnt,account from event
-                    where type=2 and \`group\`='qq/group/${this.group_id}' and account!='' and time>=${today}
-                    group by account order by cnt desc limit 1`
-                let [str1, str2] = await Promise.all([
-                    new Promise((resolve, reject)=>{
-                        db.get(sql1, (err, row)=>{
-                            if (!row)
-                                resolve("昨日没有记录")
-                            else
-                                resolve(`昨天本群发言最多的是${at(row.account.split("/").pop())}(${row.cnt}条)`)
-                        })
-                    }),
-                    new Promise((resolve, reject)=>{
-                        db.get(sql2, (err, row)=>{
-                            if (!row)
-                                resolve("今日没有记录")
-                            else
-                                resolve(`今天截至目前最多的是${at(row.account.split("/").pop())}(${row.cnt}条)`)
-                        })
-                    }),
-                ])
-                this._send(str1+"\n"+str2)
-            }if (command === '发言') {
-                let offset = new Date().getTimezoneOffset() * 60000
-                let today = (new Date(new Date(Date.now() + offset + 8 * 3600000).toDateString()).getTime() - offset - 8 * 3600000) / 1000
-                let yesterday = today - 86400
-                let sql1 = `select count(1) as cnt from event
-                    where type=2 and \`group\`='qq/group/${data.group_id}' and account='qq/user/${data.user_id}' and time>=${yesterday} and time<${today}`
-                let sql2 = `select count(1) as cnt from event
-                    where type=2 and \`group\`='qq/group/${data.group_id}' and account='qq/user/${data.user_id}' and time>=${today}`
-                let [str1, str2] = await Promise.all([
-                    new Promise((resolve, reject)=>{
-                        db.get(sql1, (err, row)=>{
-                            resolve(` 昨天你在本群发言${row.cnt}条`)
-                        })
-                    }),
-                    new Promise((resolve, reject)=>{
-                        db.get(sql2, (err, row)=>{
-                            resolve(`今天截至目前你在本群发言${row.cnt}条`)
-                        })
-                    }),
-                ])
-                this._send(at(data.user_id)+str1+"\n"+str2)
-            }
+            if (isMaster(data.user_id) && command === "raw" && param.length)
+                return ws.send(param)
             if (command === '获得管理') {
-                ws.send(JSON.stringify({
+                return ws.send(JSON.stringify({
                     "action": "set_group_admin",
                     "params": {
                         "user_id": data.user_id,
@@ -223,7 +148,7 @@ class Session {
                 }))
             }
             if (command === '放弃管理') {
-                ws.send(JSON.stringify({
+                return ws.send(JSON.stringify({
                     "action": "set_group_admin",
                     "params": {
                         "user_id": data.user_id,
@@ -239,18 +164,19 @@ class Session {
                 } catch(e) {
                     result = e.stack
                 }
-                this._send(result)
+                return this._send(result)
             }
-            if (command === "setu" && !whitelist.includes(data.group_id)) {
-                return this._send("这里不够纯洁，无法使用此服务。")
-            }
+            if (command === '龙王')
+                param = data.group_id
+            if (command === '发言')
+                param = [data.group_id, data.user_id]
             if (extras.hasOwnProperty(command)) {
-                this._send(await extras[command](param))
+                return this._send(await extras[command](param))
             }
         } else {
             if (blacklist.includes(data.user_id))
                 return
-            this._send(sandbox.run(data, timeout, isMaster(data.user_id)))
+            return this._send(sandbox.run(data, timeout, isMaster(data.user_id)))
         }
     }
 }
