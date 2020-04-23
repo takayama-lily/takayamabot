@@ -16,7 +16,7 @@ const sessions = {
 let ws = null
 
 // 固定指令
-const extras = require('./extras')
+const commands = require('./commands')
 
 // 沙盒初始化
 const sandbox = require("./utils/sandbox")
@@ -170,8 +170,8 @@ class Session {
                 param = data.group_id
             if (command === '发言')
                 param = [data.group_id, data.user_id]
-            if (extras.hasOwnProperty(command)) {
-                return this._send(await extras[command](param))
+            if (commands.hasOwnProperty(command)) {
+                return this._send(await commands[command](param))
             }
         } else {
             if (blacklist.includes(data.user_id))

@@ -10,7 +10,7 @@ const buildImage = (url)=>`[CQ:image,file=${encodeURI(url)}]`
 const sqlite3 = require('sqlite3')
 const db = new sqlite3.Database('/var/www/db/eventv2.db')
 
-const extras = {
+const commands = {
 	"qh": async function(param) {
 		if (!param.length)
             return "没有输入用户名。输入例:\n-雀魂 千羽黒乃"
@@ -235,12 +235,12 @@ https://github.com/takayama-lily/riichi`
         return at(uid) +str1 + "\n" + str2
     }
 }
-extras["雀魂"] = extras.qh
-extras["排名"] = extras.rank
-extras["牌理"] = extras.pl
-extras["疫情"] = extras.yq
-extras["新番"] = extras.bgm
-extras["动漫"] = extras.anime
-extras["色图"] = extras.setu
+commands["雀魂"] = commands.qh
+commands["排名"] = commands.rank
+commands["牌理"] = commands.pl
+commands["疫情"] = commands.yq
+commands["新番"] = commands.bgm
+commands["动漫"] = commands.anime
+commands["色图"] = commands.setu
 
-module.exports = extras
+module.exports = commands
