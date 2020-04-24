@@ -91,8 +91,7 @@ bot.on("message", async(data)=>{
             let params = param.split(" ")
             let action = params.shift()
             if (typeof bot[action] === 'function') {
-                console.log(action)
-                reply(await bot[action].apply(null, params))
+                reply(await bot[action].apply(bot, params))
             }
             return
         }
