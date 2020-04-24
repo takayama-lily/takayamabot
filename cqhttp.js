@@ -272,7 +272,6 @@ class CQHttp extends Events {
         }
     }
     _send(data) {
-        console.log("no conn")
         if (!this._conn)
             return false
         console.log("send: ", data)
@@ -280,6 +279,7 @@ class CQHttp extends Events {
         return true
     }
     async _request(data) {
+        console.log(this.queue)
         return new Promise((resolve, reject)=>{
             data.echo = Math.random() * Date.now()
             if (this._send(data)) {

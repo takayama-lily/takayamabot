@@ -90,8 +90,10 @@ bot.on("message", async(data)=>{
         if (isMaster(data.user_id) && command === "request" && param.length) {
             let params = param.split(" ")
             let action = params.shift()
-            if (bot.hasOwnProperty(action) && typeof bot[action] === 'function')
+            if (typeof bot[action] === 'function') {
+                console.log(action)
                 reply(await bot[action].apply(null, params))
+            }
             return
         }
         if (isMaster(data.user_id) && command === "run" && param.length) {
