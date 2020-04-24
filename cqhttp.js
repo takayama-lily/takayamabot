@@ -121,7 +121,7 @@ class CQHttp extends Events {
         })
         return await this._request(data)
     }
-    async setGroupAnonymous(gid, enable) {
+    async setGroupAnonymous(gid, enable = true) {
         let data = this._buildData('set_group_anonymous', {
             group_id: gid,
             enable: enable
