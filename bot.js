@@ -55,7 +55,8 @@ bot.on("notice.group_ban.ban", (data)=>{
 })
 bot.on("message", async(data)=>{
     const reply = (msg)=>{
-        if (typeof replyFilter(msg) === "string")
+        msg = replyFilter(msg)
+        if (typeof msg === "string")
             bot.reply(data, msg, {at_sender: false})
     }
     let message = ""
