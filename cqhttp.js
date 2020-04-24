@@ -69,131 +69,131 @@ class CQHttp extends Events {
     // async sendMsg(type, id, msg, escape = false) {
     // 不实现该方法
     // }
-    deleteMsg(mid) {
+    async deleteMsg(mid) {
         let data = this._buildData('delete_msg', {
             message_id: mid
         })
-        this._send(data)
+        return await this._request(data)
     }
-    sendLike(uid, times = 10) {
+    async sendLike(uid, times = 10) {
         let data = this._buildData('send_like', {
             user_id: uid,
             times: times
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setGroupKick(gid, uid, forever = false) {
+    async setGroupKick(gid, uid, forever = false) {
         let data = this._buildData('set_group_kick', {
             group_id: gid,
             user_id: uid,
             reject_add_request: forever
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setGroupBan(gid, uid, duration = 600) {
+    async setGroupBan(gid, uid, duration = 600) {
         let data = this._buildData('set_group_ban', {
             group_id: gid,
             user_id: uid,
             duration: duration
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setGroupAnonymousBan(gid, flag, duration = 600) {
+    async setGroupAnonymousBan(gid, flag, duration = 600) {
         let data = this._buildData('set_group_anonymous_ban', {
             group_id: gid,
             flag: flag,
             duration: duration
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setGroupWholeBan(gid, enable = true) {
+    async setGroupWholeBan(gid, enable = true) {
         let data = this._buildData('set_group_whole_ban', {
             group_id: gid,
             enable: enable
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setGroupAdmin(gid, uid, enable = true) {
+    async setGroupAdmin(gid, uid, enable = true) {
         let data = this._buildData('set_group_admin', {
             group_id: gid,
             user_id: uid,
             enable: enable
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setGroupAnonymous(gid) {
+    async setGroupAnonymous(gid, enable) {
         let data = this._buildData('set_group_anonymous', {
             group_id: gid,
             enable: enable
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setGroupCard(gid, uid, card = undefined) {
+    async setGroupCard(gid, uid, card = undefined) {
         let data = this._buildData('set_group_card', {
             group_id: gid,
             user_id: uid,
             card: card
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setGroupLeave(gid, dismiss = false) {
+    async setGroupLeave(gid, dismiss = false) {
         let data = this._buildData('set_group_leave', {
             group_id: gid,
             is_dismiss: dismiss
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setGroupSpecialTitle(gid, uid, title, duration = -1) {
+    async setGroupSpecialTitle(gid, uid, title, duration = -1) {
         let data = this._buildData('set_group_special_title', {
             group_id: gid,
             user_id: uid,
             special_title: title,
             duration: duration
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setDiscussLeave(did) {
+    async setDiscussLeave(did) {
         let data = this._buildData('set_discuss_leave', {
             discuss_id: did
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setFriendAddRequest(flag, approve = true, remark = undefined) {
+    async setFriendAddRequest(flag, approve = true, remark = undefined) {
         let data = this._buildData('set_friend_add_request', {
             flag: flag,
             approve: approve,
             remark: remark
         })
-        this._send(data)
+        return await this._request(data)
     }
     // setGroupAddRequest(flag, type, approve, reason) {
     // 不实现该方法
     // }
-    setGroupRequest(flag, approve = true, reason = undefined) {
+    async setGroupRequest(flag, approve = true, reason = undefined) {
         let data = this._buildData('set_group_add_request', {
             flag: flag,
             type: 'add',
             approve: approve,
             reason: reason
         })
-        this._send(data)
+        return await this._request(data)
     }
-    setGroupInvitation(flag, approve, reason) {
+    async setGroupInvitation(flag, approve, reason) {
         let data = this._buildData('set_group_add_request', {
             flag: flag,
             type: 'invite',
             approve: approve,
             reason: reason
         })
-        this._send(data)
+        return await this._request(data)
     }
-    sendGroupNotice(gid, title, content) {
+    async sendGroupNotice(gid, title, content) {
         let data = this._buildData('_send_group_notice', {
             group_id: gid,
             title: title,
             content: content
         })
-        this._send(data)
+        return await this._request(data)
     }
     async getLoginInfo() {
         let data = this._buildData('get_login_info')
@@ -244,7 +244,7 @@ class CQHttp extends Events {
         let data = this._buildData('get_status')
         return await this._request(data)
     }
-    approve(origin, approve = true, remark = undefined) {
+    async approve(origin, approve = true, remark = undefined) {
         let data = this._buildData('.handle_quick_operation', {
             context: origin,
             operation: {
@@ -253,9 +253,9 @@ class CQHttp extends Events {
                 reason: remark
             }
         })
-        this._send(data)
+        return await this._request(data)
     }
-    reply(origin, msg, option = {}) {
+    async reply(origin, msg, option = {}) {
         let data = this._buildData('.handle_quick_operation', {
             context: origin,
             operation: {
@@ -263,7 +263,7 @@ class CQHttp extends Events {
                 ...option
             }
         })
-        this._send(data)
+        return await this._request(data)
     }
     _buildData(action, params = {}) {
         return {
@@ -279,7 +279,6 @@ class CQHttp extends Events {
         return true
     }
     async _request(data) {
-        console.log(this.queue)
         return new Promise((resolve, reject)=>{
             data.echo = Math.random() * Date.now()
             if (this._send(data)) {
