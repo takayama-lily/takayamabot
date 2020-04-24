@@ -15,7 +15,6 @@ class CQHttp extends Events {
         this._conn = conn
     }
     onEvent(data) {
-        console.log("receive: ", data)
         data = JSON.parse(data)
         if (this.qq && data.self_id != this.qq)
             return
@@ -274,7 +273,6 @@ class CQHttp extends Events {
     _send(data) {
         if (!this._conn)
             return false
-        console.log("send: ", data)
         this._conn.send(JSON.stringify(data))
         return true
     }

@@ -6,13 +6,13 @@ const http = require('http')
 const WebSocket = require('ws')
 const zlib = require('zlib')
 const spawn = require('child_process')
-// process.on('uncaughtException', (e)=>{
-//     fs.appendFileSync('err.log', Date() + ' ' + e.stack + '\n')
-//     process.exit(1)
-// })
-// process.on('unhandledRejection', (reason, promise)=>{
-//     fs.appendFileSync('err.log', Date() + ' Unhandled Rejection at:' + promise + 'reason:' + reason + '\n')
-// })
+process.on('uncaughtException', (e)=>{
+    fs.appendFileSync('err.log', Date() + ' ' + e.stack + '\n')
+    process.exit(1)
+})
+process.on('unhandledRejection', (reason, promise)=>{
+    fs.appendFileSync('err.log', Date() + ' Unhandled Rejection at:' + promise + 'reason:' + reason + '\n')
+})
 
 const mjsoul = require('./utils/majsoul')
 const deny = ["login", "logout"]
