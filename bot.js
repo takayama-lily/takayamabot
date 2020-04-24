@@ -55,12 +55,14 @@ bot.on("notice.group_ban.ban", (data)=>{
 })
 bot.on("notice.group_increase", async(data)=>{
     if (data.user_id === data.self_id) {
-        let res = await bot.sendGroupMsg(data.group_id, "高山酱来了哦~")
+        let res = await bot.sendGroupMsg(data.group_id, "喵~")
         if (res.retcode)
             bot.setGroupLeave(data.group_id)
     }
 })
 bot.on("message", async(data)=>{
+    if (blacklist.includes(data.user_id))
+        return
     const reply = (msg)=>{
         msg = replyFilter(msg)
         if (typeof msg === "string")
@@ -119,8 +121,6 @@ bot.on("message", async(data)=>{
             return reply(await commands[command](param))
         }
     } else {
-        if (blacklist.includes(data.user_id))
-            return
         return reply(sandbox.run(data, timeout, isMaster(data.user_id)))
     }
 })
