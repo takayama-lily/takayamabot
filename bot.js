@@ -53,6 +53,13 @@ bot.on("notice.group_ban.ban", (data)=>{
     if (data.user_id === data.self_id && data.duration > 86400)
         bot.setGroupLeave(data.group_id)
 })
+bot.on("notice.group_increase", async(data)=>{
+    if (data.user_id === data.self_id) {
+        let res = await bot.sendGroupMsg(data.group_id, "高山酱来了哦~")
+        if (res.retcode)
+            bot.setGroupLeave(data.group_id)
+    }
+})
 bot.on("message", async(data)=>{
     const reply = (msg)=>{
         msg = replyFilter(msg)
