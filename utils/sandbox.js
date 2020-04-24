@@ -21,7 +21,9 @@ vm.createContext(context, {
 if (fs.existsSync(fnFile)) {
     let fn = JSON.parse(fs.readFileSync(fnFile))
     for (let k in fn) {
-        vm.runInContext(k + "=" + fn[k], context)
+        try {
+            vm.runInContext(k + "=" + fn[k], context)
+        } catch(e) {}
     }
 }
 
