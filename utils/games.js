@@ -3,6 +3,9 @@ jrrp=(q=qq())=>{return at(q) + " 今天的人品是: " + seed(q)%101}
 jrz=(q=qq())=>{return at(q) + ' 今天的字是"' + String.fromCodePoint(seed(q) % (0x9fa5 - 0x4e00) + 0x4e00) + '"\n快去找算命先生算一卦吧！'}
 function img(url, cache = true) { return "[CQ:image," + (cache ? "" : "cache=0,") + "file=" + url + "]"; }
 
+function jrlp(qq = data.user_id) {
+	return img("https://www.thiswaifudoesnotexist.net/example-" + (seed(qq) % 99999) + ".jpg")
+}
 
 current_chesses = {}
 create_chess = (gid)=>{
