@@ -65,16 +65,11 @@ bot.on("notice.group_increase", async(data)=>{
 bot.on("message", async(data)=>{
     if (blacklist.includes(data.user_id))
         return
-    if (data.group_id) {
-        const now = Date.now()
-        if (fff[data.group_id] && now - fff[data.group_id] <= fff.limit)
-            return
-        fff[data.group_id] = now
-    }
     const reply = (msg)=>{
         msg = replyFilter(msg)
-        if (typeof msg === "string")
+        if (typeof msg === "string") {
             bot.reply(data, msg, {at_sender: false})
+        }
     }
     let message = ""
     for (let v of data.message) {
@@ -129,7 +124,14 @@ bot.on("message", async(data)=>{
             return reply(await commands[command](param))
         }
     } else {
-        return reply(sandbox.run(data, timeout, isMaster(data.user_id)))
+        let res = sandbox.run(data, timeout, isMaster(data.user_id))
+        if (data.group_id) {
+            const now = Date.now()
+            if (fff[data.group_id] && Date.now() - fff[data.group_id] <= fff.limit)
+                return
+            fff[data.group_id] = now
+        }
+        return reply(res)
     }
 })
 
