@@ -127,9 +127,10 @@ bot.on("message", async(data)=>{
         let res = sandbox.run(data, timeout, isMaster(data.user_id))
         if (data.group_id) {
             const now = Date.now()
-            if (fff[data.group_id] && Date.now() - fff[data.group_id] <= fff.limit)
+            if (fff[data.group_id] && now - fff[data.group_id] <= fff.limit)
                 return
-            fff[data.group_id] = now
+            if (res !== undefined && res !== "")
+                fff[data.group_id] = now
         }
         return reply(res)
     }
