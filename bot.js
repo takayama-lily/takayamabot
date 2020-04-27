@@ -44,6 +44,8 @@ const replyFilter = (msg)=>{
     return msg
 }
 
+const fff = {limit: 1000} //群发言频率限制每秒1条
+
 const CQHttp = require("./cqhttp")
 const bot = new CQHttp()
 
@@ -63,6 +65,12 @@ bot.on("notice.group_increase", async(data)=>{
 bot.on("message", async(data)=>{
     if (blacklist.includes(data.user_id))
         return
+    if (data.group_id) {
+        const now = Date.now()
+        if (fff[data.group_id] && now - fff[data.group_id] <= fff.limit)
+            return
+        fff[data.group_id] = now
+    }
     const reply = (msg)=>{
         msg = replyFilter(msg)
         if (typeof msg === "string")
