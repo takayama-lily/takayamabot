@@ -4,5 +4,20 @@
         <title>管理</title>
         <meta charset="UTF-8">     
     </head>
-    <body></body>
+    <body>
+<script>
+fetch('/manage/bot') 
+    .then(function(res) { 
+        res.json().then(function(data) {
+        	let html = `<table><th><td>key</td><td>value</td></th>`
+            for (let k in data) {
+            	if (typeof data[k] === 'string') {
+            		html += `<tr><td>${k}</td><td>${data.k}</td></tr>`
+            	}
+            }
+        	html += `</table>`
+        })
+    }) 
+</script>
+    </body>
 </html>
