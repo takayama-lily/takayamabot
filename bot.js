@@ -1,5 +1,6 @@
 "use strict"
 const blacklist = [3507349275,429245111]
+blacklist.push(1738088495)
 const owner = 372914165
 const master = []
 const isMaster = (uid)=>{
