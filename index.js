@@ -17,9 +17,16 @@ process.on('unhandledRejection', (reason, promise)=>{
 const mjsoul = require('./utils/majsoul')
 const deny = ["login", "logout"]
 
+const botMain = require('./bot')
+
 const fn = async(req)=>{
     let r = url.parse(req.url)
     let query = querystring.parse(r.query)
+
+    //机器人后台管理
+    if (r.pathname === "/manage/bot") {
+        return botMain.manage()
+    }
 
     //牌谱请求
     if (r.pathname === "/record") {
@@ -83,7 +90,6 @@ const server = http.createServer(async(req, res)=>{
 })
 
 //开启ws服务器处理bot请求
-const botMain = require('./bot')
 const ws = new WebSocket.Server({server})
 ws.on('connection', (conn)=>{
     conn.on('message', (data)=>{

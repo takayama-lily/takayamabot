@@ -141,3 +141,6 @@ module.exports = (conn, data)=>{
     bot.conn = conn
     bot.onEvent(data)
 }
+module.exports.manage = ()=>{
+    return sandbox.getContext()
+}

@@ -87,3 +87,4 @@ module.exports.require = (name, object)=>{
     context[name] = object
 }
 module.exports.run = run
+module.exports.getContext = ()=>context
