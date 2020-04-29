@@ -426,20 +426,7 @@
 
   <!-- Page level custom scripts -->
   <script src="js/demo/datatables-demo.js"></script>
-<script type="text/javascript">
-fetch('/manage/bot') 
-    .then(function(res) { 
-        res.json().then(function(data) {
-          let html = `<tr><th>key</th><th>value</th></tr>`
-            for (let k in data) {
-              if (typeof data[k] === 'string') {
-                let html = `<tr><td>${k}</td><td>${data[k]}</td></tr>`
-                $("#dataTable tbody").append(html)
-              }
-            }
-        })
-    }) 
-</script>
+
 </body>
 
 </html>
