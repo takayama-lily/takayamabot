@@ -30,7 +30,7 @@ const replyFilter = (msg)=>{
         try {
             msg = JSON.stringify(msg)
         } catch (e) {
-            msg = e.message
+            msg = e.name + ": " + e.message
         }
     } else if (typeof msg !== "string") {
         msg = msg.toString()
