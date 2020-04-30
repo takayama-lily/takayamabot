@@ -36,7 +36,7 @@ const replyFilter = (msg)=>{
         msg = msg.toString()
     }
     if (typeof msg === "string") {
-        msg = msg.replace(ero, "**")
+        msg = msg.replace(ero, "⃺")
         if (msg.length > 4500)
             msg = msg.substr(0, 4495) + "\n..."
         if (!msg.length)
