@@ -30,7 +30,7 @@ const replyFilter = (msg)=>{
         try {
             msg = JSON.stringify(msg)
         } catch (e) {
-            msg = "对象过大无法保存，将被丢弃。"
+            msg = e.message
         }
     } else if (typeof msg !== "string") {
         msg = msg.toString()
