@@ -13,7 +13,7 @@ const db = new sqlite3.Database('/var/www/db/eventv2.db')
 const commands = {
 	"qh": async function(param) {
 		if (!param.length)
-            return "没有输入用户名。输入例:\n-雀魂 千羽黒乃"
+            return "没有输入用户名。输入例:\n-雀魂 千羽黒乃\n(国服出事后暂时无法搜索用户名)"
         else
         	return await mjutil.shuibiao(param, true)
 	},
