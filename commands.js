@@ -28,7 +28,7 @@ const commands = {
         	return await mjutil.shuibiao(param, true)
 	},
 	"rank": async function(param) {
-		return await mjutil.ranking(param, true)
+		return await mjutil.ranking(param)
 	},
 	"rankjp": async function(param) {
 		return await mjutil.ranking(param, true)
