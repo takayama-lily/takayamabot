@@ -11,39 +11,43 @@ const sqlite3 = require('sqlite3')
 const db = new sqlite3.Database('/var/www/db/eventv2.db')
 
 const commands = {
-	"qh": async function(param) {
-        return '由于雀魂禁止用户名搜索，该功能已完蛋。'
-		if (!param.length)
-            return "没有输入用户名。输入例:\n-雀魂 千羽黒乃\n(国服出事后暂时无法搜索用户名)"
-        else
-        	return await mjutil.shuibiao(param, true)
-	},
+    "qh": async function(param) {
+        if (!param.length)
+            return "需要输入用户ID。"
+        if (isNaN(param))
+            return '现在无法使用用户名，只能使用ID来找到用户。'
+        return await mjutil.shuibiao(param)
+    },
     "qhcn": async function(param) {
         return await mjutil.shuibiao(param)
     },
-	"qhjp": async function(param) {
-		if (!param.length)
-            return "没有输入用户名。输入例:\n-qhjp 千羽黒乃"
+    "qhjp": async function(param) {
+        if (!param.length)
+            return "需要输入用户ID。"
+        if (isNaN(param))
+            return '现在无法使用用户名，只能使用ID来找到用户。'
+        // if (!param.length)
+        //     return "没有输入用户名。输入例:\n-qhjp 千羽黒乃"
         else
-        	return await mjutil.shuibiao(param, true)
-	},
-	"rank": async function(param) {
-		return await mjutil.ranking(param)
-	},
-	"rankjp": async function(param) {
-		return await mjutil.ranking(param, true)
-	},
-	"bgm": async function(param) {
-		return await bgm.getCalendar(param)
-	},
-	"anime": async function(param) {
+            return await mjutil.shuibiao(param, true)
+    },
+    "rank": async function(param) {
+        return await mjutil.ranking(param)
+    },
+    "rankjp": async function(param) {
+        return await mjutil.ranking(param, true)
+    },
+    "bgm": async function(param) {
+        return await bgm.getCalendar(param)
+    },
+    "anime": async function(param) {
         if (!param.length)
             return "没有输入名称。输入例:\n-动漫 公主连结"
         else
-		  return await bgm.getBangumi("anime", param)
-	},
-	"yq": async function() {
-		let gbl = []
+          return await bgm.getBangumi("anime", param)
+    },
+    "yq": async function() {
+        let gbl = []
         return new Promise(resolve=>{
             https.get("https://api.inews.qq.com/newsqa/v1/automation/foreign/country/ranklist", res=>{
                 res.on("data", d=>gbl.push(d))
@@ -66,10 +70,10 @@ const commands = {
                 return "服务暂时不可用"
             }
         })
-	},
-	"pl": async function(param) {
+    },
+    "pl": async function(param) {
         param = param.trim()
-		if (!param) {
+        if (!param) {
             let s = `-----牌理指令紹介-----
 自摸例: -pl 111m234p567s1122z2z
 栄和例: -pl 111m234p567s1122z+2z
@@ -143,7 +147,7 @@ https://github.com/takayama-lily/riichi`
         } catch(e) {
             return param + '\n手牌数量不正确或输入有误'
         }
-	},
+    },
     "setu": async function(param) {
         return new Promise(resolve=>{
             let data = ""

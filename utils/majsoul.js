@@ -64,9 +64,11 @@ const shuibiao = async(words, jp = false)=>{
     try {
         let client = jp ? mjsoulJP : mjsoul
         let result = await client.sendAsync('searchAccountByPattern', {pattern: words})
-        if (result.match_accounts.length === 0) 
+        // if (result.match_accounts.length === 0)
+        if (!result.decode_id)
             return `玩家 ${words} 不存在`
-        let account_id = result.match_accounts.shift()
+        // let account_id = result.match_accounts.shift()
+        let account_id = result.decode_id
         let [account, statistic, state] = await Promise.all([
             client.sendAsync('fetchAccountInfo', {account_id: account_id}),
             client.sendAsync('fetchAccountStatisticInfo', {account_id: account_id}),
