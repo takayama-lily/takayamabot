@@ -63,10 +63,13 @@ const run = (data, timeout = undefined, isAdmin = false)=>{
         return debug ? "代码不要包含this、async、const关键字。" : undefined
     if (debug)
         code = code.substr(1)
-    code = code.replace(/(（|）|，|″|“|”|＝)/g, (s)=>{
+    code = code.replace(/(（|）|，|″|“|”|＝|&amp;|&#91;|&#93;)/g, (s)=>{
         if (["″","“","”"].includes(s)) return "\""
         if (s === "，") return ","
         if (s === "＝") return "="
+        if (s === "&amp;") return "&"
+        if (s === "&#91;") return "["
+        if (s === "&#93;") return "]"
         return String.fromCharCode(s.charCodeAt(0) - 65248)
     })
     vm.runInContext("data="+JSON.stringify(data), context)
