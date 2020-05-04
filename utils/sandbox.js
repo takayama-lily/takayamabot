@@ -57,7 +57,7 @@ setInterval(()=>{
 }, 1800000)
 
 const run = (data, timeout = undefined, isAdmin = false)=>{
-    let code = data.message
+    let code = data.raw_message
     let debug = ["\\","＼"].includes(code.substr(0, 1))
     if (code.match(/([^\w]|^)+(this|async|const){1}([^\w]|$)+/) && !isAdmin)
         return debug ? "代码不要包含this、async、const关键字。" : undefined
