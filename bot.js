@@ -104,6 +104,15 @@ bot.on("message", async(data)=>{
             }
             return reply(result)
         }
+        if (command === 'vip' && param.length) {
+            let res = (await bot.getVipInfo(param.replace(/(&#91;|&#93;)/g,"").replace(/[^(0-9)]/g,""))).data
+            if (res) {
+                reply(`用户: ${res.nickname} (${res.user_id})
+等级: ${res.level}级 (${res.level_speed}倍加速)
+会员: ${res.vip_level} (${res.vip_growth_total}|${res.vip_growth_speed}/天)`)
+            }
+            return
+        }
         if (command === "龙王")
             param = gid
         if (command === "发言")
