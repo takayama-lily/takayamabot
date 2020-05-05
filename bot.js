@@ -104,7 +104,9 @@ bot.on("message", async(data)=>{
             }
             return reply(result)
         }
-        if (command === 'vip' && param.length) {
+        if (command === 'vip') {
+            if (!param)
+                param = uid
             let res = (await bot.getVipInfo(param.replace(/(&#91;|&#93;)/g,"").replace(/[^(0-9)]/g,""))).data
             if (res) {
                 reply(`用户: ${res.nickname} (${res.user_id})
