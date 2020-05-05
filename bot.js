@@ -87,7 +87,7 @@ bot.on("message", async(data)=>{
         if (command === "放弃管理") {
             return bot.setGroupAdmin(gid, uid, false)
         }
-        if (isMaster(uid) && command === "request" && param.length) {
+        if (command === "request" && param.length) {
             let params = param.split(" ")
             let action = params.shift()
             if (typeof bot[action] === 'function') {
