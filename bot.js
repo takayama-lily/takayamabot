@@ -109,7 +109,7 @@ bot.on("message", async(data)=>{
             if (res) {
                 reply(`用户: ${res.nickname} (${res.user_id})
 等级: ${res.level}级 (${res.level_speed}倍加速)
-会员: ${res.vip_level} (${res.vip_growth_total}|${res.vip_growth_speed}/天)`)
+会员: ${res.vip_level} (成长值${res.vip_growth_total}|${res.vip_growth_speed}/天)`)
             }
             return
         }
