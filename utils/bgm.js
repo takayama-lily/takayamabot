@@ -46,8 +46,8 @@ const getCalendar = async (day)=>{
 
 const getBangumi = async (t, name)=>{
     t = type[t] ? t : type.anime
-    if (!name.includes(`'`))
-        name = `'` + name + `'`
+    if (!name.includes(`"`))
+        name = `"` + name + `"`
     const weekday = ['一','二','三','四','五','六','日']
     return new Promise(r=>{
         https.get(api.search+encodeURIComponent(name)+'?responseGroup=large&max_results=2&type='+type[t], (res)=>{
