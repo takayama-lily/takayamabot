@@ -59,7 +59,7 @@ const commands = {
                 gbl = JSON.parse(gbl).data
                 let msg = `${param?param:"国外"}疫情(${gbl[0].date.substr(1)}):\n`
                 for (let v of gbl) {
-                    if (param && !v.name.includes(v.name))
+                    if (param && !v.name.includes(param))
                         continue
                     if (!param && v.confirm < 1000)
                         continue
