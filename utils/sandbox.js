@@ -57,7 +57,7 @@ setInterval(()=>{
 }, 1800000)
 
 const run = (data, timeout = undefined, isAdmin = false)=>{
-    let code = data.raw_message
+    let code = data.raw_message.trim()
     let debug = ["\\","＼"].includes(code.substr(0, 1))
     if (code.match(/([^\w]|^)+(this|async|const){1}([^\w]|$)+/) && !isAdmin)
         return debug ? "代码不要包含this、async、const关键字。" : undefined
@@ -74,6 +74,11 @@ const run = (data, timeout = undefined, isAdmin = false)=>{
     })
     vm.runInContext("data="+JSON.stringify(data), context)
     vm.runInContext("Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);", context)
+    // if (code.startsWith("[CQ:rich"))
+    //     code = code.replace(/^\[[^\]]+\]/, "").trim()
+    let atme = `[CQ:at,qq=${data.self_id}]`
+    while (code.startsWith(atme))
+        code = code.replace(atme, "").trim()
     try {
         return vm.runInContext(code, context, {timeout: timeout})
     } catch(e) {
