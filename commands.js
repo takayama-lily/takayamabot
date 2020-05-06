@@ -46,7 +46,7 @@ const commands = {
         else
           return await bgm.getBangumi("anime", param)
     },
-    "yq": async function() {
+    "yq": async function(param) {
         let gbl = []
         return new Promise(resolve=>{
             https.get("https://api.inews.qq.com/newsqa/v1/automation/foreign/country/ranklist", res=>{
@@ -57,9 +57,11 @@ const commands = {
             try {
                 gbl = Buffer.concat(gbl).toString()
                 gbl = JSON.parse(gbl).data
-                let msg = `国外主要疫情(${gbl[0].date.substr(1)}):\n`
+                let msg = `${param?param:"国外"}疫情(${gbl[0].date.substr(1)}):\n`
                 for (let v of gbl) {
-                    if (v.confirm < 1000)
+                    if (param && !v.name.includes(v.name))
+                        continue
+                    if (!param && v.confirm < 1000)
                         continue
                     msg += v.name + `: 確` + v.confirm
                     msg += v.confirmAdd ? `(+${v.confirmAdd})` : ""
