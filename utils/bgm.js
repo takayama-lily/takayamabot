@@ -67,6 +67,8 @@ const getBangumi = async (t, name)=>{
                         result.push(`${v.name_cn} (${v.name})`)
                         result.push(`放送日${v.air_date}(周${weekday[v.air_weekday-1]}) / 全${!isNaN(v.eps) ? parseInt(v.eps) : '?'}话 / 评分${v.rating ? v.rating.score : '未知'}`)
                         result.push(v.summary)
+                        if (v.images.large)
+                            result.push(`[CQ:image,file=${v.images.large}]`)
                     }
                     r(result.join('\n'))
                 } catch (e) {
