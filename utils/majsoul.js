@@ -6,19 +6,15 @@ const querystring = require('querystring')
 const zlib = require('zlib')
 const MJSoul = require('mjsoul')
 const config = require('./majsoul.config')
-const mjsoul = new MJSoul({
-    'url': 'wss://gateway-hk.majsoul.com:4501'
+const MJBot = require('./mjbot')
+
+const mjsoul = new MJBot({
+    url: 'wss://gateway-hk.majsoul.com:4501'
 })
-const login = ()=>{
-    mjsoul.send('login', {account: config['cn.account'], password: mjsoul.hash(config['cn.password'])})
-}
-mjsoul.on('NotifyAccountLogout', login)
-mjsoul.on('NotifyAnotherLogin', login)
-mjsoul.on('error', ()=>{})
-mjsoul.open(login)
+mjsoul.login(config['cn.account'], config['cn.password'])
 
 const mjsoulJP = new MJSoul({
-    'url': 'wss://mjjpgs.mahjongsoul.com:4501/'
+    url: 'wss://mjjpgs.mahjongsoul.com:4501/'
 })
 const loginJP = ()=>{
 	let req = {
