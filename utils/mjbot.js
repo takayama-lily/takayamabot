@@ -121,9 +121,11 @@ class Bot {
             this.game.on("NotifyGamePause", (data)=>{
                 this.status = data.paused ? Bot.PAUSING : Bot.GAMING
             })
-            this.game.on("NotifyGameTerminate", this.game.close)
+            this.game.on("NotifyGameTerminate", (data)=>{
+                this.game.close()
+            })
             this.game.on("ActionPrototype", this._onAction)
-            this.game.open(this._onGameStart)
+            this.game.open(this._onGameStart.bind(this))
         })
     }
 
@@ -140,7 +142,9 @@ class Bot {
             } else {
                 await this.game.sendAsync("enterGame")
             }
-        } catch(e) {}
+        } catch(e) {
+            console.log(e)
+        }
     }
 
     /**
@@ -204,7 +208,7 @@ class Bot {
     n() {}
 
     _onAction(action) {
-        // console.log(action)
+        console.log(action)
     }
 }
 
@@ -213,6 +217,6 @@ module.exports = Bot
 // async function test() {
 //     let bot = new Bot({url: "wss://gateway-hk.majsoul.com:4501"})
 //     await bot.login("429245111@qq.com", "552233")
-//     await bot.joinRoom(95774)
+//     await bot.joinContest(917746)
 // }
 // test()
