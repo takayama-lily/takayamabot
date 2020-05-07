@@ -244,10 +244,14 @@ https://github.com/takayama-lily/riichi`
     "好友房": async(param)=>{
         if (!await mjutil.cn.joinRoom(param))
             return "无法加入，可能在对局中或者房间号错误。"
+        else
+            return `已进入${param}并准备，3分钟不开自动退出。`
     },
     "比赛场": async(param)=>{
         if (!await mjutil.cn.joinContest(param))
             return "无法加入，可能在对局中或者不在参赛名单中。"
+        else
+            return `已进入${param}并准备，3分钟不开自动退出。`
     },
     "status": async(param)=>{
         return mjutil.cn.status
