@@ -96,7 +96,7 @@ class Bot {
 
         //好友房被踢通知
         this.lobby.on("NotifyRoomKickOut", (data)=>{
-            if (data.account_id === this.accountInfo.account_id) {
+            if (!data.account_id) {
                 this._clearWaitID()
                 this.status = Bot.WAITING
             }
