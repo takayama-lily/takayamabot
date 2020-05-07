@@ -248,6 +248,9 @@ https://github.com/takayama-lily/riichi`
     "比赛场": async(param)=>{
         if (!await mjutil.cn.joinContest(param))
             return "无法加入，可能在对局中或者不在参赛名单中。"
+    },
+    "status": async(param)=>{
+        return mjutil.cn.status
     }
 }
 commands["雀魂"] = commands.qh
