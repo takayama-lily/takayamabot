@@ -1,6 +1,6 @@
 'use strict'
 module.exports = {
-    'cn.account': '372914165@qq.com',
+    'cn.account': '429245111@qq.com',
     'cn.password': '552233',
     'cn.token': '',
     'jp.account': '',
