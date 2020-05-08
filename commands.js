@@ -241,20 +241,24 @@ https://github.com/takayama-lily/riichi`
         ])
         return at(uid) +str1 + "\n" + str2
     },
-    "好友房": async(param)=>{
+    "友人": async(param)=>{
         if (!await mjutil.cn.joinRoom(param))
             return "无法加入，可能在对局中或者房间号错误。"
         else
             return `已进入${param}并准备，3分钟不开自动退出。`
     },
-    "比赛场": async(param)=>{
+    "比赛": async(param)=>{
         if (!await mjutil.cn.joinContest(param))
             return "无法加入，可能在对局中或者不在参赛名单中。"
         else
             return `已进入${param}并准备，3分钟不开自动退出。`
     },
+    "状态": async(param)=>{
+        let res = mjutil.cn.getStatus()
+        return `当前位置：${res.current.position}`
+    },
     "status": async(param)=>{
-        return mjutil.cn.status
+        return mjutil.cn.getStatus()
     }
 }
 commands["雀魂"] = commands.qh
