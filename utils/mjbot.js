@@ -145,7 +145,7 @@ class Bot {
         this.lobby.on("NotifyRoomKickOut", (data)=>{
             if (!data.account_id) {
                 this._clearWaitID()
-                this.status = Bot.WAITING
+                this._nextTick()
             }
         })
 
