@@ -355,7 +355,7 @@ class Bot {
             type: Bot.DISCARD,
             tile: tile,
             moqie: moqie,
-            timeuse: 0,
+            timeuse: 1,
             tile_state: 0
         })
     }
@@ -364,7 +364,7 @@ class Bot {
             type: Bot.RIICHI,
             tile: tile,
             moqie: moqie,
-            timeuse: 0,
+            timeuse: 1,
             tile_state: 0
         })
     }
@@ -372,28 +372,28 @@ class Bot {
         await this.game.sendAsync("inputOperation", {
             type: Bot.KITA,
             moqie: moqie,
-            timeuse: 0
+            timeuse: 1
         })
     }
     async ankan(index = 0) {
         await this.game.sendAsync("inputOperation", {
             type: Bot.ANKAN,
             index: index,
-            timeuse: 0
+            timeuse: 1
         })
     }
     async kakan(index = 0) {
         await this.game.sendAsync("inputOperation", {
             type: Bot.KAKAN,
             index: index,
-            timeuse: 0
+            timeuse: 1
         })
     }
     async kuku() {
         await this.game.sendAsync("inputOperation", {
             type: Bot.KUKU,
             index: 0,
-            timeuse: 0
+            timeuse: 1
         })
     }
     async tsumo() {
@@ -412,38 +412,40 @@ class Bot {
         await this.game.sendAsync("inputChiPengGang", {
             type: Bot.CHI,
             index: index,
-            timeuse: 0
+            timeuse: 1
         })
     }
     async pon(index = 0) {
         await this.game.sendAsync("inputChiPengGang", {
             type: Bot.PON,
             index: index,
-            timeuse: 0
+            timeuse: 1
         })
     }
     async minkan() {
         await this.game.sendAsync("inputChiPengGang", {
             type: Bot.MINKAN,
             index: 0,
-            timeuse: 0
+            timeuse: 1
         })
     }
     async pass() {
         await this.game.sendAsync("inputChiPengGang", {
             cancel_operation: true,
-            timeuse: 0
+            timeuse: 1
         })
     }
 
     async _onAction(action) {
         switch (action.name) {
             case "ActionMJStart":
-                break
-            case "ActionLiuJu":
-                break
+                return
             case "ActionHule":
-                break
+            case "ActionLiuJu":
+                try {
+                    this.game.sendAsync("confirmNewRound")
+                } catch(e) {}
+                return
             case "ActionNewRound":
                 // console.log(action.data)
                 this.table.tehai = action.data.tiles
@@ -543,6 +545,6 @@ module.exports = Bot
 // async function test() {
 //     let bot = new Bot({url: "wss://gateway-hk.majsoul.com:4501"})
 //     await bot.login("429245111@qq.com", "552233")
-//     await bot.joinRoom(10560)
+//     await bot.joinRoom(66415)
 // }
 // test()
