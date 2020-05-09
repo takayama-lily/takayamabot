@@ -41,7 +41,7 @@ class Bot extends EventEmitter {
             connect_token: undefined,
             game_uuid: undefined,
             game_info: {},
-            position: "waiting" //5位数字:友人 6位数字:比赛 "match":段位 "waiting":待机
+            position: "lobby" //5位数字:友人 6位数字:比赛 "rank":段位 "lobby":待机
         }
 
         this.waitID = 0
@@ -63,7 +63,7 @@ class Bot extends EventEmitter {
             al: false,
             left: 0,
             score: [],
-            enimy: [],
+            enemy: [],
             rule: {
                 type: 4,
                 mode: 0,
@@ -124,7 +124,7 @@ class Bot extends EventEmitter {
         }
         this.accountInfo = (await this.lobby.sendAsync("fetchAccountInfo")).account
         this.status = Bot.WAITING
-        this.current.position = "waiting"
+        this.current.position = "lobby"
         if (this.current.game_uuid && !this.game) {
             // 掉线 todo
         }
@@ -230,7 +230,7 @@ class Bot extends EventEmitter {
                 }, this._maxWaitTime * 1000)
             } else {
                 this.status = Bot.WAITING
-                this.current.position = "waiting"
+                this.current.position = "lobby"
             }
         } catch (e) {
             console.log(e)
@@ -268,7 +268,7 @@ class Bot extends EventEmitter {
             console.log(e)
         }
         if (this.status === Bot.MATCHING) {
-            this.current.position = "match"
+            this.current.position = "rank"
             return true
         }
         return false
