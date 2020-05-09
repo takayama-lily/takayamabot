@@ -242,20 +242,29 @@ https://github.com/takayama-lily/riichi`
         return at(uid) +str1 + "\n" + str2
     },
     "友人": async(param)=>{
-        if (!await mjutil.cn.joinRoom(param))
-            return "无法加入，可能在对局中或者房间号错误。"
+        if (!param)
+            return "需要输入房间号。"
+        let res = await mjutil.cn.roomJoin(param)
+        if (res.hasOwnProperty("error"))
+            return res.error.message
         else
-            return `已进入${param}并准备，3分钟不开自动退出。`
+            return `已进入${param}，1分钟不开自动退出。`
     },
     "比赛": async(param)=>{
-        if (!await mjutil.cn.joinContest(param))
-            return "无法加入，可能在对局中或者不在参赛名单中。"
+        if (!param)
+            return "需要输入赛事ID。"
+        let res = await mjutil.cn.contestReady(param)
+        if (res.hasOwnProperty("error"))
+            return res.error.message
         else
-            return `已进入${param}并准备，3分钟不开自动退出。`
+            return `已进入${param}，1分钟不开自动退出。`
     },
     "状态": async(param)=>{
+        let status = ["待机","匹配","游戏","暂停","准备","离线"]
         let res = mjutil.cn.getStatus()
-        return `当前位置：${res.current.position}`
+        let text = `位置：${res.current.position}
+状态：${status[res.status]}`
+        return text
     },
     "status": async(param)=>{
         return mjutil.cn.getStatus()

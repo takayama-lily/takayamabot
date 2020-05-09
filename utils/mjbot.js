@@ -1,4 +1,5 @@
 "use strict"
+const EventEmitter = require("events")
 const MJSoul = require("mjsoul")
 const MJ = require("riichi")
 
@@ -9,14 +10,14 @@ const MJ = require("riichi")
  * 此时会维护两个连接，一个是大厅里的，一个是牌局
  * 两个连接域名相同，前者端口号后两位是01，后者是02
  */
-class Bot {
+class Bot extends EventEmitter {
     static CLOSED = -1
     static WAITING = 0
     static MATCHING = 1
     static GAMING = 2
     static PAUSING = 3
     static READY = 4
-    static FAILURE = 9
+    static FAILURE = 5
 
     static DISCARD = 1
     static CHI = 2
@@ -31,6 +32,7 @@ class Bot {
     static KITA = 11
 
     constructor(config = {}) {
+        super()
         this.lobby = new MJSoul(config)
         this.game = null
         this.accountInfo = {}
@@ -39,9 +41,12 @@ class Bot {
             connect_token: undefined,
             game_uuid: undefined,
             game_info: {},
-            position: "等待" //5位数字:友人 6位数字:比赛 "match":段位
+            position: "waiting" //5位数字:友人 6位数字:比赛 "match":段位 "waiting":待机
         }
+
         this.waitID = 0
+        this._maxWaitTime = 60 //最大等待时间，不开自动退出
+
         this.matchType = 3&4
         this.matchRank = "both"
         this.matchFlag = false //不间断进行段位匹配
@@ -65,7 +70,12 @@ class Bot {
             }
         }
 
+        this.reOpen = async()=>{}
         this._init()
+    }
+
+    set maxWaitTime(maxWaitTime) {
+        this._maxWaitTime = maxWaitTime
     }
 
     getStatus() {
@@ -86,56 +96,58 @@ class Bot {
         this.reOpen = async()=>{
             return await this.login(account, password)
         }
-        let id
+        let resLogin
         if (password === undefined) {
             await new Promise((resolve, reject)=>{
                 this.lobby.open(async()=>{
-                    id = (await this.lobby.sendAsync("oauth2Login", {
+                    resLogin = await this.lobby.sendAsync("oauth2Login", {
                         type: 10,
                         access_token: token
-                    })).account_id
+                    })
                     resolve()
                 })
             })
         } else {
             await new Promise((resolve, reject)=>{
                 this.lobby.open(async()=>{
-                    id = (await this.lobby.sendAsync("login", {
+                    resLogin = await this.lobby.sendAsync("login", {
                         account: account,
                         password: this.lobby.hash(password)
-                    })).account_id
+                    })
                     resolve()
                 })
             })
         }
-        this.accountInfo = (await this.lobby.sendAsync("fetchAccountInfo", {account_id: id})).account
+        if (resLogin.game_info) {
+            this.current.access_token = resLogin.game_info.connect_token
+            this.current.game_uuid = resLogin.game_info.game_uuid
+        }
+        this.accountInfo = (await this.lobby.sendAsync("fetchAccountInfo")).account
         this.status = Bot.WAITING
-        if (this.accountInfo.game_info) {
-            // 掉线不会回到对局中
+        this.current.position = "waiting"
+        if (this.current.game_uuid && !this.game) {
+            // 掉线 todo
         }
     }
-
-    async reOpen() {}
 
     async sendAsync(name, data) {
         return await this.lobby.sendAsync(name, data)
     }
 
     _clearWaitID() {
-        if (this.waitID) {
-            clearTimeout(this.waitID)
-            this.waitID = 0
-        }
+        clearTimeout(this.waitID)
+        this.waitID = 0
     }
 
     _init() {
-
         this.lobby.on("error", (err)=>{})
         //lobby断线自动重连一次
         this.lobby.on("close", ()=>{
             if (this.status !== Bot.FAILURE) {
                 this.status = Bot.FAILURE
                 this.reOpen()
+            } else {
+                this.emit("close")
             }
         })
         this.lobby.on('NotifyAccountLogout', this.reOpen)
@@ -150,59 +162,79 @@ class Bot {
         })
 
         //game开始通知
-        this.lobby.on("NotifyRoomGameStart", (data)=>{
-            this._clearWaitID()
-            this.status = Bot.GAMING
-            this.current.connect_token = data.connect_token
-            this.current.game_uuid = data.game_uuid
-            let url = this.lobby.url.substr(0, this.lobby.url.length - 2) + "02"
-            this.game = new MJSoul({
-                url: url,
-                timeout: this.lobby.timeout,
-                wsOption: this.lobby.wsOption
-            })
-            this.game.on("error", (e)=>{})
-            this.game.on("close", this._nextTick.bind(this))
-            this.game.on("NotifyGamePause", (data)=>{
-                this.status = data.paused ? Bot.PAUSING : Bot.GAMING
-            })
-            this.game.on("NotifyGameTerminate", this.game.close)
-            this.game.on("NotifyGameEndResult", this.game.close)
-            this.game.on("ActionPrototype", this._onAction.bind(this))
-            this.game.open(this._onGameStart.bind(this))
-        })
+        this.lobby.on("NotifyRoomGameStart", this._onGameStart.bind(this))
+        this.lobby.on("NotifyMatchGameStart", this._onGameStart.bind(this))
     }
 
-    async _onGameStart(restore = false) {
-        try {
-            let data = await this.game.sendAsync("authGame", {
-                account_id: this.accountInfo.account_id,
-                token: this.current.connect_token,
-                game_uuid: this.current.game_uuid
-            })
-            this.current.game_info = data
-            this.table.rule.type = data.seat_list.length
-            this.table.seat = data.seat_list.indexOf(this.accountInfo.account_id)
-            if (restore) {
-                // let game = await this.game.sendAsync("syncGame", {round_id: 0, step: 0}) //todo
-            } else {
-                await this.game.sendAsync("enterGame")
+    async _onGameStart(data) {
+        this._clearWaitID()
+        this.status = Bot.GAMING
+        this.current.connect_token = data.connect_token
+        this.current.game_uuid = data.game_uuid
+        if (this.lobby.url[this.lobby.url.length-1] === "/")
+            this.lobby.url = this.lobby.url.substr(0, this.lobby.url.length-1)
+        let url = this.lobby.url.substr(0, this.lobby.url.length - 2) + "02"
+        this.game = new MJSoul({
+            url: url,
+            timeout: this.lobby.timeout,
+            wsOption: this.lobby.wsOption
+        })
+        this.game.on("error", (e)=>{})
+        this.game.on("close", ()=>{
+            if (this.current.game_uuid) {
+                //掉线 todo
             }
-        } catch(e) {
-            console.log(e)
-        }
+            this.game = null
+            this._nextTick()
+        })
+        this.game.on("NotifyGamePause", (data)=>{
+            this.status = data.paused ? Bot.PAUSING : Bot.GAMING
+        })
+        this.game.on("NotifyGameTerminate", this._onGameOver.bind(this))
+        this.game.on("NotifyGameEndResult", this._onGameOver.bind(this))
+        this.game.on("ActionPrototype", this._onAction.bind(this))
+        this.game.open(async()=>{
+            try {
+                let data = await this.game.sendAsync("authGame", {
+                    account_id: this.accountInfo.account_id,
+                    token: this.current.connect_token,
+                    game_uuid: this.current.game_uuid
+                })
+                this.current.game_info = data
+                this.table.rule.type = data.seat_list.length
+                this.table.seat = data.seat_list.indexOf(this.accountInfo.account_id)
+                await this.game.sendAsync("enterGame")
+            } catch(e) {}
+        })
+    }
+    _onGameOver() {
+        this.current.access_token = undefined
+        this.current.game_uuid = undefined
+        this.current.game_info = undefined
+        this.game.close()
     }
 
     async _nextTick() {
         try {
-            if (this.current.position.toString().length === 5)
-                await this.lobby.sendAsync("leaveRoom")
-        } catch (e) {}
-        this.accountInfo = (await this.lobby.sendAsync("fetchAccountInfo", {account_id: this.accountInfo.account_id})).account
-        this.status = Bot.WAITING
-        this.current.position = "等待"
-        if (this.matchFlag)
-            return this.match()
+            this.accountInfo = (await this.lobby.sendAsync("fetchAccountInfo")).account
+            if (this.matchFlag) {
+                if (this.accountInfo.room_id > 0)
+                    await this.roomLeave()
+                this.status = Bot.WAITING
+                return await this.match()
+            } else if (this.accountInfo.room_id > 0) {
+                await this.roomReady()
+                this.waitID = setTimeout(async()=>{
+                    await this.roomLeave()
+                    this._nextTick()
+                }, this._maxWaitTime * 1000)
+            } else {
+                this.status = Bot.WAITING
+                this.current.position = "waiting"
+            }
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     /**
@@ -217,18 +249,29 @@ class Bot {
         this.matchFlag = true
         if (this.status !== Bot.WAITING)
             return false
-        this.status = Bot.MATCHING
-        this.current.position = "match"
-        if (type % 3 === 0) {
-            let mode = this._getMatchMode(3, rank)
-            for (let v of mode)
-                await this.lobby.sendAsync("matchGame", {match_mode: v})
+        try {
+            if (type % 3 === 0) {
+                let mode = this._getMatchMode(3, rank)
+                for (let v of mode) {
+                    await this.lobby.sendAsync("matchGame", {match_mode: v})
+                    this.status = Bot.MATCHING
+                }
+            }
+            if (type % 4 === 0) {
+                let mode = this._getMatchMode(4, rank)
+                for (let v of mode) {
+                    await this.lobby.sendAsync("matchGame", {match_mode: v})
+                    this.status = Bot.MATCHING
+                }
+            }
+        } catch(e) {
+            console.log(e)
         }
-        if (type % 4 === 0) {
-            let mode = this._getMatchMode(4, rank)
-            for (let v of mode)
-                await this.lobby.sendAsync("matchGame", {match_mode: v})
+        if (this.status === Bot.MATCHING) {
+            this.current.position = "match"
+            return true
         }
+        return false
     }
     async stopMatch() {
         this.matchFlag = false
@@ -245,7 +288,9 @@ class Bot {
                         await this.lobby.sendAsync("cancelMatch", {match_mode: v})
                 }
                 this._nextTick()
-            } catch(e) {}
+            } catch(e) {
+                console.log(e)
+            }
         }
     }
     _getMatchMode(type, rank) {
@@ -290,22 +335,43 @@ class Bot {
      * @param {number} id
      * @returns {boolean} 
      */
-    async joinContest(id) {
-        if (this.status !== Bot.WAITING)
-            return false
+    async contestReady(id) {
+        if (this.status !== Bot.WAITING || this.matchFlag)
+        return {error: {message: "正在对局中，无法加入。", code: -1}}
         try {
             let unique_id = (await this.lobby.sendAsync("fetchCustomizedContestByContestId", {contest_id: id})).contest_info.unique_id
             await this.lobby.sendAsync("startCustomizedContest", {unique_id: unique_id})
             this.status = Bot.READY
             this.current.position = id
             this.waitID = setTimeout(async()=>{
-                await this.lobby.sendAsync("stopCustomizedContest")
+                await this.contestCancel()
                 this._nextTick()
-            }, 180000)
-            return true
+            }, this._maxWaitTime * 1000)
+            return {}
+        } catch(e) {
+            switch (e.error.code) {
+                case 1023:
+                    e.error.message = `正在对局中，无法加入。`
+                    break
+                case 2501:
+                    e.error.message = `赛事${id}不存在。`
+                    break
+                case 2511:
+                    e.error.message = `没有赛事${id}的参赛资格。`
+                    break
+                default:
+                    console.log(e)
+                    e.error.message = `对局中，无法加入。`
+                    break
+            }
+            return e
+        }
+    }
+    async contestCancel() {
+        try {
+            await this.lobby.sendAsync("stopCustomizedContest")
         } catch(e) {
             console.log(e)
-            return false
         }
     }
 
@@ -314,22 +380,52 @@ class Bot {
      * @param {number} id 
      * @returns {boolean} 
      */
-    async joinRoom(id) {
-        if (this.status !== Bot.WAITING)
-            return false
+    async roomJoin(id) {
+        if (this.status !== Bot.WAITING || this.matchFlag)
+            return {error: {message: "正在对局中，无法加入。", code: -1}}
         try {
             await this.lobby.sendAsync("joinRoom", {room_id: id})
-            await this.lobby.sendAsync("readyPlay", {ready: true})
-            this.status = Bot.READY
+            await this.roomReady()
             this.current.position = id
             this.waitID = setTimeout(async()=>{
-                await this.lobby.sendAsync("leaveRoom")
+                await this.roomLeave()
                 this._nextTick()
-            }, 180000)
-            return true
+            }, this._maxWaitTime * 1000)
+            return {}
+        } catch(e) {
+            switch (e.error.code) {
+                case 1100:
+                    e.error.message = `房间号${id}不存在。`
+                    break
+                case 1105:
+                    e.error.message = `已经加入了这个房间。`
+                    break
+                case 1109:
+                    e.error.message = `正在对局中，无法加入。`
+                    break
+                default:
+                    console.log(e)
+                    e.error.message = `对局中，无法加入。`
+                    break
+            }
+            return e
+        }
+    }
+    async roomLeave() {
+        try {
+            await this.lobby.sendAsync("leaveRoom")
         } catch(e) {
             console.log(e)
-            return false
+        }
+    }
+    async roomReady() {
+        try {
+            await this.lobby.sendAsync("readyPlay", {ready: true})
+            this.status = Bot.READY
+        } catch(e) {
+            console.log(e)
+            await this.roomLeave()
+            this._nextTick()
         }
     }
 
@@ -442,9 +538,7 @@ class Bot {
                 return
             case "ActionHule":
             case "ActionLiuJu":
-                try {
-                    this.game.sendAsync("confirmNewRound")
-                } catch(e) {}
+                this.game.sendAsync("confirmNewRound").catch(()=>{})
                 return
             case "ActionNewRound":
                 // console.log(action.data)
@@ -502,19 +596,21 @@ class Bot {
                 return this.kita("4z" === action.data.tile)
             }
             if (type.includes(Bot.RIICHI)) {
-                let kiru = this._nanikiru()
+                let kiru = this._nanikiru(this.table)
+                this.table.tehai.splice(this.table.tehai.indexOf(kiru), 1)
                 return this.riichi(kiru, kiru === action.data.tile)
             }
             if (type.includes(Bot.DISCARD)) {
-                let kiru = this._nanikiru()
+                let kiru = this._nanikiru(this.table)
+                this.table.tehai.splice(this.table.tehai.indexOf(kiru), 1)
                 return this.discard(kiru, kiru === action.data.tile)
             }
             return this.pass()
         }
     }
 
-    _nanikiru() {
-        const mj = new MJ(this.table.tehai.join(""))
+    _nanikiru(table) {
+        const mj = new MJ(table.tehai.join(""))
         let result = mj.calc().syanten
         let kiru = ""
         let machi = 0
@@ -529,13 +625,12 @@ class Bot {
                 kiru = k
             }
         }
-        if (kiru === "5m" && !this.table.tehai.includes("5m"))
+        if (kiru === "5m" && !table.tehai.includes("5m"))
             kiru = "0m"
-        if (kiru === "5p" && !this.table.tehai.includes("5p"))
+        if (kiru === "5p" && !table.tehai.includes("5p"))
             kiru = "0p"
-        if (kiru === "5s" && !this.table.tehai.includes("5s"))
+        if (kiru === "5s" && !table.tehai.includes("5s"))
             kiru = "0s"
-        this.table.tehai.splice(this.table.tehai.indexOf(kiru), 1)
         return kiru
     }
 }
@@ -544,7 +639,11 @@ module.exports = Bot
 
 // async function test() {
 //     let bot = new Bot({url: "wss://gateway-hk.majsoul.com:4501"})
-//     await bot.login("429245111@qq.com", "552233")
-//     await bot.joinRoom(66415)
+//     bot.on("close", ()=>{
+//         console.log(1)
+//     })
+//     await bot.login("372914165@qq.com", "552233")
+//     // await bot.contestReady(917746)
+//     await bot.roomJoin(38873)
 // }
 // test()
