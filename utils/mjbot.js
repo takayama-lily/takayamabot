@@ -208,7 +208,7 @@ class Bot extends EventEmitter {
         })
     }
     _onGameOver() {
-        this.current.access_token = undefined
+        this.current.connect_token = undefined
         this.current.game_uuid = undefined
         this.current.game_info = undefined
         this.game.close()
