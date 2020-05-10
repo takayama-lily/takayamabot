@@ -259,6 +259,12 @@ https://github.com/takayama-lily/riichi`
         else
             return `已进入${param}，1分钟不开自动退出。`
     },
+    "段位匹配": async(param)=>{
+        await mjutil.cn.match(3)
+    },
+    "停止匹配": async(param)=>{
+        await mjutil.cn.stopMatch()
+    },
     "状态": async(param)=>{
         let status = ["待机","匹配","游戏","暂停","准备","离线"]
         let res = mjutil.cn.getStatus()

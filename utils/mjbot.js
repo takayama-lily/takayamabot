@@ -1,7 +1,7 @@
 "use strict"
 const EventEmitter = require("events")
 const MJSoul = require("mjsoul")
-const MJ = require("riichi")
+const nanikiru = require("./nanikiru")
 
 /**
  * 这是一个雀魂打牌机器人
@@ -30,6 +30,7 @@ class Bot extends EventEmitter {
     static RON = 9
     static KUKU = 10
     static KITA = 11
+    static PASS = 12
 
     constructor(config = {}) {
         super()
@@ -52,21 +53,23 @@ class Bot extends EventEmitter {
         this.matchFlag = false //不间断进行段位匹配
 
         this.table = {
-            seat: 0,
-            bakaze: 0,
-            jikaze: 0,
-            tehai: [],
-            furo: [],
-            dora: [],
-            honba: 0,
-            riichi: 0,
-            al: false,
-            left: 0,
-            score: [],
-            enemy: [],
-            rule: {
-                type: 4,
-                mode: 0,
+            seat: 0, //自座席 0-3東南西北
+            bakaze: 0, //場風 0-3東南西北
+            jikaze: 0, //自風 0-3東南西北
+            tehai: [], //自手牌配列
+            hai: "", //トリガー牌
+            from: 0, //from座席
+            hints: [],
+            dora: [], //表ドラ配列
+            honba: 0, //本場数
+            riichi: 0, //立直数
+            isAL: false, //all last
+            left: 0, //残牌数
+            score: [], //各家点数(seat順)
+            players: [], // {0: {furo:[], kawa: [], isRiichi: 0, riichiHai: ""}} (seat順)
+            rules: {
+                type: 4, //3三麻 4四麻
+                mode: 0, //東風 東南 todo
             }
         }
 
@@ -120,6 +123,7 @@ class Bot extends EventEmitter {
                 })
             })
         }
+        await this.lobby.sendAsync("loginBeat", {contract: "DF2vkXCnfeXp4WoGrBGNcJBufZiMN3uP"})
         if (resLogin.game_info) {
             this.current.connect_token = resLogin.game_info.connect_token
             this.current.game_uuid = resLogin.game_info.game_uuid
@@ -208,7 +212,7 @@ class Bot extends EventEmitter {
                     game_uuid: this.current.game_uuid
                 })
                 this.current.game_info = data
-                this.table.rule.type = data.seat_list.length
+                this.table.rules.type = data.seat_list.length
                 this.table.seat = data.seat_list.indexOf(this.accountInfo.account_id)
                 await this.game.sendAsync("enterGame")
             } catch(e) {}
@@ -234,7 +238,7 @@ class Bot extends EventEmitter {
                 this.waitID = setTimeout(async()=>{
                     await this.roomLeave()
                     this._nextTick()
-                }, this._maxWaitTime * 1000)
+                }, this._maxWaitTime * 1000 + 30000)
             } else {
                 this.status = Bot.WAITING
                 this.current.position = "lobby"
@@ -453,7 +457,9 @@ class Bot extends EventEmitter {
      * @param {string} tile 0-9mpsz形式
      * @param {number} index 吃碰杠的选择，比如["3m|4m","4m|6m","6m|7m"]，选择吃法的index
      */
-    async discard(tile, moqie = false) {
+    async discard(tile) {
+        let moqie = tile === this.table.tehai[this.table.tehai.length-1]
+        this.table.tehai.splice(this.table.tehai.indexOf(tile), 1)
         await this.game.sendAsync("inputOperation", {
             type: Bot.DISCARD,
             tile: tile,
@@ -462,7 +468,9 @@ class Bot extends EventEmitter {
             tile_state: 0
         })
     }
-    async riichi(tile, moqie = false) {
+    async riichi(tile) {
+        let moqie = tile === this.table.tehai[this.table.tehai.length-1]
+        this.table.tehai.splice(this.table.tehai.indexOf(tile), 1)
         await this.game.sendAsync("inputOperation", {
             type: Bot.RIICHI,
             tile: tile,
@@ -471,7 +479,9 @@ class Bot extends EventEmitter {
             tile_state: 0
         })
     }
-    async kita(moqie = false) {
+    async kita() {
+        let moqie = "4z" === this.table.tehai[this.table.tehai.length-1]
+        this.table.tehai.splice(this.table.tehai.indexOf("4z"), 1)
         await this.game.sendAsync("inputOperation", {
             type: Bot.KITA,
             moqie: moqie,
@@ -540,105 +550,179 @@ class Bot extends EventEmitter {
     }
 
     async _onAction(action) {
+        let data = action.data
+        // console.log(data)
         switch (action.name) {
             case "ActionMJStart":
+            case "ActionNoTile":
                 return
             case "ActionHule":
             case "ActionLiuJu":
                 this.game.sendAsync("confirmNewRound").catch(()=>{})
                 return
             case "ActionNewRound":
-                // console.log(action.data)
-                this.table.tehai = action.data.tiles
-                this.table.dora = action.data.doras
-                this.table.bakaze = action.data.chang
-                this.table.jikaze = (this.table.seat - action.data.ju + 4) % 4
-                this.table.riichi = action.data.liqibang
-                this.table.honba = action.data.ben
-                this.table.al = action.data.al
-                this.table.left = action.data.left_tile_count
-                this.table.score = action.data.scores
-                break
-            case "ActionNoTile":
-                break
-            case "ActionBaBei":
-                break
-            case "ActionDiscardTile":
-                // console.log("seat:", action.data.seat, "出牌:", action.data.tile)
-                break
-            case "ActionDealTile":
-                // console.log("seat:", action.data.seat, "摸牌:", action.data.tile)
-                this.table.left = action.data.left_tile_count
-                if (action.data.seat === this.table.seat) {
-                    this.table.tehai.push(action.data.tile)
+                //初期化
+                this.table.bakaze = data.chang
+                this.table.jikaze = (this.table.seat - data.ju + this.table.rules.type) % this.table.rules.type
+                this.table.tehai = data.tiles
+                this.table.hai = ""
+                this.table.from = this.table.seat
+                this.table.dora = data.doras
+                this.table.honba = data.ben
+                this.table.riichi = data.liqibang
+                this.table.isAL = false
+                this.table.left = data.left_tile_count
+                this.table.score = data.scores
+                this.table.players = []
+                for (let i = 0; i < this.table.rules.type; i++) {
+                    this.table.players[i] = {
+                        furo: [],
+                        kawa: [],
+                        isRiichi: 0,
+                        riichiHai: ""
+                    }
                 }
                 break
+            case "ActionBaBei":
+                //副露变更(抜北)
+                this.table.players[data.seat].furo.push("4z")
+                this.table.from = data.seat
+                this.table.hai = "4z"
+                break
+            case "ActionDiscardTile":
+                //牌河变更
+                this.table.players[data.seat].kawa.push(data.tile)
+                this.table.from = data.seat
+                this.table.hai = data.tile
+                if (data.is_liqi || data.is_wliqi) {
+                    //立直
+                    this.table.players[data.seat].isRiichi = data.is_wliqi ? 2 : 1
+                    this.table.players[data.seat].riichiHai = data.tile
+                }
+                break
+            case "ActionDealTile":
+                //摸牌
+                this.table.left = data.left_tile_count
+                this.table.from = data.seat
+                this.table.hai = data.tile
+                if (data.seat === this.table.seat) {
+                    this.table.tehai.push(data.tile)
+                }
+                break
+            //副露变更
             case "ActionChiPengGang":
+                for (let v of data.froms) {
+                    if (v !== data.seat) {
+                        //被吃碰杠的牌
+                        let last = this.table.players[v].kawa.pop()
+                        this.table.players[v].kawa.push("!"+last)
+                    }
+                }
+                this.table.players[data.seat].furo.push(data.tiles.sort().join(""))
                 break
             case "ActionAnGangAddGang":
-                break
-            default:
+                this.table.from = data.seat
+                this.table.hai = data.tiles
+                if (data.type === 3)
+                    this.table.players[data.seat].furo.push(data.tiles.repeat(2))
+                else {
+                    for (let i in this.table.players[data.seat].furo) {
+                        if (this.table.players[data.seat].furo[i].includes(data.tiles))
+                            this.table.players[data.seat].furo[i] += data.tiles
+                    }
+                }
                 break
         }
-        if (action.data && action.data.operation) {
+        if (data.doras && data.doras.length > 0) {
+            //dora变更
+            this.table.dora = data.doras
+        }
+        if (data.liqi) {
+            //立直成功 立直棒&点数变更
+            this.table.riichi = data.liqi.liqibang
+            this.table.score[data.liqi.seat] = data.liqi.score
+        }
+        if (data && data.operation) {
+            // console.log(data.operation.operation_list)
             if (action.name === "ActionNewRound") {
                 await new Promise((resolve)=>{
                     setTimeout(resolve, 3000)
                 })
             }
-            let type = []
-            for (let v of action.data.operation.operation_list) {
-                type.push(v.type)
+            let types = []
+            for (let v of data.operation.operation_list) {
+                types.push(v.type)
             }
-            if (!type.length)
+            if (!types.length)
                 return
-            if (type.includes(Bot.TSUMO))
-                return this.tsumo()
-            if (type.includes(Bot.RON))
-                return this.ron()
-            if (type.includes(Bot.KUKU))
-                return this.kuku()
-            if (type.includes(Bot.KITA)) {
-                this.table.tehai.splice(this.table.tehai.indexOf("4z"), 1)
-                return this.kita("4z" === action.data.tile)
+            this.table.hints = types
+            let res = nanikiru(this.table)
+            switch (res.type) {
+                case Bot.DISCARD:
+                    return this.discard(res.tiles)
+                case Bot.RIICHI:
+                    return this.riichi(res.tiles)
+                case Bot.KITA:
+                    return this.kita()
+                case Bot.KUKU:
+                    return this.kuku()
+                case Bot.TSUMO:
+                    return this.tsumo()
+                case Bot.RON:
+                    return this.ron()
+                case Bot.MINKAN:
+                    if (this.table.hai[0] === "0")
+                        this.table.hai = "5" + this.table.hai[1]
+                    while (this.table.tehai.includes(this.table.hai))
+                        this.table.tehai.splice(this.table.tehai.indexOf(this.table.hai), 1)
+                    if (this.table.hai[0] === "5")
+                        this.table.tehai.splice(this.table.tehai.indexOf("0"+this.table.hai[1]), 1)
+                    return this.minkan()
+                case Bot.ANKAN:
+                    for (let v of data.operation.operation_list) {
+                        if (v.type === Bot.ANKAN) {
+                            for (let i in v.combination) {
+                                if (v.combination[i].includes(res.tiles)) {
+                                    while (this.table.tehai.includes(res.tiles))
+                                        this.table.tehai.splice(this.table.tehai.indexOf(res.tiles), 1)
+                                    if (res.tiles[0] === "5")
+                                        this.table.tehai.splice(this.table.tehai.indexOf("0"+res.tiles[1]), 1)
+                                    return this.ankan(i)
+                                }
+                            }
+                        }
+                    }
+                case Bot.KAKAN:
+                    for (let v of data.operation.operation_list) {
+                        if (v.type === Bot.KAKAN) {
+                            for (let i in v.combination) {
+                                if (v.combination[i].includes(res.tiles)) {
+                                    this.table.tehai.splice(this.table.tehai.indexOf(res.tiles), 1)
+                                    return this.kakan(i)
+                                }
+                            }
+                        }
+                    }
+                case Bot.CHI:
+                    for (let v of data.operation.operation_list) {
+                        if (v.type === Bot.CHI) {
+                            for (let v of res.tiles.split("|"))
+                                this.table.tehai.splice(this.table.tehai.indexOf(v), 1)
+                            return this.chi(v.combination.indexOf(res.tiles))
+                        }
+                    }
+                case Bot.PON:
+                    for (let v of data.operation.operation_list) {
+                        if (v.type === Bot.PON) {
+                            for (let v of res.tiles.split("|"))
+                                this.table.tehai.splice(this.table.tehai.indexOf(v), 1)
+                            return this.pon(v.combination.indexOf(res.tiles))
+                        }
+                    }
+                case Bot.PASS:
+                    return this.pass()
             }
-            if (type.includes(Bot.RIICHI)) {
-                let kiru = this._nanikiru(this.table)
-                this.table.tehai.splice(this.table.tehai.indexOf(kiru), 1)
-                return this.riichi(kiru, kiru === action.data.tile)
-            }
-            if (type.includes(Bot.DISCARD)) {
-                let kiru = this._nanikiru(this.table)
-                this.table.tehai.splice(this.table.tehai.indexOf(kiru), 1)
-                return this.discard(kiru, kiru === action.data.tile)
-            }
-            return this.pass()
         }
-    }
-
-    _nanikiru(table) {
-        const mj = new MJ(table.tehai.join(""))
-        let result = mj.calc().syanten
-        let kiru = ""
-        let machi = 0
-        for (let k in result) {
-            if (k === "now")
-                continue
-            let cnt = 0
-            for (let kk in result[k])
-                cnt += result[k][kk]
-            if (cnt >= machi) {
-                machi = cnt
-                kiru = k
-            }
-        }
-        if (kiru === "5m" && !table.tehai.includes("5m"))
-            kiru = "0m"
-        if (kiru === "5p" && !table.tehai.includes("5p"))
-            kiru = "0p"
-        if (kiru === "5s" && !table.tehai.includes("5s"))
-            kiru = "0s"
-        return kiru
     }
 }
 
@@ -652,6 +736,7 @@ module.exports = Bot
 //     let res
 //     res = await bot.login("372914165@qq.com", "552233")
 //     // res = await bot.contestReady(917746)
-//     // res = await bot.roomJoin(38873)
+//     // res = await bot.roomJoin(12308)
+//     await bot.match(3)
 // }
 // test()
