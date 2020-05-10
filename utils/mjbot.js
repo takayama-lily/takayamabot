@@ -119,7 +119,7 @@ class Bot extends EventEmitter {
             })
         }
         if (resLogin.game_info) {
-            this.current.access_token = resLogin.game_info.connect_token
+            this.current.connect_token = resLogin.game_info.connect_token
             this.current.game_uuid = resLogin.game_info.game_uuid
         }
         this.accountInfo = (await this.lobby.sendAsync("fetchAccountInfo")).account
