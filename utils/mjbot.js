@@ -89,10 +89,11 @@ class Bot extends EventEmitter {
     /**
      * login
      * 如果只传一个account不传password，代表用token登陆
-     * @param {string} account 
+     * @param {string} account 邮箱/手机/token
      * @param {string} password 
      */
     async login(account, password) {
+        account = account.toString().trim()
         this.reOpen = async()=>{
             return await this.login(account, password)
         }
@@ -112,7 +113,8 @@ class Bot extends EventEmitter {
                 this.lobby.open(async()=>{
                     resLogin = await this.lobby.sendAsync("login", {
                         account: account,
-                        password: this.lobby.hash(password)
+                        password: this.lobby.hash(password),
+                        type: isNaN(account) ? 0 : 1
                     })
                     resolve()
                 })
@@ -128,6 +130,7 @@ class Bot extends EventEmitter {
         if (this.current.game_uuid && !this.game) {
             // 掉线 todo
         }
+        return resLogin
     }
 
     async sendAsync(name, data) {
@@ -150,8 +153,12 @@ class Bot extends EventEmitter {
                 this.emit("close")
             }
         })
-        this.lobby.on('NotifyAccountLogout', this.reOpen)
-        this.lobby.on('NotifyAnotherLogin', this.reOpen)
+        this.lobby.on('NotifyAccountLogout', (data)=>{
+            this.reOpen()
+        })
+        this.lobby.on('NotifyAnotherLogin', (data)=>{
+            this.reOpen()
+        })
 
         //友人kick通知
         this.lobby.on("NotifyRoomKickOut", (data)=>{
@@ -642,8 +649,9 @@ module.exports = Bot
 //     bot.on("close", ()=>{
 //         console.log(1)
 //     })
-//     await bot.login("372914165@qq.com", "552233")
-//     // await bot.contestReady(917746)
-//     await bot.roomJoin(38873)
+//     let res
+//     res = await bot.login("372914165@qq.com", "552233")
+//     // res = await bot.contestReady(917746)
+//     // res = await bot.roomJoin(38873)
 // }
 // test()
