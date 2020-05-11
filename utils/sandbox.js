@@ -32,6 +32,7 @@ vm.runInContext(fs.readFileSync(initCodeFile), context)
 let fn = {}
 const beforeSaveContext = ()=>{
     for (let k in context) {
+        fn = {}
         if (typeof context[k] === "function") {
             fn[k] = context[k].toString()
         }
