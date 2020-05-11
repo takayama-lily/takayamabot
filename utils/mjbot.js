@@ -289,12 +289,12 @@ class Bot extends EventEmitter {
         if (this.status === Bot.MATCHING) {
             try {
                 if (this.matchType % 3 === 0) {
-                    let mode = this._getMatchMode(3, rank)
+                    let mode = this._getMatchMode(3, this.matchRank)
                     for (let v of mode)
                         await this.lobby.sendAsync("cancelMatch", {match_mode: v})
                 }
                 if (this.matchType % 4 === 0) {
-                    let mode = this._getMatchMode(4, rank)
+                    let mode = this._getMatchMode(4, this.matchRank)
                     for (let v of mode)
                         await this.lobby.sendAsync("cancelMatch", {match_mode: v})
                 }
