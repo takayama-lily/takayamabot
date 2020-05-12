@@ -178,7 +178,7 @@ class CQHttp extends Events {
         })
         return await this._request(data)
     }
-    async setGroupInvitation(flag, approve, reason) {
+    async setGroupInvitation(flag, approve = true, reason = undefined) {
         let data = this._buildData('set_group_add_request', {
             flag: flag,
             type: 'invite',

@@ -56,7 +56,7 @@ bot.on("request.group.add", (data)=>{
 })
 bot.on("request.group.invite", (data)=>{
     if (data.self_id === 3507349275) {
-        return bot.setGroupInvitation(data.flag, false, "11111")
+        return bot.setGroupInvitation(data.flag, false, "拒绝")
         return bot.approve(data, false, "暂时不接受群邀请")
     }
     bot.approve(data)
