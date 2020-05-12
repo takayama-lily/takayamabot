@@ -53,6 +53,7 @@ const bot = new CQHttp()
 bot.on("request.friend", bot.approve)
 bot.on("request.group.invite", (data)=>{
     if (data.self_id === 3507349275) {
+        return bot.setGroupInvitation(data.flag, false, "暂时不接受群邀请")
         return bot.approve(data, false, "暂时不接受群邀请")
     }
     bot.approve(data)
