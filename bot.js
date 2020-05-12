@@ -51,13 +51,9 @@ const CQHttp = require("./cqhttp")
 const bot = new CQHttp()
 
 bot.on("request.friend", bot.approve)
-bot.on("request.group.add", (data)=>{
-    bot.setGroupRequest(data.flag, false, "拒绝")
-})
 bot.on("request.group.invite", (data)=>{
-    if (data.self_id === 3507349275) {
-        return bot.setGroupInvitation(data.flag, false, "拒绝")
-        return bot.approve(data, false, "暂时不接受群邀请")
+    if (data.self_id === 429245111) {
+        return bot.approve(data, false)
     }
     bot.approve(data)
 })
