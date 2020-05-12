@@ -51,7 +51,12 @@ const CQHttp = require("./cqhttp")
 const bot = new CQHttp()
 
 bot.on("request.friend", bot.approve)
-bot.on("request.group.invite", bot.approve)
+bot.on("request.group.invite", (data)=>{
+    if (data.self_id === 3507349275) {
+        return bot.approve(data, false, "暂时不接受群邀请")
+    }
+    bot.approve(data)
+})
 bot.on("notice.group_ban.ban", (data)=>{
     if (data.user_id === data.self_id && data.duration > 86400)
         bot.setGroupLeave(data.group_id)
