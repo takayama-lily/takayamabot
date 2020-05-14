@@ -11,9 +11,9 @@
   "dependencies": {
     "https-proxy-agent": "^3.0.1",
     "mjsoul": "^2.1.1",
-    "riichi": "^1.0.2",
+    "riichi": "^1.0.3",
     "sqlite3": "^4.2.0",
-    "syanten": "^1.2.5",
-    "ws": "^7.2.5"
+    "syanten": "^1.3.0",
+    "ws": "^7.3.0"
   }
 }
