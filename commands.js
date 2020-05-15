@@ -116,27 +116,29 @@ https://github.com/takayama-lily/riichi`
                 return param + '\n手牌数量不正确或输入有误'
             } else if (!res.isAgari) {
                 let s = ''
-                if (!res.syanten.now) {
+                if (res.hairi7and13.now !== -2 && res.hairi7and13.now < res.hairi.now)
+                    res.hairi = res.hairi7and13
+                if (!res.hairi.now) {
                     s += '聴牌'
                 } else {
-                    s += res.syanten.now + '向聴'
+                    s += res.hairi.now + '向聴'
                 }
-                if (res.syanten.hasOwnProperty('wait')) {
+                if (res.hairi.hasOwnProperty('wait')) {
                     s += ' 摸'
                     let c = 0
-                    for (let i in res.syanten.wait) {
+                    for (let i in res.hairi.wait) {
                         s += mjhai[i]
-                        c += parseInt(res.syanten.wait[i])
+                        c += parseInt(res.hairi.wait[i])
                     }
                     s += `共${c}枚`
                 } else {
-                    for (let i in res.syanten) {
-                        if (i !== 'now' && Object.keys(res.syanten[i]).length > 0) {
+                    for (let i in res.hairi) {
+                        if (i !== 'now' && Object.keys(res.hairi[i]).length > 0) {
                             s += '\n打' + mjhai[i] + ' 摸'
                             let c = 0
-                            for (let ii in res.syanten[i]) {
+                            for (let ii in res.hairi[i]) {
                                 s += mjhai[ii]
-                                c += parseInt(res.syanten[i][ii])
+                                c += parseInt(res.hairi[i][ii])
                             }
                             s += `共${c}枚`
                         }
