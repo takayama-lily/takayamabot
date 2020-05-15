@@ -102,10 +102,16 @@ o=古役有効 (目前只有人和,大七星)
 https://github.com/takayama-lily/riichi`
             return s
         }
+        const mjhai = {
+            "1m": "🀇", "2m": "🀈", "3m": "🀉", "4m": "🀊", "5m": "🀋", "6m": "🀌", "7m": "🀍", "8m": "🀎", "9m": "🀏", "0m": "🀋", 
+            "1p": "🀙", "2p": "🀚", "3p": "🀛", "4p": "🀜", "5p": "🀝", "6p": "🀞", "7p": "🀟", "8p": "🀠", "9p": "🀡", "0p": "🀝", 
+            "1s": "🀐", "2s": "🀑", "3s": "🀒", "4s": "🀓", "5s": "🀔", "6s": "🀕", "7s": "🀖", "8s": "🀗", "9s": "🀘", "0s": "🀔", 
+            "1z": "🀀", "2z": "🀁", "3z": "🀂", "4z": "🀃", "5z": "🀆", "6z": "🀅", "7z": "🀄"
+        }
         try {
             let beachmark = Date.now()
             let res = new MJ(param).calc()
-            let msg = param + ` (${Date.now()-beachmark}毫秒)\n`
+            let msg = param + ` (耗时${Date.now()-beachmark}ms)\n`
             if (res.error) {
                 return param + '\n手牌数量不正确或输入有误'
             } else if (!res.isAgari) {
@@ -116,20 +122,20 @@ https://github.com/takayama-lily/riichi`
                     s += res.syanten.now + '向聴'
                 }
                 if (res.syanten.hasOwnProperty('wait')) {
-                    s += ' 待'
+                    s += ' 摸'
                     let c = 0
                     for (let i in res.syanten.wait) {
-                        s += i
+                        s += mjhai[i]
                         c += parseInt(res.syanten.wait[i])
                     }
                     s += `共${c}枚`
                 } else {
                     for (let i in res.syanten) {
                         if (i !== 'now' && Object.keys(res.syanten[i]).length > 0) {
-                            s += '\n打' + i + ' 摸'
+                            s += '\n打' + mjhai[i] + ' 摸'
                             let c = 0
                             for (let ii in res.syanten[i]) {
-                                s += ii
+                                s += mjhai[ii]
                                 c += parseInt(res.syanten[i][ii])
                             }
                             s += `共${c}枚`
