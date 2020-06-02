@@ -101,8 +101,8 @@ bot.on("message", async(data)=>{
             }
             return
         }
-        if (command === "card" && gid && params) {
-            return bot.setGroupCard(gid, me, params)
+        if (command === "card" && gid && param) {
+            return bot.setGroupCard(gid, me, param)
         }
         if (isMaster(uid) && command === "run" && param.length) {
             let result
