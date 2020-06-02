@@ -50,11 +50,14 @@ const fff = {limit: 1000} //群发言频率限制每秒1条
 const CQHttp = require("./cqhttp")
 const bot = new CQHttp()
 
-bot.on("request.friend", bot.approve)
+bot.on("request.friend", (data)=>{
+    let answer = 0x142857
+    if (data.comment.includes(answer.toString()))
+        bot.approve(data)
+    else
+        bot.approve(data, false, "答案不正确。")
+})
 bot.on("request.group.invite", (data)=>{
-    if (data.self_id === 429245111) {
-        return bot.approve(data, false)
-    }
     bot.approve(data)
 })
 bot.on("notice.group_ban.ban", (data)=>{
