@@ -69,6 +69,7 @@ bot.on("notice.group_increase", async(data)=>{
     }
 })
 bot.on("message", async(data)=>{
+    let me = data.self_id
     let uid = data.user_id
     let gid = data.group_id
     if (blacklist.includes(uid))
@@ -99,6 +100,9 @@ bot.on("message", async(data)=>{
                 reply(await bot[action].apply(bot, params))
             }
             return
+        }
+        if (command === "card" && gid && params) {
+            return bot.setGroupCard(gid, me, params)
         }
         if (isMaster(uid) && command === "run" && param.length) {
             let result

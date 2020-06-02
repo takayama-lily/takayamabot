@@ -625,15 +625,28 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
     浇水成长值[q]={value:0,fans:{}}
   if (!浇水成长值[q].fans[qq()])
     浇水成长值[q].fans[qq()]={value:0,last:0}
-  if (Date.now()-浇水成长值[q].fans[qq()].last<12*60*60*1000)
-    return at()+" 12小时内已经浇过水了。"
+  if (Date.now()-浇水成长值[q].fans[qq()].last<20*60*60*1000)
+    return at()+" 20小时内不能重复浇水。"
   let a = random(5,10)*random(5,10)
-  let b = random(1,5)*random(1,5)
+  let b = random(2,5)*random(2,5)
+  let double_text=""
+  let hour = (new Date(Date.now()+new Date().getTimezoneOffset()*60000).getHours()+8)%24
+  if (hour>=6&&hour<9) {
+    a*=2,b*=2,double_text="(早起收益加倍)"
+  }
   浇水成长值[q].value+=a
   浇水成长值[q].fans[qq()].value+=b
   浇水成长值[q].fans[qq()].last=Date.now()
-  return at()+` 本次浇水收获${at(q)}的好感度${b}点。
+  return at()+` 本次浇水收获${at(q)}的好感度${b}点${double_text}。
 目标获得成长值: ${a}点。当前成长值: ${浇水成长值[q].value}。`
 }
-
+好感度=(q)=>{
+  q=parseQQ(q)
+  if (!浇水成长值[q])
+    return "什么都没有"
+  let res = at(q)+" 当前的成长值："+浇水成长值[q].value+"。好感度："
+  for (let k in 浇水成长值[q].fans)
+    res+="\n"+at(k)+`(${k}) / `+浇水成长值[q].fans[k].value
+  return res
+}
 
