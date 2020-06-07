@@ -88,7 +88,7 @@ const shuibiao = async(words, jp = false)=>{
         let mode23 = deepAdd(statistic[mode11], statistic[mode12])
         let format = `${name} -${state}- ${sign}`
         //type 0 1 2摸 3荣 4铳 5
-        console.log(mode3)
+        // console.log(mode3)
         if (mode3) {
             let mode = mode3
             let top = Math.round(mode.game_final_position[0]/mode.game_count_sum*100)
