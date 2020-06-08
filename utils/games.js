@@ -56,7 +56,7 @@ create_chess = (gid)=>{
 		return chessss(input)
 	}
 	for (let v of current_chesses[gid].chess)
-		str += v.join('') + '\n'
+		str += '' + v.join('') + '\n'
 	return str
 }
 
@@ -168,7 +168,7 @@ chessss = (input = '')=>{
 			if(!(step%2)&&black.includes(chess[dn][dm]))throw e
 		}
 		if(['將','帥','士','仕'].includes(koma)){//将士不出九宫
-			if (dm < 3 || dm > 5 || (dn > 4 && dn < 8))throw e
+			if (dm < 3 || dm > 5 || (dn > 3 && dn < 8))throw e
 		}
 		if(['象','相'].includes(koma)) {//象不能过河
 			if(step%2&&dn<6)throw e
@@ -594,10 +594,9 @@ eid2id=(t)=>{var e=67108863&(t-=1e7);return e=(131071&e)<<9|e>>17,e=(131071&e)<<
 id2eid=(t)=>{var e=67108863&(t^=6139246);return e=(511&e)<<17|e>>9,e=(511&e)<<17|e>>9,e=(511&e)<<17|e>>9,e=(511&e)<<17|e>>9,(e=(511&e)<<17|e>>9)+(-67108864&t)+1e7}
 function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&65535)+(y&65535);var msw=(x>>16)+(y>>16)+(lsw>>16);return(msw<<16)|(lsw&65535)}function S(X,n){return(X>>>n)|(X<<(32-n))}function R(X,n){return(X>>>n)}function Ch(x,y,z){return((x&y)^((~x)&z))}function Maj(x,y,z){return((x&y)^(x&z)^(y&z))}function Sigma0256(x){return(S(x,2)^S(x,13)^S(x,22))}function Sigma1256(x){return(S(x,6)^S(x,11)^S(x,25))}function Gamma0256(x){return(S(x,7)^S(x,18)^R(x,3))}function Gamma1256(x){return(S(x,17)^S(x,19)^R(x,10))}function core_sha256(m,l){var K=new Array(1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298);var HASH=new Array(1779033703,3144134277,1013904242,2773480762,1359893119,2600822924,528734635,1541459225);var W=new Array(64);var a,b,c,d,e,f,g,h,i,j;var T1,T2;m[l>>5]|=128<<(24-l%32);m[((l+64>>9)<<4)+15]=l;for(var i=0;i<m.length;i+=16){a=HASH[0];b=HASH[1];c=HASH[2];d=HASH[3];e=HASH[4];f=HASH[5];g=HASH[6];h=HASH[7];for(var j=0;j<64;j++){if(j<16){W[j]=m[j+i]}else{W[j]=safe_add(safe_add(safe_add(Gamma1256(W[j-2]),W[j-7]),Gamma0256(W[j-15])),W[j-16])}T1=safe_add(safe_add(safe_add(safe_add(h,Sigma1256(e)),Ch(e,f,g)),K[j]),W[j]);T2=safe_add(Sigma0256(a),Maj(a,b,c));h=g;g=f;f=e;e=safe_add(d,T1);d=c;c=b;b=a;a=safe_add(T1,T2)}HASH[0]=safe_add(a,HASH[0]);HASH[1]=safe_add(b,HASH[1]);HASH[2]=safe_add(c,HASH[2]);HASH[3]=safe_add(d,HASH[3]);HASH[4]=safe_add(e,HASH[4]);HASH[5]=safe_add(f,HASH[5]);HASH[6]=safe_add(g,HASH[6]);HASH[7]=safe_add(h,HASH[7])}return HASH}function str2binb(str){var bin=Array();var mask=(1<<chrsz)-1;for(var i=0;i<str.length*chrsz;i+=chrsz){bin[i>>5]|=(str.charCodeAt(i/chrsz)&mask)<<(24-i%32)}return bin}function Utf8Encode(string){string=string.replace(/\r\n/g,"\n");var utftext="";for(var n=0;n<string.length;n++){var c=string.charCodeAt(n);if(c<128){utftext+=String.fromCharCode(c)}else{if((c>127)&&(c<2048)){utftext+=String.fromCharCode((c>>6)|192);utftext+=String.fromCharCode((c&63)|128)}else{utftext+=String.fromCharCode((c>>12)|224);utftext+=String.fromCharCode(((c>>6)&63)|128);utftext+=String.fromCharCode((c&63)|128)}}}return utftext}function binb2hex(binarray){var hex_tab=hexcase?"0123456789ABCDEF":"0123456789abcdef";var str="";for(var i=0;i<binarray.length*4;i++){str+=hex_tab.charAt((binarray[i>>2]>>((3-i%4)*8+4))&15)+hex_tab.charAt((binarray[i>>2]>>((3-i%4)*8))&15)}return str}s=Utf8Encode(s);return binb2hex(core_sha256(str2binb(s),s.length*chrsz))}
 
+函数调用次数={}
 函数调用统计=function() {
   let name=arguments.callee.caller.name
-  if (!函数调用次数)
-    函数调用次数={}
   if (!函数调用次数[name])
     函数调用次数[name]={"users":{},"groups":{}}
   if (qun()) {
@@ -613,40 +612,72 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
     函数调用次数[name].users[qq()].names.push(username())
 }
 
+浇水成长值={}
 浇水=(q)=>{
   q=parseQQ(q)
   if (q===qq())
     return at()+" 不能给自己浇水"
   if (isNaN(q) || q <10000 || q > 4000000000)
     return at()+" 目标不正确"
-  if (!浇水成长值)
-  	浇水成长值={}
   if (!浇水成长值[q])
     浇水成长值[q]={value:0,fans:{}}
   if (!浇水成长值[q].fans[qq()])
     浇水成长值[q].fans[qq()]={value:0,last:0}
-  if (Date.now()-浇水成长值[q].fans[qq()].last<20*60*60*1000)
-    return at()+" 20小时内不能重复浇水。"
+  if (Date.now()-浇水成长值[q].fans[qq()].last<12*60*60*1000)
+    return at()+" 12小时内不能重复浇水。"
   let a = random(5,10)*random(5,10)
   let b = random(2,5)*random(2,5)
-  let double_text=""
-  let hour = (new Date(Date.now()+new Date().getTimezoneOffset()*60000).getHours()+8)%24
-  if (hour>=6&&hour<9) {
-    a*=2,b*=2,double_text="(早起收益加倍)"
-  }
+  // let double_text=""
+  // let hour = (new Date(Date.now()+new Date().getTimezoneOffset()*60000).getHours()+8)%24
+  // if (hour>=6&&hour<9) {
+  //   a*=2,b*=2,double_text="(早起收益加倍)"
+  // }
   浇水成长值[q].value+=a
   浇水成长值[q].fans[qq()].value+=b
   浇水成长值[q].fans[qq()].last=Date.now()
-  return at()+` 本次浇水收获${at(q)}的好感度${b}点${double_text}。
-目标获得成长值: ${a}点。当前成长值: ${浇水成长值[q].value}。`
+  return at()+`本次浇水获得${at(q)}的好感度${b}点。当前好感度${浇水成长值[q].fans[qq()].value}(${浇水称号(浇水成长值[q].fans[qq()].value,2)})。
+目标获得成长值${a}点。当前成长值${浇水成长值[q].value}(${浇水称号(浇水成长值[q].value)})。`
 }
 好感度=(q)=>{
   q=parseQQ(q)
   if (!浇水成长值[q])
     return "什么都没有"
-  let res = at(q)+" 当前的成长值："+浇水成长值[q].value+"。好感度："
+  let res = at(q)+` 当前的成长值：${浇水成长值[q].value}(${浇水称号(浇水成长值[q].value)})。好感度：`
   for (let k in 浇水成长值[q].fans)
-    res+="\n"+at(k)+`(${k}) / `+浇水成长值[q].fans[k].value
+    res+="\n"+at(k)+`(${k}) / ${浇水成长值[q].fans[k].value}(${浇水称号(浇水成长值[q].fans[k].value, 2)})`
   return res
+}
+浇水称号=(pt,type=1)=>{
+	if(type===1){
+		if (pt<1024)
+			return "小幼苗"
+		if (pt<2048)
+			return "茁壮成长"
+		if (pt<4096)
+			return "亭亭玉立"
+		if (pt<8192)
+			return "含苞待放"
+		if (pt<16384)
+			return "花枝招展"
+		if (pt<32768)
+			return "绝代佳人"
+		else
+			return "千古流芳"
+	}else{
+		if (pt<64)
+			return "工具人"
+		if (pt<128)
+			return "云备胎"
+		if (pt<256)
+			return "心有灵犀"
+		if (pt<512)
+			return "小鹿乱撞"
+		if (pt<1024)
+			return "ツンデレ"
+		if (pt<2048)
+			return "亲密无间"
+		else
+			return "生死不离"
+	}
 }
 
