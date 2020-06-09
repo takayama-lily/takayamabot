@@ -49,6 +49,7 @@ const fff = {limit: 1000} //群发言频率限制每秒1条
 
 const CQHttp = require("./cqhttp")
 const bot = new CQHttp()
+sandbox.require("setGroupBan", bot.setGroupBan)
 
 bot.on("request.friend", (data)=>{
     let answer = 0x142857
