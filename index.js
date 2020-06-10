@@ -11,7 +11,7 @@ process.on('uncaughtException', (e)=>{
     process.exit(1)
 })
 process.on('unhandledRejection', (reason, promise)=>{
-    fs.appendFileSync('err.log', Date() + ' Unhandled Rejection at:', promise, reason)
+    fs.appendFileSync('err.log', Date() + ' Unhandled Rejection at:' + JSON.stringify(promise) + 'reason:' + JSON.stringify(reason) + '\n')
 })
 
 const mjsoul = require('./utils/majsoul')
