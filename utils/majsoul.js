@@ -9,8 +9,7 @@ const config = require('./majsoul.config')
 const MJBot = require('./mjbot')
 
 const mjsoul = new MJBot({
-    url: 'wss://gateway-v2.maj-soul.com:5101'
-    // url: 'wss://gateway-cdn.maj-soul.com/gateway'
+    url: 'wss://gateway-cdn.maj-soul.com/gateway'
 })
 mjsoul.login(config['cn.account'], config['cn.password'])
 
