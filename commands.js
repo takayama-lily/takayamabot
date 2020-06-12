@@ -249,40 +249,40 @@ https://github.com/takayama-lily/riichi`
         ])
         return at(uid) +str1 + "\n" + str2
     },
-    "友人": async(param)=>{
-        if (!param)
-            return "需要输入房间号。"
-        let res = await mjutil.cn.roomJoin(param)
-        if (res.hasOwnProperty("error"))
-            return res.error.message
-        else
-            return `已进入${param}，1分钟不开自动退出。`
-    },
-    "比赛": async(param)=>{
-        if (!param)
-            return "需要输入赛事ID。"
-        let res = await mjutil.cn.contestReady(param)
-        if (res.hasOwnProperty("error"))
-            return res.error.message
-        else
-            return `已进入${param}，1分钟不开自动退出。`
-    },
-    "段位匹配": async(param)=>{
-        await mjutil.cn.match(3)
-    },
-    "停止匹配": async(param)=>{
-        await mjutil.cn.stopMatch()
-    },
-    "状态": async(param)=>{
-        let status = ["待机","匹配","游戏","暂停","准备","离线"]
-        let res = mjutil.cn.getStatus()
-        let text = `位置：${res.current.position}
-状态：${status[res.status]}`
-        return text
-    },
-    "status": async(param)=>{
-        return mjutil.cn.getStatus()
-    }
+//     "友人": async(param)=>{
+//         if (!param)
+//             return "需要输入房间号。"
+//         let res = await mjutil.cn.roomJoin(param)
+//         if (res.hasOwnProperty("error"))
+//             return res.error.message
+//         else
+//             return `已进入${param}，1分钟不开自动退出。`
+//     },
+//     "比赛": async(param)=>{
+//         if (!param)
+//             return "需要输入赛事ID。"
+//         let res = await mjutil.cn.contestReady(param)
+//         if (res.hasOwnProperty("error"))
+//             return res.error.message
+//         else
+//             return `已进入${param}，1分钟不开自动退出。`
+//     },
+//     "段位匹配": async(param)=>{
+//         await mjutil.cn.match(3)
+//     },
+//     "停止匹配": async(param)=>{
+//         await mjutil.cn.stopMatch()
+//     },
+//     "状态": async(param)=>{
+//         let status = ["待机","匹配","游戏","暂停","准备","离线"]
+//         let res = mjutil.cn.getStatus()
+//         let text = `位置：${res.current.position}
+// 状态：${status[res.status]}`
+//         return text
+//     },
+//     "status": async(param)=>{
+//         return mjutil.cn.getStatus()
+//     }
 }
 commands["雀魂"] = commands.qh
 commands["排名"] = commands.rank

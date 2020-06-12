@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "https-proxy-agent": "^3.0.1",
-    "mjsoul": "^2.1.1",
+    "mjsoul": "^2.1.2",
     "riichi": "^1.1.2",
     "sqlite3": "^4.2.0",
     "syanten": "^1.4.0",
