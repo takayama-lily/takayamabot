@@ -14,7 +14,7 @@ const reboot = ()=>{
 const commands = require("./commands")
 
 // 沙盒初始化
-const sandbox = require("./modules/sandbox")
+const sandbox = require("./modules/sandbox/sandbox")
 sandbox.require("向听", require("syanten"))
 let timeout = 50
 
