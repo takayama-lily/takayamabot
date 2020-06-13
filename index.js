@@ -14,7 +14,7 @@ process.on('unhandledRejection', (reason, promise)=>{
     fs.appendFileSync('err.log', Date() + ' Unhandled Rejection at:' + JSON.stringify(promise) + 'reason:' + JSON.stringify(reason) + '\n')
 })
 
-const mjsoul = require('./utils/majsoul')
+const mjsoul = require('./modules/majsoul')
 const deny = ["login", "logout"]
 
 const botMain = require('./bot')

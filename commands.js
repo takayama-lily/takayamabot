@@ -1,8 +1,8 @@
 "use strict"
 const https = require("https")
 const MJ = require("riichi")
-const mjutil = require("./utils/majsoul")
-const bgm = require("./utils/bgm")
+const mjutil = require("./modules/majsoul")
+const bgm = require("./modules/bgm")
 const at = (qq)=>`[CQ:at,qq=${qq}]`
 const buildImage = (url)=>`[CQ:image,file=${encodeURI(url)}]`
 
