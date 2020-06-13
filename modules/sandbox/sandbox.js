@@ -58,7 +58,8 @@ setInterval(()=>{
     fs.writeFile(contextFile, JSON.stringify(context), (err)=>{})
 }, 1800000)
 
-const run = (data, timeout = undefined, isAdmin = false)=>{
+let timeout = 50
+const run = (data, isAdmin = false)=>{
     let code = data.raw_message.trim()
     let debug = ["\\","＼"].includes(code.substr(0, 1))
     if (code.match(/([^\w]|^)+(this|async|const){1}([^\w]|$)+/) && !isAdmin)
@@ -98,3 +99,6 @@ module.exports.require = (name, object)=>{
 }
 module.exports.run = run
 module.exports.getContext = ()=>context
+module.exports.setTimeout = (t)=>{
+    timeout = t
+}

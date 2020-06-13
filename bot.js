@@ -1,4 +1,7 @@
 "use strict"
+const QQPlugin = require("./modules/qqplugin/cqhttp")
+const sandbox = require("./modules/sandbox/sandbox")
+const commands = require("./commands")
 const blacklist = [3507349275,429245111]
 blacklist.push(1738088495)
 const owner = 372914165
@@ -10,13 +13,7 @@ const reboot = ()=>{
     process.exit(1)
 }
 
-// 固定指令
-const commands = require("./commands")
-
-// 沙盒初始化
-const sandbox = require("./modules/sandbox/sandbox")
 sandbox.require("向听", require("syanten"))
-let timeout = 50
 
 // 敏感词
 const ero = require("./ero")
@@ -45,10 +42,8 @@ const replyFilter = (msg)=>{
     return msg
 }
 
+const bot = new QQPlugin()
 const fff = {limit: 1000} //群发言频率限制每秒1条
-
-const CQHttp = require("./cqhttp")
-const bot = new CQHttp()
 // sandbox.require("setGroupBan", bot.setGroupBan)
 
 bot.on("request.friend", (data)=>{
@@ -136,7 +131,7 @@ bot.on("message", async(data)=>{
             return reply(await commands[command](param))
         }
     } else {
-        let res = sandbox.run(data, timeout, isMaster(uid))
+        let res = sandbox.run(data, isMaster(uid))
         if (gid) {
             const now = Date.now()
             if (fff[gid] && now - fff[gid] <= fff.limit)
