@@ -2,6 +2,7 @@
 const fs = require('fs')
 const http = require('http')
 const url = require('url')
+const path = require('path')
 const querystring = require('querystring')
 const zlib = require('zlib')
 const MJSoul = require('mjsoul')
@@ -235,7 +236,7 @@ ${result[i].ptChange.join('->')}`
     return format
 }
 
-const recordCachePath = './data/record/'
+const recordCachePath = path.join(__dirname, 'data/records')
 if (!fs.existsSync(recordCachePath)) {
     fs.mkdirSync(recordCachePath, {recursive: true, mode: 0o700})
 }
@@ -243,7 +244,7 @@ const getParsedRecord = async(id)=>{
     if (!id)
         return {"error": "id required"}
     id = id.split("_").shift()
-    const filePath = recordCachePath + id
+    const filePath = path.join(recordCachePath, id)
     if (fs.existsSync(filePath)) {
         const buf = fs.readFileSync(filePath)
         return zlib.brotliDecompressSync(buf)
