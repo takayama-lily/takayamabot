@@ -6,8 +6,12 @@ const path = require('path')
 const querystring = require('querystring')
 const zlib = require('zlib')
 const MJSoul = require('mjsoul')
-const config = require('./majsoul.config')
 const MJBot = require('./mjbot')
+
+const config = {}
+config['cn.account'] = process.env.MAJSOUL_CN_ACCOUNT
+config['cn.password'] = process.env.MAJSOUL_CN_PASSWORD
+config['jp.token'] = process.env.MAJSOUL_JP_TOKEN
 
 const mjsoul = new MJBot({
     url: 'wss://gateway-cdn.maj-soul.com/gateway'
