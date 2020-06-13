@@ -4,7 +4,7 @@ const vm = require("vm")
 const dataPath = module.path + "/../data/"//path.join(__dirname, "data")
 const contextFile = path.join(dataPath, "context")
 const fnFile = path.join(dataPath, "context.fn")
-const initCodeFile = path.join(dataPath, "sandbox.code.js")
+const initCodeFile = path.join(module.path, "sandbox.code.js")
 if (!fs.existsSync(dataPath)) {
     fs.mkdirSync(dataPath, {recursive: true, mode: 0o700})
 }
