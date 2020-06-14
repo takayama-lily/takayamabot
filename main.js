@@ -1,6 +1,95 @@
 "use strict"
+const fs = require("fs")
+const url = require("url")
+const querystring = require("querystring")
+const http = require("http")
+const WebSocket = require("ws")
+const zlib = require("zlib")
+const spawn = require("child_process")
+process.on("uncaughtException", (e)=>{
+    fs.appendFileSync("err.log", Date() + " " + e.stack + "\n")
+    process.exit(1)
+})
+process.on("unhandledRejection", (reason, promise)=>{
+    fs.appendFileSync("err.log", Date() + " Unhandled Rejection at:" + JSON.stringify(promise) + "reason:" + JSON.stringify(reason) + "\n")
+})
+
+const manager = require("./manager")
+const mjsoul = require("./modules/majsoul/majsoul")
+
+const fn = async(req)=>{
+    let r = url.parse(req.url)
+    let query = querystring.parse(r.query)
+
+    //机器人后台管理
+    // if (r.pathname === "/manage/bot") {
+    //     return manager()
+    // }
+
+    //牌谱请求
+    if (r.pathname === "/record") {
+        return await mjsoul.getParsedRecord(query.id)
+    }
+    
+    //国服雀魂api
+    else if (r.pathname === "/api" && query.m && !["login", "logout"].includes(query.m)) {
+        return await mjsoul.cn.sendAsync(query.m, query)
+    }
+    
+    //日服雀魂api
+    else if (r.pathname === "/jp/api" && query.m && !["login", "logout"].includes(query.m)) {
+        return await mjsoul.jp.sendAsync(query.m, query)
+    }
+    
+    //处理github push请求
+    else if (r.pathname === "/youShouldPull") {
+        return new Promise((resolve, reject)=>{
+            spawn.exec("./up", (error, stdout, stderr) => {
+                let output = {
+                    "stdout": stdout,
+                    "stderr": stderr,
+                    "error": error
+                }
+                resolve(output)
+            })
+        })
+    }
+}
+
+//开启http服务器处理一些请求
+const server = http.createServer(async(req, res)=>{
+    let result
+    try {
+        result = await fn(req)
+        if (!result) {
+            res.writeHead(302, {"Location": "/index.html"})
+            res.end()
+            return
+        }
+    } catch(e) {
+        result = e
+    }
+    if (!(result instanceof Buffer) && typeof result !== "string")
+        result = JSON.stringify(result)
+    res.setHeader("Content-Type", "application/json; charset=utf-8")
+
+    //开启gzip
+    let acceptEncoding = req.headers["accept-encoding"]
+    if (acceptEncoding && acceptEncoding.includes("gzip")) {
+        res.writeHead(200, { "Content-Encoding": "gzip" })
+        const output = zlib.createGzip()
+        output.pipe(res)
+        output.write(result, ()=>{
+            output.flush(()=>res.end())
+        });
+    } else {
+        res.end(result)
+    }
+})
+
 const QQPlugin = require("./modules/qqplugin/cqhttp")
 const sandbox = require("./modules/sandbox/sandbox")
+sandbox.require("向听", require("syanten"))
 const commands = require("./commands")
 const blacklist = [3507349275,429245111]
 blacklist.push(1738088495)
@@ -12,8 +101,6 @@ const isMaster = (uid)=>{
 const reboot = ()=>{
     process.exit(1)
 }
-
-sandbox.require("向听", require("syanten"))
 
 // 敏感词
 const ero = /(看批|日批|香批|批里|成人|无码|苍井空|b里|嫩b|嫩比|小便|大便|粪|屎|尿|淦|屄|屌|奸|淫|穴|yin|luan|xue|jiao|cao|sao|肏|肛|骚|逼|妓|艹|子宫|月经|危险期|安全期|戴套|无套|内射|中出|射在里|射在外|精子|卵子|受精|幼女|嫩幼|粉嫩|日我|日烂|草我|草烂|干我|日死|草死|干死|狂草|狂干|狂插|狂操|日比|草比|搞我|舔我|舔阴|浪女|浪货|浪逼|浪妇|发浪|浪叫|淫荡|淫乱|荡妇|荡女|荡货|操烂|抽插|被干|被草|被操|被日|被上|被艹|被插|被射|射爆|射了|颜射|射脸|按摩棒|肉穴|小穴|阴核|阴户|阴阜|阴蒂|阴囊|阴部|阴道|阴唇|阴茎|肉棒|阳具|龟头|勃起|爱液|蜜液|精液|食精|咽精|吃精|吸精|吞精|喷精|射精|遗精|梦遗|深喉|人兽|兽交|滥交|拳交|乱交|群交|肛交|足交|脚交|口爆|口活|口交|乳交|乳房|乳头|乳沟|巨乳|玉乳|豪乳|暴乳|爆乳|乳爆|乳首|乳罩|奶子|奶罩|摸奶|胸罩|摸胸|胸部|胸推|推油|大保健|黄片|爽片|a片|野战|叫床|露出|露b|漏出|漏b|乱伦|轮奸|轮暴|轮操|强奸|强暴|情色|色情|全裸|裸体|果体|酥痒|捏弄|套弄|体位|骑乘|后入|二穴|三穴|嬲|调教|凌辱|饥渴|好想要|性交|性奴|性虐|性欲|性行为|性爱|做爱|作爱|手淫|撸管|自慰|痴女|jj|jb|j8|j8|鸡8|鸡ba|鸡鸡|鸡巴|鸡吧|鸡儿|肉便器|rbq|泄欲|发泄|高潮|潮吹|潮喷|爽死|爽翻|爽爆|你妈|屁眼|后庭|菊花|援交|操死|插死)/ig
@@ -95,7 +182,7 @@ bot.on("message", async(data)=>{
         if (command === "request" && param.length) {
             let params = param.split(" ")
             let action = params.shift()
-            if (typeof bot[action] === 'function') {
+            if (typeof bot[action] === "function") {
                 reply(await bot[action].apply(bot, params))
             }
             return
@@ -112,7 +199,7 @@ bot.on("message", async(data)=>{
             }
             return reply(result)
         }
-        if (command === 'vip') {
+        if (command === "vip") {
             if (!param)
                 param = uid.toString()
             let res = (await bot.getVipInfo(param.replace(/(&#91;|&#93;)/g,"").replace(/[^(0-9)]/g,""))).data
@@ -143,10 +230,12 @@ bot.on("message", async(data)=>{
     }
 })
 
-module.exports = (conn, data)=>{
-    bot.conn = conn
-    bot.onEvent(data)
-}
-module.exports.manage = ()=>{
-    return sandbox.getContext()
-}
+//开启ws服务器处理bot请求
+const ws = new WebSocket.Server({server})
+ws.on("connection", (conn)=>{
+    conn.on("message", (data)=>{
+        bot.conn = conn
+        bot.onEvent(data)
+    })   
+})
+server.listen(3000)
