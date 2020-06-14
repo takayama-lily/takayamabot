@@ -33,7 +33,7 @@ const fn = async(req)=>{
     
     //国服雀魂api
     else if (r.pathname === "/api" && query.m && !["login", "logout"].includes(query.m)) {
-        console.log(query)
+        console.log(Date(), query)
         return await mjsoul.cn.sendAsync(query.m, query)
     }
     
