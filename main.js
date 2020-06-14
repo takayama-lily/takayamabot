@@ -28,6 +28,7 @@ const fn = async(req)=>{
 
     //牌谱请求
     if (r.pathname === "/record") {
+        console.log(Date(), query)
         return await mjsoul.getParsedRecord(query.id)
     }
     
