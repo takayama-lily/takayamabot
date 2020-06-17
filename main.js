@@ -178,7 +178,7 @@ bot.on("notice.group_increase", async(data)=>{
             bot.setGroupLeave(data.group_id)
     }
 })
-bot.on("notice", async(data)=>{
+bot.on("notice", (data)=>{
     sandbox.run(`onNotice(${JSON.stringify(data)})`)
 })
 const prefix_list = ["-","/",".","?","!","？","！","－"]
