@@ -133,13 +133,7 @@ const replyFilter = (msg)=>{
 const bot = new QQPlugin()
 const fff = {limit: 1000} //群发言频率限制每秒1条
 
-function ban(gid, uid, duration = 60) {
-    bot.setGroupBan(gid, uid, duration)
-}
-
-// const passon = require("./api_passon")
-sandbox.require("$", ban)
-sandbox.require("向听", require("syanten"))
+require("./api_passon")(bot)
 
 bot.on("request.friend", (data)=>{
     return bot.approve(data)
