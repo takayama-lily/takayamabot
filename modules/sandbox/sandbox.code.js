@@ -187,10 +187,10 @@ const group_proxy_handler = {
 		Object.defineProperty(o, key, descriptor)
 	}
 }
-Object.freeze(group_proxy_handler)
+Object.freeze(group_proxy_handler);
 
 (()=>{
-	const tmp = {}
+	let tmp = {}
 	if (this.database)
 		tmp = this.database
 	delete this.database
