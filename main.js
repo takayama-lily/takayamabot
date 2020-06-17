@@ -138,7 +138,7 @@ function ban(gid, uid, duration = 60) {
 }
 
 // const passon = require("./api_passon")
-sandbox.require("$", bot)
+sandbox.require("$", ban)
 sandbox.require("向听", require("syanten"))
 
 bot.on("request.friend", (data)=>{
