@@ -168,11 +168,6 @@ const grouphead=(group=qun(),cache=true)=>{
 }
 
 const group_proxy_handler = {
-	get: (o, key)=>{
-		if (key != qun())
-			throw new Error("403 forbidden")
-		return o[key]
-	},
 	set: (o, key, value)=>{
 		if (key != qun())
 			throw new Error("403 forbidden")
