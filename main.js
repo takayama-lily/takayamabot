@@ -197,12 +197,6 @@ bot.on("message", async(data)=>{
         let split = message.substr(1).trim().split(" ")
         let command = split.shift()
         let param = split.join(" ")
-        if (command === "获得管理") {
-            return bot.setGroupAdmin(gid, uid)
-        }
-        if (command === "放弃管理") {
-            return bot.setGroupAdmin(gid, uid, false)
-        }
         if (command === "request" && param.length) {
             let params = param.split(" ")
             let action = params.shift()
@@ -210,9 +204,6 @@ bot.on("message", async(data)=>{
                 reply(await bot[action].apply(bot, params))
             }
             return
-        }
-        if (command === "card" && gid && param) {
-            return bot.setGroupCard(gid, me, param)
         }
         if (isMaster(uid) && command === "run" && param.length) {
             let result
