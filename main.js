@@ -148,8 +148,13 @@ bot.on("request.group.invite", (data)=>{
 })
 const bans = {}
 bot.on("notice.group_ban.lift_ban", (data)=>{
-    if (data.user_id === data.self_id)
+    if (data.user_id === data.self_id) {
+        if (bans.hasOwnProperty(data.group_id)) {
+            clearTimeout(bans[data.group_id])
+            delete bans[data.group_id]
+        }
         bot.sendGroupMsg(data.group_id, "为什么要禁言我")
+    }
 })
 bot.on("notice.group_ban.ban", (data)=>{
     if (data.user_id === data.self_id && data.duration > 86400)
