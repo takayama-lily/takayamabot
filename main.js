@@ -150,7 +150,7 @@ const bans = {}
 bot.on("notice.group_ban.lift_ban", (data)=>{
     if (data.user_id === data.self_id)
         bot.sendGroupMsg(data.group_id, "为什么要禁言我")
-}
+})
 bot.on("notice.group_ban.ban", (data)=>{
     if (data.user_id === data.self_id && data.duration > 86400)
         bot.setGroupLeave(data.group_id)
