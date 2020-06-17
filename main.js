@@ -134,8 +134,8 @@ const replyFilter = (msg)=>{
 const bot = new QQPlugin()
 const fff = {limit: 1000} //群发言频率限制每秒1条
 
-function ban(gid, uid, duration = 600) {
-    bot.setGroupBan(gid, uid, duration = 600)
+function ban(gid, uid, duration = 60) {
+    bot.setGroupBan(gid, uid, duration)
 }
 sandbox.require("setGroupBan", ban)
 
@@ -201,9 +201,6 @@ bot.on("message", async(data)=>{
         let split = message.substr(1).trim().split(" ")
         let command = split.shift()
         let param = split.join(" ")
-        if (command === "ban") {
-            return ban(gid, parseInt(param), 60)
-        }
         if (command === "获得管理") {
             return bot.setGroupAdmin(gid, uid)
         }
