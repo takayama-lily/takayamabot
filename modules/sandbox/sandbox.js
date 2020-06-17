@@ -93,8 +93,6 @@ const run = (data, isAdmin = false)=>{
 }
 
 module.exports.require = (name, object)=>{
-    if (object.constructor)
-        object.constructor = undefined
     context[name] = object
 }
 module.exports.run = run
