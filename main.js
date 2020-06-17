@@ -236,7 +236,13 @@ bot.on("message", async(data)=>{
             return reply(await commands[command](param))
         }
     } else {
-        let res = sandbox.run(data, isMaster(uid))
+        let code = data.raw_message.trim()
+        let atme = `[CQ:at,qq=${data.self_id}]`
+        while (code.startsWith(atme))
+            code = code.replace(atme, "").trim()
+        sandbox.run("data="+JSON.stringify(data), true)
+        sandbox.run("Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);", true)
+        let res = sandbox.run(code, isMaster(uid))
         if (gid) {
             const now = Date.now()
             if (fff[gid] && now - fff[gid] <= fff.limit)
