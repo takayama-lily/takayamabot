@@ -156,13 +156,50 @@ const img=(url,cache=1)=>{
 	cache=cache?1:0
 	return `[CQ:image,cache=${cache},file=${encodeURI(url)}]`
 }
-const qhead=(q=qq(),cache=true)=>{
+const qqhead=(q=qq(),cache=true)=>{
 	if (q===false||q ===0)
 		cache=false,q=qq()
     return img("http://q1.qlogo.cn/g?b=qq&s=640&nk="+parseQQ(q),cache)
 }
-const ghead=(group=qun(),cache=true)=>{
+const grouphead=(group=qun(),cache=true)=>{
 	if (group===false||group===0)
 		cache=false,group=qun()
 	return img("http://p.qlogo.cn/gh/"+group+"/"+group+"/640",cache)
 }
+
+const group_proxy_handler = {
+	get: (o, key)=>{
+		if (key != qun())
+			throw new Error("403 forbidden")
+		return o[key]
+	},
+	set: (o, key, value)=>{
+		if (key != qun())
+			throw new Error("403 forbidden")
+		return o[key] = value
+	},
+	deleteProperty: (o, key)=>{
+		throw new Error("403 forbidden")
+	},
+	defineProperty: (o, key, descriptor)=>{
+		if (key != qun())
+			throw new Error("403 forbidden")
+		Object.defineProperty(o, key, descriptor)
+	}
+}
+Object.freeze(group_proxy_handler)
+
+(()=>{
+	const tmp = {}
+	if (this.database)
+		tmp = this.database
+	delete this.database
+	tmp = new Proxy(tmp, group_proxy_handler)
+	Object.defineProperty(this, "database", {
+		configurable: false,
+		enumerable: true,
+		writable: false,
+		value: tmp
+	})
+})()
+
