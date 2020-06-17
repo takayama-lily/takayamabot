@@ -14,10 +14,14 @@ $.setGroupAnonymous //设置&取消允许匿名
 $.setGroupAdmin //设置&取消管理
 $.setGroupSpecialTitle //设置群头衔`
 
+let last = Date.now()
 const frequency = {}
 const check_frequency = (object)=>{
+    if (Date.now() - last < 50)
+        throw new Error("调用频率太快")
     if (frequency.hasOwnProperty(object) && Date.now() - frequency[object] < 1000)
         throw new Error("调用频率太快")
+    last = Date.now()
     frequency[object] = Date.now()
 }
 
