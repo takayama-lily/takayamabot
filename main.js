@@ -146,9 +146,21 @@ bot.on("request.friend", (data)=>{
 bot.on("request.group.invite", (data)=>{
     bot.approve(data)
 })
+const bans = {}
 bot.on("notice.group_ban.ban", (data)=>{
     if (data.user_id === data.self_id && data.duration > 86400)
         bot.setGroupLeave(data.group_id)
+    else if (data.user_id === data.self_id) {
+        if (bans.hasOwnProperty(data.group_id)) {
+            clearTimeout(bans[data.group_id])
+            delete bans[data.group_id]
+        }
+        const id = setTimeout(()=>{
+            bot.sendGroupMsg(data.group_id, "为什么要禁言我")
+            delete bans[data.group_id]
+        }, (data.duration+1)*1000)
+        bans[data.group_id] = id
+    }
 })
 bot.on("notice.group_increase", async(data)=>{
     if (data.user_id === data.self_id) {
