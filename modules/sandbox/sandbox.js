@@ -94,6 +94,9 @@ const run = (data, isAdmin = false)=>{
 
 module.exports.require = (name, object)=>{
     context[name] = object
+    vm.runInContext(`const ${name} = this.${name}
+Object.freeze(${name})
+Object.freeze(${name}.prototype)`, context)
 }
 module.exports.run = run
 module.exports.getContext = ()=>context
