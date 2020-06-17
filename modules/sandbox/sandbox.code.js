@@ -82,7 +82,7 @@ Object.freeze(Reflect)
 Object.freeze(DataView)
 Object.freeze(DataView.prototype)
 Object.freeze(Atomics)
-// delete Promise
+delete Promise
 delete globalThis
 delete console
 const constructor = undefined
