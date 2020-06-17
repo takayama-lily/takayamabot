@@ -91,7 +91,6 @@ const server = http.createServer(async(req, res)=>{
 
 const QQPlugin = require("./modules/qqplugin/cqhttp")
 const sandbox = require("./modules/sandbox/sandbox")
-sandbox.require("向听", require("syanten"))
 const commands = require("./commands")
 const blacklist = [3507349275,429245111]
 blacklist.push(1738088495)
@@ -137,7 +136,10 @@ const fff = {limit: 1000} //群发言频率限制每秒1条
 function ban(gid, uid, duration = 60) {
     bot.setGroupBan(gid, uid, duration)
 }
-sandbox.require("setGroupBan", ban)
+
+// const passon = require("./api_passon")
+sandbox.require("$", bot)
+sandbox.require("向听", require("syanten"))
 
 bot.on("request.friend", (data)=>{
     return bot.approve(data)
