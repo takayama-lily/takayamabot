@@ -6,6 +6,7 @@ $.sendGroupMsg //发送群聊
 $.deleteMsg //撤回消息
 $.setGroupLeave //退群
 $.setGroupCard //设置群名片
+$.setGroupRequest //处理加群请求
 $.sendGroupNotice //发布群公告
 $.setGroupKick //群踢人
 $.setGroupBan //群禁言
@@ -21,25 +22,32 @@ alert(msg) //输出(无返回值)
 self() //返回当前群的数据库(不会串群)
 at(qq) //返回at一个人
 
-● 群事件处理：
-需要自行实现"notice群号"函数，例如群号为1234567，则实现
-function notice1234567(data) {
+● 自定义群事件处理：
+需要自行实现"on_notice_群号"和"on_message_群号"函数，例如群号为1234567，则实现
+function on_notice_1234567(data) { //该函数在有群事件时触发
+    alert(JSON.stringify(data))
+}
+function on_message_1234567(data) { //该函数在有群消息时触发
     alert(JSON.stringify(data))
 }`
 
-let last = Date.now()
+let rest = 3
+setInterval(()=>{
+    rest = 3
+}, 50)
 const check_frequency = ()=>{
-    if (Date.now() - last < 50)
+    if (rest === 0)
         throw new Error("调用频率太快")
+    --rest
 }
 
 module.exports = (bot)=>{
     $.sendPrivateMsg = (uid, msg, escape = false)=>{
-        check_frequency(uid)
+        check_frequency()
         bot.sendPrivateMsg(uid, msg, escape)
     }
     $.sendGroupMsg = (gid, msg, escape = false)=>{
-        check_frequency(gid)
+        check_frequency()
         bot.sendGroupMsg(gid, msg, escape)
     }
     $.deleteMsg = (message_id)=>{
@@ -47,44 +55,48 @@ module.exports = (bot)=>{
         bot.deleteMsg(message_id)
     }
     $.setGroupKick = (gid, uid, forever = false)=>{
-        check_frequency(gid)
+        check_frequency()
         bot.setGroupKick(gid, uid, forever)
     }
     $.setGroupBan = (gid, uid, duration = 60)=>{
-        check_frequency(gid)
+        check_frequency()
         bot.setGroupBan(gid, uid, duration)
     }
     $.setGroupAnonymousBan = (gid, flag, duration = 60)=>{
-        check_frequency(gid)
+        check_frequency()
         bot.setGroupAnonymousBan(gid, flag, duration)
     }
     $.setGroupAdmin = (gid, uid, enable = true)=>{
-        check_frequency(gid)
+        check_frequency()
         bot.setGroupAdmin(gid, uid, enable)
     }
     $.setGroupWholeBan = (gid, enable = true)=>{
-        check_frequency(gid)
+        check_frequency()
         bot.setGroupWholeBan(gid, enable)
     }
     $.setGroupAnonymous = (gid, enable = true)=>{
-        check_frequency(gid)
+        check_frequency()
         bot.setGroupAnonymous(gid, enable)
     }
     $.setGroupCard = (gid, uid, card = undefined)=>{
-        check_frequency(gid)
+        check_frequency()
         bot.setGroupCard(gid, uid, card)
     }
     $.setGroupLeave = (gid, dismiss = false)=>{
-        check_frequency(gid)
+        check_frequency()
         bot.setGroupLeave(gid, dismiss)
     }
     $.setGroupSpecialTitle = (gid, uid, title, duration = -1)=>{
-        check_frequency(gid)
+        check_frequency()
         bot.setGroupSpecialTitle(gid, uid, title, duration)
     }
     $.sendGroupNotice = (gid, title, content)=>{
-        check_frequency(gid)
+        check_frequency()
         bot.sendGroupNotice(gid, title, content)
+    }
+    $.setGroupRequest = (flag, approve = true, reason = undefined)=>{
+        check_frequency()
+        bot.setGroupRequest(flag, approve, reason)
     }
     sandbox.require("$", $)
 }

@@ -178,8 +178,14 @@ bot.on("notice.group_increase", async(data)=>{
             bot.setGroupLeave(data.group_id)
     }
 })
+bot.on("message.group", (data)=>{
+    sandbox.run(`data=${JSON.stringify(data)};onEvents(data)`)
+})
 bot.on("notice", (data)=>{
-    sandbox.run(`data=${JSON.stringify(data)};onNotice(data)`)
+    sandbox.run(`data=${JSON.stringify(data)};onEvents(data)`)
+})
+bot.on("request.group.add", (data)=>{
+    sandbox.run(`data=${JSON.stringify(data)};onEvents(data)`)
 })
 const prefix_list = ["-","/",".","?","!","？","！","－"]
 bot.on("message", async(data)=>{

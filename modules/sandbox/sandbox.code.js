@@ -218,14 +218,18 @@ Object.freeze(group_proxy_handler);
 	})
 })()
 
-const onNotice = (data)=>{
-	if (data.group_id) {
-		let method = "notice" + data.group_id
-		if (typeof this[method] === "function") {
-			try {
-				this[method](data)
-			} catch(e) {}
-		}
+const onEvents = (data)=>{
+	if (!data.group_id)
+		return
+	let method
+	if (data.post_type === "message")
+		method = "on_message_" + data.group_id
+	else (data.message)
+		method = "on_notice_" + data.group_id
+	if (typeof this[method] === "function") {
+		try {
+			this[method](data)
+		} catch(e) {}
 	}
 }
 
