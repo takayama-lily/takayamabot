@@ -224,7 +224,7 @@ const onEvents = (data)=>{
 	let method
 	if (data.post_type === "message")
 		method = "on_message_" + data.group_id
-	else (data.message)
+	else
 		method = "on_notice_" + data.group_id
 	if (typeof this[method] === "function") {
 		try {
