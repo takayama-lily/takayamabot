@@ -221,7 +221,7 @@ Object.freeze(group_proxy_handler);
 const onNotice = (data)=>{
 	if (data.group_id) {
 		let method = "notice" + data.group_id
-		if (this.hasOwnProperty(method)) {
+		if (typeof this[method] === "function") {
 			try {
 				method(data)
 			} catch(e) {}
@@ -231,7 +231,7 @@ const onNotice = (data)=>{
 
 const alert = (msg, escape = false)=>{
 	if (qun())
-		$.sendGroupMsg(qun(), msg, escape)
+		$.sendGroupMsg(qun(), msg.toString(), escape)
 	else
-		$.sendPrivateMsg(qq(), msg, escape)
+		$.sendPrivateMsg(qq(), msg.toString(), escape)
 }
