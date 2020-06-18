@@ -167,19 +167,37 @@ const grouphead=(group=qun(),cache=true)=>{
 	return img("http://p.qlogo.cn/gh/"+group+"/"+group+"/640",cache)
 }
 
+const self = ()=>this.database[qun()]
 const group_proxy_handler = {
-	set: (o, key, value)=>{
-		if (key != qun())
+	get: (o, k)=>{
+		if (!qq())
+			return o[k]
+		if (parseInt(k) !== qun())
 			throw new Error("403 forbidden")
-		return o[key] = value
+		if (!o.hasOwnProperty(k))
+			o[k] = {}
+		return o[k]
 	},
-	deleteProperty: (o, key)=>{
+	set: (o, k, v)=>{
 		throw new Error("403 forbidden")
 	},
-	defineProperty: (o, key, descriptor)=>{
-		if (key != qun())
-			throw new Error("403 forbidden")
-		Object.defineProperty(o, key, descriptor)
+	has: (o, k)=>{
+		throw new Error("403 forbidden")
+	},
+	deleteProperty: (o, k)=>{
+		throw new Error("403 forbidden")
+	},
+	defineProperty: (o, k, d)=>{
+		throw new Error("403 forbidden")
+	},
+	ownKeys: (o)=>{
+		throw new Error("403 forbidden")
+	},
+	preventExtensions: (o)=>{
+		throw new Error("403 forbidden")
+	},
+	setPrototypeOf: (o, prototype)=>{
+		throw new Error("403 forbidden")
 	}
 }
 Object.freeze(group_proxy_handler);
@@ -197,4 +215,3 @@ Object.freeze(group_proxy_handler);
 		value: tmp
 	})
 })()
-

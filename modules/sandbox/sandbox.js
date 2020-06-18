@@ -39,13 +39,14 @@ const beforeSaveContext = ()=>{
         }
         if (typeof context[k] === "object") {
             try {
-                if (JSON.stringify(context[k]).length > 524288)
+                if (JSON.stringify(context[k]).length > 10485760)
                     delete context[k]
             } catch (e) {
                 delete context[k]
             }
         }
     }
+    vm.runInContext(`data={}`, context)
 }
 process.on("exit", (code)=>{
     beforeSaveContext()
