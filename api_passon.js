@@ -15,7 +15,7 @@ $.setGroupAdmin //设置&取消管理
 $.setGroupSpecialTitle //设置群头衔`
 
 let last = Date.now()
-const check_frequency = (object)=>{
+const check_frequency = ()=>{
     if (Date.now() - last < 50)
         throw new Error("调用频率太快")
 }
@@ -28,6 +28,10 @@ module.exports = (bot)=>{
     $.sendGroupMsg = (gid, msg, escape = false)=>{
         check_frequency(gid)
         bot.sendGroupMsg(gid, msg, escape)
+    }
+    $.deleteMsg = (message_id)=>{
+        check_frequency()
+        bot.deleteMsg(message_id)
     }
     $.setGroupKick = (gid, uid, forever = false)=>{
         check_frequency(gid)
