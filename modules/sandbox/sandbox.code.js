@@ -191,6 +191,8 @@ const group_proxy_handler = {
 		throw new Error("403 forbidden")
 	},
 	ownKeys: (o)=>{
+		if (!qq())
+			return Reflect.ownKeys(target)
 		throw new Error("403 forbidden")
 	},
 	preventExtensions: (o)=>{
