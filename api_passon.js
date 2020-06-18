@@ -1,5 +1,6 @@
 const sandbox = require("./modules/sandbox/sandbox")
-const $ = new String(`输入$.help查看文档`)
+const $ = new String(`你现在看到的是一个全局变量
+输入$.help查看开发文档`)
 $.help = `● 以下是QQAPI：
 $.sendPrivateMsg //发送私聊
 $.sendGroupMsg //发送群聊
@@ -24,10 +25,14 @@ at(qq) //返回at一个人
 
 ● 自定义群事件处理：
 需要自行实现"on_notice_群号"和"on_message_群号"函数，例如群号为1234567，则实现
-function on_notice_1234567(data) { //该函数在有群事件时触发
+
+//该函数在有群事件时触发
+function on_notice_1234567(data) { 
     alert(JSON.stringify(data))
 }
-function on_message_1234567(data) { //该函数在有群消息时触发
+
+//该函数在有群消息时触发，data与环境变量data完全一致
+function on_message_1234567(data) { 
     alert(JSON.stringify(data))
 }`
 
