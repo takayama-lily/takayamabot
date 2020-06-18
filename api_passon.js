@@ -1,6 +1,5 @@
 const sandbox = require("./modules/sandbox/sandbox")
-const $ = new String(`你现在看到的是一个全局变量
-输入$.help查看开发文档`)
+const $ = new String(`你现在看到的是一个全局变量。输入$.help查看开发文档。`)
 $.help = `● 以下是QQAPI：
 $.sendPrivateMsg //发送私聊
 $.sendGroupMsg //发送群聊
