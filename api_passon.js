@@ -4,7 +4,6 @@ $.help = `● 以下是QQAPI：
 $.sendPrivateMsg //发送私聊
 $.sendGroupMsg //发送群聊
 $.deleteMsg //撤回消息
-$.setGroupLeave //退群
 $.setGroupCard //设置群名片
 $.setGroupRequest //处理加群请求
 $.sendGroupNotice //发布群公告
