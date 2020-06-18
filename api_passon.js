@@ -1,6 +1,6 @@
 const sandbox = require("./modules/sandbox/sandbox")
 const $ = new String(`输入$.help查看文档`)
-$.help = `部分需要管理员或群主权限
+$.help = `● 以下是QQAPI：
 $.sendPrivateMsg //发送私聊
 $.sendGroupMsg //发送群聊
 $.deleteMsg //撤回消息
@@ -13,7 +13,19 @@ $.setGroupAnonymousBan //禁言匿名者
 $.setGroupWholeBan //设置&取消全员禁言
 $.setGroupAnonymous //设置&取消允许匿名
 $.setGroupAdmin //设置&取消管理
-$.setGroupSpecialTitle //设置群头衔`
+$.setGroupSpecialTitle //设置群头衔
+(有调用频率限制，部分需要管理员或群主权限)
+
+● 以下是通用API：
+alert(msg) //输出(无返回值)
+self() //返回当前群的数据库(不会串群)
+at(qq) //返回at一个人
+
+● 群事件处理：
+需要自行实现"notice群号"函数，例如群号为1234567，则实现
+function notice1234567(data) {
+    alert(JSON.stringify(data))
+}`
 
 let last = Date.now()
 const check_frequency = ()=>{

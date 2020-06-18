@@ -217,3 +217,21 @@ Object.freeze(group_proxy_handler);
 		value: tmp
 	})
 })()
+
+const onNotice = (data)=>{
+	if (data.group_id) {
+		let method = "notice" + data.group_id
+		if (this.hasOwnProperty(method)) {
+			try {
+				method(data)
+			} catch(e) {}
+		}
+	}
+}
+
+const alert = (msg, escape = false)=>{
+	if (qun())
+		$.sendGroupMsg(qun(), msg, escape)
+	else
+		$.sendPrivateMsg(qq(), msg, escape)
+}
