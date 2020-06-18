@@ -88,6 +88,7 @@ const run = (code, isAdmin = false)=>{
 module.exports.require = (name, object)=>{
     context[name] = object
     vm.runInContext(`const ${name} = this.${name}
+delete this.${name}
 Object.freeze(${name})
 Object.freeze(${name}.prototype)`, context)
 }
