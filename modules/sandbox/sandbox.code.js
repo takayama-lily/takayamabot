@@ -218,12 +218,12 @@ Object.freeze(group_proxy_handler);
 	})
 })()
 
-const onNotice = (data)=>{
+this.onNotice = (data)=>{
 	if (data.group_id) {
 		let method = "notice" + data.group_id
 		if (typeof this[method] === "function") {
 			try {
-				method(data)
+				this.method(data)
 			} catch(e) {}
 		}
 	}
