@@ -3,6 +3,7 @@ const $ = new String(`输入$.help查看文档`)
 $.help = `部分需要管理员或群主权限
 $.sendPrivateMsg //发送私聊
 $.sendGroupMsg //发送群聊
+$.deleteMsg //撤回消息
 $.setGroupLeave //退群
 $.setGroupCard //设置群名片
 $.sendGroupNotice //发布群公告
