@@ -267,28 +267,40 @@ this.set_history = this.set_history && typeof this.set_history === "object" ? th
 // 		throw error403
 // 	}
 // })
-Object.defineProperty(this, "set_history", {
-	configurable: false,
-	enumerable: true,
-	writable: false,
-	value: this.set_history
-})
-Object.defineProperty(this, "recordSetHistory", {
-	configurable: false,
-	enumerable: false,
-	writable: false,
-	value: (k)=>{
-		if (!this.qq())
-			return
-		this.set_history_allowed = true
-		this.set_history[k] = {
-			id: this.qq(),
-			name: this.user(0),
-			group: this.qun(),
-			card: this.user(1)
-		}
-		this.set_history_allowed = false
-	}
-})
+// Object.defineProperty(this, "set_history", {
+// 	configurable: false,
+// 	enumerable: true,
+// 	writable: false,
+// 	value: this.set_history
+// })
+// Object.defineProperty(this, "recordSetHistory", {
+// 	configurable: false,
+// 	enumerable: false,
+// 	writable: false,
+// 	value: (k)=>{
+// 		if (!this.qq())
+// 			return
+// 		this.set_history_allowed = true
+// 		this.set_history[k] = {
+// 			id: this.qq(),
+// 			name: this.user(0),
+// 			group: this.qun(),
+// 			card: this.user(1)
+// 		}
+// 		this.set_history_allowed = false
+// 	}
+// })
 
+this.recordSetHistory = (k)=>{
+	if (!this.qq())
+		return
+	this.set_history_allowed = true
+	this.set_history[k] = {
+		id: this.qq(),
+		name: this.user(0),
+		group: this.qun(),
+		card: this.user(1)
+	}
+	this.set_history_allowed = false
+}
 delete Proxy
