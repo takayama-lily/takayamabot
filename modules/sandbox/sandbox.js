@@ -18,9 +18,10 @@ if (fs.existsSync(contextFile)) {
 //把context包装成proxy对象，来捕捉一些操作
 context = new Proxy(context, {
     set(o, k, v) {
+        Reflect.set(o, k, v)
         if (typeof o.recordSetHistory === "function")
             o.recordSetHistory(k)
-        return Reflect.set(o, k, v)
+        return true
     }
 })
 
@@ -48,6 +49,7 @@ vm.runInContext(fs.readFileSync(initCodeFile), context)
 //定时持久化context(30分钟)
 let fn = {}
 const beforeSaveContext = ()=>{
+    vm.runInContext(`data={}`, context)
     fn = {}
     for (let k in context) {
         if (typeof context[k] === "function") {
@@ -62,7 +64,6 @@ const beforeSaveContext = ()=>{
             }
         }
     }
-    vm.runInContext(`data={}`, context)
 }
 process.on("exit", (code)=>{
     beforeSaveContext()

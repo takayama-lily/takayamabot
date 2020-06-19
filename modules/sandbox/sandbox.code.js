@@ -24,7 +24,7 @@ const Error = this.Error
 const WeakSet = this.WeakSet
 const WeakMap = this.WeakMap
 const Symbol = this.Symbol
-const Proxy = this.Proxy
+// const Proxy = this.Proxy
 const Reflect = this.Reflect
 const DataView = this.DataView
 const Atomics = this.Atomics
@@ -77,7 +77,7 @@ Object.freeze(WeakMap)
 Object.freeze(WeakMap.prototype)
 Object.freeze(Symbol)
 Object.freeze(Symbol.prototype)
-Object.freeze(Proxy)
+// Object.freeze(Proxy)
 Object.freeze(Reflect)
 Object.freeze(DataView)
 Object.freeze(DataView.prototype)
@@ -136,9 +136,9 @@ const doc=`-----js控制台doc-----
 ● 圆括号、双引号、逗号等自动转半角
 ● 支持ECMAScript6语法(非strict)`
 
-const qq = this.qq = ()=>data.user_id
-const qun = this.qun = ()=>data.group_id
-const user = this.user = (card=1)=>{
+const qq = ()=>data.user_id
+const qun = ()=>data.group_id
+const user = (card=1)=>{
 	if(!card)
 		return data.sender.nickname
 	if(data.sender.card!=undefined&&data.sender.card.length)
@@ -168,51 +168,12 @@ const grouphead=(group=qun(),cache=true)=>{
 	return img("http://p.qlogo.cn/gh/"+group+"/"+group+"/640",cache)
 }
 
-const self = ()=>this.database[qun()]
-const group_proxy_handler = {
-	get: (o, k)=>{
-		if (!qq())
-			return o[k]
-		if (parseInt(k) !== qun())
-			throw new Error("403 forbidden")
-		if (!o.hasOwnProperty(k))
-			o[k] = {}
-		return o[k]
-	},
-	set: (o, k, v, r)=>{
-		throw new Error("403 forbidden")
-	},
-	has: (o, k)=>{
-		throw new Error("403 forbidden")
-	},
-	deleteProperty: (o, k)=>{
-		throw new Error("403 forbidden")
-	},
-	defineProperty: (o, k, d)=>{
-		throw new Error("403 forbidden")
-	},
-	ownKeys: (o)=>{
-		if (!qq())
-			return Reflect.ownKeys(o)
-		throw new Error("403 forbidden")
-	},
-	preventExtensions: (o)=>{
-		throw new Error("403 forbidden")
-	},
-	setPrototypeOf: (o, prototype)=>{
-		throw new Error("403 forbidden")
-	}
+const alert = (msg, escape = false)=>{
+	if (qun())
+		$.sendGroupMsg(qun(), msg.toString(), escape)
+	else
+		$.sendPrivateMsg(qq(), msg.toString(), escape)
 }
-Object.freeze(group_proxy_handler)
-
-this.database = this.database && typeof this.database === "object" ? this.database : {}
-this.database = new Proxy(this.database, group_proxy_handler)
-Object.defineProperty(this, "database", {
-	configurable: false,
-	enumerable: true,
-	writable: false,
-	value: this.database
-})
 
 const onEvents = (data)=>{
 	if (!data.group_id)
@@ -229,9 +190,105 @@ const onEvents = (data)=>{
 	}
 }
 
-const alert = (msg, escape = false)=>{
-	if (qun())
-		$.sendGroupMsg(qun(), msg.toString(), escape)
-	else
-		$.sendPrivateMsg(qq(), msg.toString(), escape)
+const error403 = new Error("403 forbidden")
+
+const self = ()=>this.database[qun()]
+const group_proxy_handler = {
+	get: (o, k)=>{
+		if (!qq())
+			return o[k]
+		if (parseInt(k) !== qun())
+			throw error403
+		if (!o.hasOwnProperty(k))
+			o[k] = {}
+		return o[k]
+	},
+	set: (o, k, v, r)=>{
+		throw new error403
+	},
+	has: (o, k)=>{
+		throw new error403
+	},
+	deleteProperty: (o, k)=>{
+		throw new error403
+	},
+	defineProperty: (o, k, d)=>{
+		throw new error403
+	},
+	ownKeys: (o)=>{
+		if (!qq())
+			return Reflect.ownKeys(o)
+		throw new error403
+	},
+	preventExtensions: (o)=>{
+		throw new error403
+	},
+	setPrototypeOf: (o, prototype)=>{
+		throw new error403
+	}
 }
+Object.freeze(group_proxy_handler)
+
+this.database = this.database && typeof this.database === "object" ? this.database : {}
+this.database = new Proxy(this.database, group_proxy_handler)
+Object.defineProperty(this, "database", {
+	configurable: false,
+	enumerable: true,
+	writable: false,
+	value: this.database
+})
+
+this.set_history_allowed = false
+this.set_history = this.set_history && typeof this.set_history === "object" ? this.set_history : {}
+this.set_history = new Proxy(this.set_history, {
+	set: (o, k, v, r)=>{
+		if (!this.set_history_allowed)
+			throw new error403
+		return Reflect.set(o, k, v)
+	},
+	has: (o, k)=>{
+		throw new error403
+	},
+	deleteProperty: (o, k)=>{
+		throw new error403
+	},
+	defineProperty: (o, k, d)=>{
+		throw new error403
+	},
+	ownKeys: (o)=>{
+		if (!qq())
+			return Reflect.ownKeys(o)
+		throw new error403
+	},
+	preventExtensions: (o)=>{
+		throw new error403
+	},
+	setPrototypeOf: (o, prototype)=>{
+		throw new error403
+	}
+})
+Object.defineProperty(this, "set_history", {
+	configurable: false,
+	enumerable: true,
+	writable: false,
+	value: this.set_history
+})
+Object.defineProperty(this, "recordSetHistory", {
+	configurable: false,
+	enumerable: false,
+	writable: false,
+	value: (k)=>{
+		if (!qq() || !this.hasOwnProperty(k))
+			return
+		this.set_history_allowed = true
+		this.set_history[k] = {
+			id: qq(),
+			name: user(0),
+			group: qun(),
+			card: user(1)
+		}
+		this.set_history_allowed = false
+	}
+})
+
+delete Proxy
