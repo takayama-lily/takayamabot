@@ -15,7 +15,7 @@ if (fs.existsSync(contextFile)) {
     context = JSON.parse(fs.readFileSync(contextFile))
 }
 
-把context包装成proxy对象，来捕捉一些操作
+//把context包装成proxy对象，来捕捉一些操作
 context = new Proxy(context, {
     set(o, k, v) {
         if (typeof o.qq === "function" && o.qq()) {
