@@ -86,7 +86,7 @@ delete Promise
 delete globalThis
 delete console
 const constructor = undefined
-let data
+let data = {}
 
 const 帮助=`-----指令列表-----
 ● -雀魂 ※查询雀魂战绩(-qh)
