@@ -10,9 +10,10 @@ if (!fs.existsSync(dataPath)) {
 }
 
 //初始化context数据
-let context = {}
+let context = Object.create(null)
 if (fs.existsSync(contextFile)) {
     context = JSON.parse(fs.readFileSync(contextFile))
+    Object.setPrototypeOf(context, null)
 }
 
 //把context包装成proxy对象，来捕捉一些操作

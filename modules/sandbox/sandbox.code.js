@@ -85,7 +85,6 @@ Object.freeze(Atomics)
 delete Promise
 delete globalThis
 delete console
-const constructor = undefined
 let data = {}
 
 const 帮助=`-----指令列表-----
