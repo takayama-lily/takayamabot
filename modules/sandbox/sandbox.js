@@ -33,7 +33,7 @@ context = new Proxy(context, {
         return Reflect.set(o, k, v)
     },
     has: (o, k)=>{
-        return false
+        throw new Error("403 forbidden")
     },
     // ownKeys: (o)=>{
     //     if (!qq())

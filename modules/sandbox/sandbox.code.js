@@ -287,10 +287,11 @@ Object.defineProperty(this, "recordSetHistory", {
 				qq: qq(),
 				name: user(0),
 				group: qun(),
-				card: user(1),
+				card: qun() ? user(1) : undefined,
 				time: Date.now()
 			}
 		}
 	}
 })
+
 delete Proxy
