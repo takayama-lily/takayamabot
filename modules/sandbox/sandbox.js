@@ -20,10 +20,10 @@ context = new Proxy(context, {
     set(o, k, v) {
         if (typeof o.qq === "function" && o.qq()) {
             o.set_history[k] = {
-                id: this.qq(),
-                name: this.user(0),
-                group: this.qun(),
-                card: this.user(1)
+                id: o.qq(),
+                name: o.user(0),
+                group: o.qun(),
+                card: o.user(1)
             }
         }
         return Reflect.set(o, k, v)
