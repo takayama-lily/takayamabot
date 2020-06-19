@@ -9,16 +9,30 @@ if (!fs.existsSync(dataPath)) {
     fs.mkdirSync(dataPath, {recursive: true, mode: 0o700})
 }
 
+//初始化context数据
 let context = {}
 if (fs.existsSync(contextFile)) {
     context = JSON.parse(fs.readFileSync(contextFile))
 }
+
+//把context包装成proxy对象，来捕捉一些操作
+context = new Proxy(context, {
+    set(o, k, v) {
+        if (typeof o.recordSetHistory === "function")
+            o.recordSetHistory(k)
+        return Reflect.set(o, k, v)
+    }
+})
+
+//创建context
 vm.createContext(context, {
     codeGeneration: {
         strings: false,
         wasm: false
     }
 })
+
+//还原context中的函数
 if (fs.existsSync(fnFile)) {
     let fn = JSON.parse(fs.readFileSync(fnFile))
     for (let k in fn) {
@@ -28,8 +42,10 @@ if (fs.existsSync(fnFile)) {
     }
 }
 
+//执行init代码
 vm.runInContext(fs.readFileSync(initCodeFile), context)
 
+//定时持久化context(30分钟)
 let fn = {}
 const beforeSaveContext = ()=>{
     fn = {}
@@ -59,8 +75,12 @@ setInterval(()=>{
     fs.writeFile(contextFile, JSON.stringify(context), (err)=>{})
 }, 1800000)
 
+//沙盒执行超时时间
 let timeout = 50
-const run = (code, isAdmin = false)=>{
+module.exports.setTimeout = (t)=>timeout=t
+
+//执行代码
+module.exports.run = (code, isAdmin = false)=>{
     let debug = ["\\","＼"].includes(code.substr(0, 1))
     if (!isAdmin && code.match(/([^\w]|^)+(this|async|const){1}([^\w]|$)+/))
         return debug ? "代码不要包含this、async、const关键字。" : undefined
@@ -85,6 +105,14 @@ const run = (code, isAdmin = false)=>{
     }
 }
 
+//设置环境变量
+module.exports.setEnv = (env)=>{
+    try {
+        vm.runInContext(`data=${JSON.stringify(env)};Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);`, context)
+    } catch(e) {}
+}
+
+//传递一个外部对象到context
 module.exports.require = (name, object)=>{
     context[name] = object
     vm.runInContext(`const ${name} = this.${name}
@@ -92,8 +120,6 @@ delete this.${name}
 Object.freeze(${name})
 Object.freeze(${name}.prototype)`, context)
 }
-module.exports.run = run
+
+//返回context
 module.exports.getContext = ()=>context
-module.exports.setTimeout = (t)=>{
-    timeout = t
-}

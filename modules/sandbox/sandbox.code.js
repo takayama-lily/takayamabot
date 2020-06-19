@@ -136,9 +136,9 @@ const doc=`-----js控制台doc-----
 ● 圆括号、双引号、逗号等自动转半角
 ● 支持ECMAScript6语法(非strict)`
 
-const qq=()=>data.user_id
-const qun=()=>data.group_id
-const user=(card=1)=>{
+const qq = this.qq = ()=>data.user_id
+const qun = this.qun = ()=>data.group_id
+const user = this.user = (card=1)=>{
 	if(!card)
 		return data.sender.nickname
 	if(data.sender.card!=undefined&&data.sender.card.length)
@@ -179,7 +179,7 @@ const group_proxy_handler = {
 			o[k] = {}
 		return o[k]
 	},
-	set: (o, k, v)=>{
+	set: (o, k, v, r)=>{
 		throw new Error("403 forbidden")
 	},
 	has: (o, k)=>{
@@ -203,21 +203,16 @@ const group_proxy_handler = {
 		throw new Error("403 forbidden")
 	}
 }
-Object.freeze(group_proxy_handler);
+Object.freeze(group_proxy_handler)
 
-(()=>{
-	let tmp = {}
-	if (this.database)
-		tmp = this.database
-	delete this.database
-	tmp = new Proxy(tmp, group_proxy_handler)
-	Object.defineProperty(this, "database", {
-		configurable: false,
-		enumerable: true,
-		writable: false,
-		value: tmp
-	})
-})()
+this.database = this.database && typeof this.database === "object" ? this.database : {}
+this.database = new Proxy(this.database, group_proxy_handler)
+Object.defineProperty(this, "database", {
+	configurable: false,
+	enumerable: true,
+	writable: false,
+	value: this.database
+})
 
 const onEvents = (data)=>{
 	if (!data.group_id)
