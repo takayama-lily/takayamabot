@@ -216,8 +216,7 @@ bot.on("message", async(data)=>{
         let atme = `[CQ:at,qq=${data.self_id}]`
         while (code.startsWith(atme))
             code = code.replace(atme, "").trim()
-        sandbox.run("data="+JSON.stringify(data), true)
-        sandbox.run("Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);", true)
+        sandbox.setEnv(data)
         let res = sandbox.run(code, isMaster(uid))
         if (gid) {
             const now = Date.now()

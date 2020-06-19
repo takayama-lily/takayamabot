@@ -85,7 +85,7 @@ Object.freeze(Atomics)
 delete Promise
 delete globalThis
 delete console
-let data = {}
+let data = this.data = {}
 
 const 帮助=`-----指令列表-----
 ● -雀魂 ※查询雀魂战绩(-qh)
@@ -161,10 +161,10 @@ const qqhead=(q=qq(),cache=true)=>{
 		cache=false,q=qq()
     return img("http://q1.qlogo.cn/g?b=qq&s=640&nk="+parseQQ(q),cache)
 }
-const grouphead=(group=qun(),cache=true)=>{
-	if (group===false||group===0)
-		cache=false,group=qun()
-	return img("http://p.qlogo.cn/gh/"+group+"/"+group+"/640",cache)
+const grouphead=(gid=qun(),cache=true)=>{
+	if (gid===false||gid===0)
+		cache=false,gid=qun()
+	return img("http://p.qlogo.cn/gh/"+gid+"/"+gid+"/640",cache)
 }
 
 const alert = (msg, escape = false)=>{

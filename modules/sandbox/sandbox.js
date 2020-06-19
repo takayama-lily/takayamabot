@@ -27,6 +27,20 @@ context = new Proxy(context, {
             o.set_history_allowed = false
         }
         return Reflect.set(o, k, v)
+    },
+    has: (o, k)=>{
+        return false
+    },
+    // ownKeys: (o)=>{
+    //     if (!qq())
+    //         return Reflect.ownKeys(o)
+    //     return false
+    // },
+    preventExtensions: (o)=>{
+        return false
+    },
+    setPrototypeOf: (o, prototype)=>{
+        return false
     }
 })
 
@@ -54,7 +68,7 @@ vm.runInContext(fs.readFileSync(initCodeFile), context)
 //定时持久化context(30分钟)
 let fn = {}
 const beforeSaveContext = ()=>{
-    vm.runInContext(`data={}`, context)
+    setEnv()
     fn = {}
     for (let k in context) {
         if (typeof context[k] === "function") {
@@ -112,11 +126,10 @@ module.exports.run = (code, isAdmin = false)=>{
 }
 
 //设置环境变量
-module.exports.setEnv = (env)=>{
-    try {
-        vm.runInContext(`data=${JSON.stringify(env)};Object.freeze(data);Object.freeze(data.sender);Object.freeze(data.anonymous);`, context)
-    } catch(e) {}
+const setEnv = (env = {})=>{
+    vm.runInContext(`this.data=data=${JSON.stringify(env)};Object.freeze(this.data);Object.freeze(this.data.sender);Object.freeze(this.data.anonymous);`, context)
 }
+module.exports.setEnv = setEnv
 
 //传递一个外部对象到context
 module.exports.require = (name, object)=>{
