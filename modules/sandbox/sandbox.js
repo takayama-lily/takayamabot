@@ -18,10 +18,9 @@ if (fs.existsSync(contextFile)) {
 //把context包装成proxy对象，来捕捉一些操作
 context = new Proxy(context, {
     set(o, k, v) {
-        Reflect.set(o, k, v)
         if (typeof o.recordSetHistory === "function")
             o.recordSetHistory(k)
-        return true
+        return Reflect.set(o, k, v)
     }
 })
 
