@@ -279,14 +279,12 @@ Object.defineProperty(this, "recordSetHistory", {
 	writable: false,
 	value: (k)=>{
 		if (k !== "data" && typeof this.qq === "function" && this.qq()) {
-			this.set_history_allowed = true
 			this.set_history[k] = {
 				id: this.qq(),
 				name: this.user(0),
 				group: this.qun(),
 				card: this.user(1)
 			}
-			this.set_history_allowed = false
 		}
 	}
 })
