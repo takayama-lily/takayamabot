@@ -280,10 +280,11 @@ Object.defineProperty(this, "recordSetHistory", {
 	value: (k)=>{
 		if (k !== "data" && qq()) {
 			this.set_history[k] = {
-				id: qq(),
+				qq: qq(),
 				name: user(0),
 				group: qun(),
-				card: user(1)
+				card: user(1),
+				time: Date.now()
 			}
 		}
 	}
