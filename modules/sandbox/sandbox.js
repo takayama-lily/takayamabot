@@ -17,9 +17,12 @@ if (fs.existsSync(contextFile)) {
 }
 
 //把context包装成proxy对象，来捕捉一些操作
+let set_env_allowed = false
 context = new Proxy(context, {
     set(o, k, v) {
         if (k === "set_history_allowed")
+            return false
+        if (k === "data" && !set_env_allowed)
             return false
         if (typeof o.recordSetHistory === "function") {
             o.set_history_allowed = true
@@ -127,7 +130,9 @@ module.exports.run = (code, isAdmin = false)=>{
 
 //设置环境变量
 const setEnv = (env = {})=>{
+    set_env_allowed = true
     vm.runInContext(`this.data=data=${JSON.stringify(env)};Object.freeze(this.data);Object.freeze(this.data.sender);Object.freeze(this.data.anonymous);`, context)
+    set_env_allowed = false
 }
 module.exports.setEnv = setEnv
 

@@ -85,7 +85,13 @@ Object.freeze(Atomics)
 delete Promise
 delete globalThis
 delete console
-let data = this.data = {}
+let data = {}
+Object.defineProperty(this, "data", {
+	configurable: false,
+	enumerable: false,
+	writable: true,
+	value: {}
+})
 
 const 帮助=`-----指令列表-----
 ● -雀魂 ※查询雀魂战绩(-qh)
@@ -135,15 +141,15 @@ const doc=`-----js控制台doc-----
 ● 圆括号、双引号、逗号等自动转半角
 ● 支持ECMAScript6语法(非strict)`
 
-const qq = ()=>data.user_id
-const qun = ()=>data.group_id
+const qq = ()=>this.data.user_id
+const qun = ()=>this.data.group_id
 const user = (card=1)=>{
 	if(!card)
-		return data.sender.nickname
-	if(data.sender.card!=undefined&&data.sender.card.length)
-		return data.sender.card
+		return this.data.sender.nickname
+	if(this.data.sender.card!=undefined&&this.data.sender.card.length)
+		return this.data.sender.card
 	else
-		return data.sender.nickname
+		return this.data.sender.nickname
 }
 const parseQQ=(str)=>{
 	if (!isNaN(str))
@@ -174,14 +180,14 @@ const alert = (msg, escape = false)=>{
 		$.sendPrivateMsg(qq(), msg.toString(), escape)
 }
 
-const onEvents = (data)=>{
-	if (!data.group_id)
+const onEvents = ()=>{
+	if (!this.data.group_id)
 		return
 	let method
-	if (data.post_type === "message")
-		method = "on_message_" + data.group_id
+	if (this.data.post_type === "message")
+		method = "on_message_" + this.data.group_id
 	else
-		method = "on_notice_" + data.group_id
+		method = "on_notice_" + this.data.group_id
 	if (typeof this[method] === "function") {
 		try {
 			this[method](data)
