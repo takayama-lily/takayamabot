@@ -15,14 +15,20 @@ if (fs.existsSync(contextFile)) {
     context = JSON.parse(fs.readFileSync(contextFile))
 }
 
-//把context包装成proxy对象，来捕捉一些操作
-// context = new Proxy(context, {
-//     set(o, k, v) {
-//         if (typeof o.recordSetHistory === "function")
-//             o.recordSetHistory(k)
-//         return Reflect.set(o, k, v)
-//     }
-// })
+把context包装成proxy对象，来捕捉一些操作
+context = new Proxy(context, {
+    set(o, k, v) {
+        if (typeof o.qq === "function" && o.qq()) {
+            o.set_history[k] = {
+                id: this.qq(),
+                name: this.user(0),
+                group: this.qun(),
+                card: this.user(1)
+            }
+        }
+        return Reflect.set(o, k, v)
+    }
+})
 
 //创建context
 vm.createContext(context, {
