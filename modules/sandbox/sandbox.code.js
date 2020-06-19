@@ -190,7 +190,7 @@ const onEvents = ()=>{
 		method = "on_notice_" + this.data.group_id
 	if (typeof this[method] === "function") {
 		try {
-			this[method](data)
+			this[method](this.data)
 		} catch(e) {}
 	}
 }

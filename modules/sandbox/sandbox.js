@@ -18,6 +18,7 @@ if (fs.existsSync(contextFile)) {
 
 //把context包装成proxy对象，来捕捉一些操作
 let set_env_allowed = false
+let init_finished = false
 context = new Proxy(context, {
     set(o, k, v) {
         if (k === "set_history_allowed")
@@ -39,6 +40,12 @@ context = new Proxy(context, {
     //         return Reflect.ownKeys(o)
     //     return false
     // },
+    defineProperty: (o, k, d)=>{
+        if (init_finished)
+            return false
+        else
+            return Object.defineProperty(o, k, d)
+    },
     preventExtensions: (o)=>{
         return false
     },
@@ -67,6 +74,7 @@ if (fs.existsSync(fnFile)) {
 
 //执行init代码
 vm.runInContext(fs.readFileSync(initCodeFile), context)
+init_finished = true
 
 //定时持久化context(30分钟)
 let fn = {}
