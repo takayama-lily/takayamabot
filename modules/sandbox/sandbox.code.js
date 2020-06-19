@@ -136,9 +136,9 @@ const doc=`-----js控制台doc-----
 ● 圆括号、双引号、逗号等自动转半角
 ● 支持ECMAScript6语法(非strict)`
 
-const qq = ()=>data.user_id
-const qun = ()=>data.group_id
-const user = (card=1)=>{
+const qq = this.qq = ()=>data.user_id
+const qun = this.qun = ()=>data.group_id
+const user = this.user = (card=1)=>{
 	if(!card)
 		return data.sender.nickname
 	if(data.sender.card!=undefined&&data.sender.card.length)
@@ -278,14 +278,14 @@ Object.defineProperty(this, "recordSetHistory", {
 	enumerable: false,
 	writable: false,
 	value: (k)=>{
-		if (!qq())
+		if (!this.qq())
 			return
 		this.set_history_allowed = true
 		this.set_history[k] = {
-			id: qq(),
-			name: user(0),
-			group: qun(),
-			card: user(1)
+			id: this.qq(),
+			name: this.user(0),
+			group: this.qun(),
+			card: this.user(1)
 		}
 		this.set_history_allowed = false
 	}
