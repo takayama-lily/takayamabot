@@ -16,13 +16,13 @@ if (fs.existsSync(contextFile)) {
 }
 
 //把context包装成proxy对象，来捕捉一些操作
-context = new Proxy(context, {
-    set(o, k, v) {
-        if (typeof o.recordSetHistory === "function")
-            o.recordSetHistory(k)
-        return Reflect.set(o, k, v)
-    }
-})
+// context = new Proxy(context, {
+//     set(o, k, v) {
+//         if (typeof o.recordSetHistory === "function")
+//             o.recordSetHistory(k)
+//         return Reflect.set(o, k, v)
+//     }
+// })
 
 //创建context
 vm.createContext(context, {

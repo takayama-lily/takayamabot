@@ -238,8 +238,8 @@ Object.defineProperty(this, "database", {
 	value: this.database
 })
 
-this.set_history_allowed = false
-this.set_history = this.set_history && typeof this.set_history === "object" ? this.set_history : {}
+// this.set_history_allowed = false
+// this.set_history = this.set_history && typeof this.set_history === "object" ? this.set_history : {}
 // this.set_history = new Proxy(this.set_history, {
 // 	set: (o, k, v, r)=>{
 // 		if (!this.set_history_allowed)
@@ -291,16 +291,16 @@ this.set_history = this.set_history && typeof this.set_history === "object" ? th
 // 	}
 // })
 
-this.recordSetHistory = (k)=>{
-	if (!this.qq())
-		return
-	this.set_history_allowed = true
-	this.set_history[k] = {
-		id: this.qq(),
-		name: this.user(0),
-		group: this.qun(),
-		card: this.user(1)
-	}
-	this.set_history_allowed = false
-}
+// this.recordSetHistory = (k)=>{
+// 	if (!this.qq())
+// 		return
+// 	this.set_history_allowed = true
+// 	this.set_history[k] = {
+// 		id: this.qq(),
+// 		name: this.user(0),
+// 		group: this.qun(),
+// 		card: this.user(1)
+// 	}
+// 	this.set_history_allowed = false
+// }
 delete Proxy
