@@ -238,7 +238,6 @@ Object.defineProperty(this, "database", {
 	value: this.database
 })
 
-this.set_history_allowed = false
 this.set_history = this.set_history && typeof this.set_history === "object" ? this.set_history : {}
 this.set_history = new Proxy(this.set_history, {
 	set: (o, k, v, r)=>{
