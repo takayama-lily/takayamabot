@@ -204,27 +204,27 @@ const group_proxy_handler = {
 		return o[k]
 	},
 	set: (o, k, v, r)=>{
-		throw new error403
+		throw error403
 	},
 	has: (o, k)=>{
-		throw new error403
+		throw error403
 	},
 	deleteProperty: (o, k)=>{
-		throw new error403
+		throw error403
 	},
 	defineProperty: (o, k, d)=>{
-		throw new error403
+		throw error403
 	},
 	ownKeys: (o)=>{
 		if (!qq())
 			return Reflect.ownKeys(o)
-		throw new error403
+		throw error403
 	},
 	preventExtensions: (o)=>{
-		throw new error403
+		throw error403
 	},
 	setPrototypeOf: (o, prototype)=>{
-		throw new error403
+		throw error403
 	}
 }
 Object.freeze(group_proxy_handler)
@@ -243,28 +243,28 @@ this.set_history = this.set_history && typeof this.set_history === "object" ? th
 this.set_history = new Proxy(this.set_history, {
 	set: (o, k, v, r)=>{
 		if (!this.set_history_allowed)
-			throw new error403
+			throw error403
 		return Reflect.set(o, k, v)
 	},
 	has: (o, k)=>{
-		throw new error403
+		throw error403
 	},
 	deleteProperty: (o, k)=>{
-		throw new error403
+		throw error403
 	},
 	defineProperty: (o, k, d)=>{
-		throw new error403
+		throw error403
 	},
 	ownKeys: (o)=>{
 		if (!qq())
 			return Reflect.ownKeys(o)
-		throw new error403
+		throw error403
 	},
 	preventExtensions: (o)=>{
-		throw new error403
+		throw error403
 	},
 	setPrototypeOf: (o, prototype)=>{
-		throw new error403
+		throw error403
 	}
 })
 Object.defineProperty(this, "set_history", {
