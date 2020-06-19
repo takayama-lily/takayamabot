@@ -267,12 +267,12 @@ this.set_history = this.set_history && typeof this.set_history === "object" ? th
 // 		throw error403
 // 	}
 // })
-Object.defineProperty(this, "set_history", {
-	configurable: false,
-	enumerable: true,
-	writable: false,
-	value: this.set_history
-})
+// Object.defineProperty(this, "set_history", {
+// 	configurable: false,
+// 	enumerable: true,
+// 	writable: false,
+// 	value: this.set_history
+// })
 Object.defineProperty(this, "recordSetHistory", {
 	configurable: false,
 	enumerable: false,
