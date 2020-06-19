@@ -241,31 +241,31 @@ Object.defineProperty(this, "database", {
 this.set_history_allowed = false
 this.set_history = this.set_history && typeof this.set_history === "object" ? this.set_history : {}
 this.set_history = new Proxy(this.set_history, {
-	set: (o, k, v, r)=>{
-		if (!this.set_history_allowed)
-			throw error403
-		return Reflect.set(o, k, v)
-	},
-	has: (o, k)=>{
-		throw error403
-	},
-	deleteProperty: (o, k)=>{
-		throw error403
-	},
-	defineProperty: (o, k, d)=>{
-		throw error403
-	},
-	ownKeys: (o)=>{
-		if (!qq())
-			return Reflect.ownKeys(o)
-		throw error403
-	},
-	preventExtensions: (o)=>{
-		throw error403
-	},
-	setPrototypeOf: (o, prototype)=>{
-		throw error403
-	}
+	// set: (o, k, v, r)=>{
+	// 	if (!this.set_history_allowed)
+	// 		throw error403
+	// 	return Reflect.set(o, k, v)
+	// },
+	// has: (o, k)=>{
+	// 	throw error403
+	// },
+	// deleteProperty: (o, k)=>{
+	// 	throw error403
+	// },
+	// defineProperty: (o, k, d)=>{
+	// 	throw error403
+	// },
+	// ownKeys: (o)=>{
+	// 	if (!qq())
+	// 		return Reflect.ownKeys(o)
+	// 	throw error403
+	// },
+	// preventExtensions: (o)=>{
+	// 	throw error403
+	// },
+	// setPrototypeOf: (o, prototype)=>{
+	// 	throw error403
+	// }
 })
 Object.defineProperty(this, "set_history", {
 	configurable: false,
