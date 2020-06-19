@@ -18,16 +18,11 @@ if (fs.existsSync(contextFile)) {
 //把context包装成proxy对象，来捕捉一些操作
 context = new Proxy(context, {
     set(o, k, v) {
-        // if (k !== "data" && typeof o.qq === "function" && o.qq()) {
-        //     o.set_history[k] = {
-        //         id: o.qq(),
-        //         name: o.user(0),
-        //         group: o.qun(),
-        //         card: o.user(1)
-        //     }
-        // }
-        if (typeof o.recordSetHistory === "function")
+        if (typeof o.recordSetHistory === "function") {
+            o.set_history_allowed = true
             o.recordSetHistory(k)
+            o.set_history_allowed = false
+        }
         return Reflect.set(o, k, v)
     }
 })
