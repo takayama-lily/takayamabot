@@ -86,7 +86,7 @@ delete Promise
 delete globalThis
 delete console
 const constructor = undefined
-this.data = {}
+let data = {}
 
 const 帮助=`-----指令列表-----
 ● -雀魂 ※查询雀魂战绩(-qh)
@@ -136,9 +136,9 @@ const doc=`-----js控制台doc-----
 ● 圆括号、双引号、逗号等自动转半角
 ● 支持ECMAScript6语法(非strict)`
 
-const qq = this.qq = ()=>data.user_id
-const qun = this.qun = ()=>data.group_id
-const user = this.user = (card=1)=>{
+const qq = ()=>data.user_id
+const qun = ()=>data.group_id
+const user = (card=1)=>{
 	if(!card)
 		return data.sender.nickname
 	if(data.sender.card!=undefined&&data.sender.card.length)
@@ -278,7 +278,7 @@ Object.defineProperty(this, "recordSetHistory", {
 	enumerable: false,
 	writable: false,
 	value: (k)=>{
-		if (qq()) {
+		if (k !== "data" && qq()) {
 			this.set_history[k] = {
 				id: qq(),
 				name: user(0),
