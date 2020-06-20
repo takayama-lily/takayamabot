@@ -19,7 +19,7 @@ const mjsoul = new MJBot({
 mjsoul.login(config['cn.account'], config['cn.password'])
 
 const mjsoulJP = new MJSoul({
-    url: 'wss://mjjpgs.mahjongsoul.com:4501/'
+    url: 'wss://mjjpgs.mahjongsoul.com:9663'
 })
 const loginJP = ()=>{
 	let req = {
