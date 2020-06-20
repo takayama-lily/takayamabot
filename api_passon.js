@@ -108,6 +108,19 @@ module.exports = (bot)=>{
         bot.setGroupRequest(flag, approve, reason)
     }
     sandbox.require("$", $)
+
+    bot.on("message.group", (data)=>{
+        sandbox.setEnv(data)
+        sandbox.run(`this.onEvents()`, true)
+    })
+    bot.on("notice", (data)=>{
+        sandbox.setEnv(data)
+        sandbox.run(`this.onEvents()`, true)
+    })
+    bot.on("request.group.add", (data)=>{
+        sandbox.setEnv(data)
+        sandbox.run(`this.onEvents()`, true)
+    })
 }
 
 sandbox.require("向听", require("syanten"))

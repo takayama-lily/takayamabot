@@ -152,19 +152,6 @@ bot.on("notice.group_increase", async(data)=>{
     }
 })
 
-bot.on("message.group", (data)=>{
-    sandbox.setEnv(data)
-    sandbox.run(`this.onEvents()`)
-})
-bot.on("notice", (data)=>{
-    sandbox.setEnv(data)
-    sandbox.run(`this.onEvents()`)
-})
-bot.on("request.group.add", (data)=>{
-    sandbox.setEnv(data)
-    sandbox.run(`this.onEvents()`)
-})
-
 const prefix_list = ["-","/",".","?","!","？","！","－"]
 bot.on("message", async(data)=>{
     let me = data.self_id
