@@ -3,7 +3,7 @@ const $ = new String(`这是一个完整的ECMAScript6沙箱
 聊天窗口可以看做一个与之交互的命令行界面
 你刚才输入的"$"是一个全局变量
 输入$.help查看开发文档
-※本文档可能需要一定的编程经验才能充分理解`)
+※本文档可能需要一定的编程基础才能充分理解`)
 $.help = `● 以下是QQAPI：
 　　　发送私聊: $.sendPrivateMsg(uid,msg)
 　　　发送群聊: $.sendGroupMsg(gid,msg)
@@ -31,7 +31,7 @@ data ※环境变量
 需要自行实现"on_notice_群号"和"on_message_群号"函数，例如群号为1234567，则实现
 
 //该函数在有群事件时触发(入群、退群、加群请求等)
-function on_notice_1234567(data) { 
+function on_event_1234567(data) { 
     alert(data)
 }
 
