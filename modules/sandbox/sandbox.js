@@ -16,14 +16,42 @@ if (fs.existsSync(contextFile)) {
     Object.setPrototypeOf(context, null)
 }
 
+const protected_properties = [
+  'Object',             'Function',       'Array',
+  'Number',             'parseFloat',     'parseInt',
+  'Infinity',           'NaN',            'undefined',
+  'Boolean',            'String',         'Symbol',
+  'Date',               'Promise',        'RegExp',
+  'Error',              'EvalError',      'RangeError',
+  'ReferenceError',     'SyntaxError',    'TypeError',
+  'URIError',           'globalThis',     'JSON',
+  'Math',               'console',        'Intl',
+  'ArrayBuffer',        'Uint8Array',     'Int8Array',
+  'Uint16Array',        'Int16Array',     'Uint32Array',
+  'Int32Array',         'Float32Array',   'Float64Array',
+  'Uint8ClampedArray',  'BigUint64Array', 'BigInt64Array',
+  'DataView',           'Map',            'BigInt',
+  'Set',                'WeakMap',        'WeakSet',
+  'Proxy',              'Reflect',        'decodeURI',
+  'decodeURIComponent', 'encodeURI',      'encodeURIComponent',
+  'escape',             'unescape',       'eval',
+  'isFinite',           'isNaN',          'SharedArrayBuffer',
+  'Atomics',            'WebAssembly',
+  'onEvents','master','帮助','help','高级','advance','小游戏'
+]
+
 //把context包装成proxy对象，来捕捉一些操作
 let set_env_allowed = false
 let init_finished = false
 context = new Proxy(context, {
     set(o, k, v) {
+        if (!init_finished)
+            return Reflect.set(o, k, v)
         if (k === "set_history_allowed")
             return false
         if (k === "data" && !set_env_allowed)
+            return false
+        if (protected_properties.includes(k) && !o.isMaster())
             return false
         if (typeof o.recordSetHistory === "function") {
             o.set_history_allowed = true
@@ -32,19 +60,20 @@ context = new Proxy(context, {
         }
         return Reflect.set(o, k, v)
     },
-    has: (o, k)=>{
-        throw new Error("403 forbidden")
-    },
-    // ownKeys: (o)=>{
-    //     if (!qq())
-    //         return Reflect.ownKeys(o)
-    //     return false
+    // defineProperty: (o, k, d)=>{
+    //     if (!init_finished || o.isMaster())
+    //         return Object.defineProperty(o, k, d)
+    //     else 
+    //         return false
     // },
-    defineProperty: (o, k, d)=>{
-        if (init_finished)
-            return false
-        else
-            return Object.defineProperty(o, k, d)
+    deleteProperty: (o, k)=>{
+        if (!init_finished)
+            return Reflect.deleteProperty(o, k)
+        else {
+            if (protected_properties.includes(k) && !o.isMaster())
+                return false
+            return Reflect.deleteProperty(o, k)
+        }
     },
     preventExtensions: (o)=>{
         return false

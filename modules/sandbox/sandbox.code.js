@@ -115,31 +115,14 @@ const 小游戏=`-----js小游戏列表-----
 ● 猜拳() / 写信()
 经常会添加一些奇怪的东西`
 
-const 高级=`-----这是一个js控制台-----
-● 普通模式，输入例: 你好="你也好"
-● 调试模式，输入例: \\delete 你好
+const 高级=`-----这是一个JavaScript控制台-----
+● 普通模式，输入: 你好="你也好"
+● 调试模式，输入: \\delete 你好
 　※最前添加反斜杠，可反馈报错信息
-● 禁止定义敏感内容
-● 支持CQ码，使用JavaScript语言
-● data ※环境变量
+● 支持CQ码，请勿定义敏感内容
 ● $ ※高级开发，自定义bot行为
 (暂时不能发图片了，恢复时间未知)`
 const advance=高级
-
-const doc=`-----js控制台doc-----
-● 面向希望开发自定义功能的高级玩家
-● data ※环境变量(发言人的一切)
-● 常用函数
- • qq(),user() ※发言人的qq号和昵称
- • qun() ※当前群号
- • at() ※艾特一个人,默认自己
- • seed() ※一个变数,每人每天固定
- • qhead() ※qq头像,默认自己
- • ghead() ※群头像,默认当前群
-　※头像有缓存，多传个参数0可清
-● 禁止的关键字: this, async, const
-● 圆括号、双引号、逗号等自动转半角
-● 支持ECMAScript6语法(非strict)`
 
 const qq = ()=>this.data.user_id
 const qun = ()=>this.data.group_id
@@ -175,24 +158,17 @@ const grouphead=(gid=qun(),cache=true)=>{
 
 const alert = (msg, escape = false)=>{
 	if (qun())
-		$.sendGroupMsg(qun(), msg.toString(), escape)
+		$.sendGroupMsg(qun(), msg, escape)
 	else
-		$.sendPrivateMsg(qq(), msg.toString(), escape)
+		$.sendPrivateMsg(qq(), msg, escape)
 }
 
-const onEvents = ()=>{
-	if (!this.data.group_id)
-		return
-	let method
-	if (this.data.post_type === "message")
-		method = "on_message_" + this.data.group_id
-	else
-		method = "on_notice_" + this.data.group_id
-	if (typeof this[method] === "function") {
-		try {
-			this[method](this.data)
-		} catch(e) {}
-	}
+if (!this.master)
+	this.master = "372914165"
+
+const master = undefined
+const isMaster = this.isMaster = ()=>{
+	return !qq() || this.master.includes(qq().toString())
 }
 
 const error403 = new Error("403 forbidden")
