@@ -116,7 +116,13 @@ const initQQData = async()=>{
             groups_tmp[group.group_id] = (await bot.getGroupInfo(group.group_id)).data
             if (!groups_tmp[group.group_id])
                 groups_tmp[group.group_id] = {}
-            groups_tmp[group.group_id].members = (await bot.getGroupMemberList(group.group_id)).data
+            groups_tmp[group.group_id].members = {}
+            let members = (await bot.getGroupMemberList(group.group_id)).data
+            if (members) {
+                for (let member of members) {
+                    groups_tmp[group.group_id].members[member.user_id] = member
+                }
+            }
         }
     } else {
         return
