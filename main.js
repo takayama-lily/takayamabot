@@ -108,12 +108,7 @@ const fff = {limit: 1000} //群发言频率限制每秒1条
 require("./api_passon")(bot)
 
 bot.on("request.friend", (data)=>{
-    return bot.approve(data)
-    // let answer = 0x142857
-    // if (data.comment.includes(answer.toString()))
-    //     bot.approve(data)
-    // else
-    //     bot.approve(data, false, "答案不正确。")
+    bot.approve(data)
 })
 bot.on("request.group.invite", (data)=>{
     bot.approve(data)
@@ -141,13 +136,6 @@ bot.on("notice.group_ban.ban", (data)=>{
             delete bans[data.group_id]
         }, data.duration * 1000)
         bans[data.group_id] = id
-    }
-})
-bot.on("notice.group_increase", async(data)=>{
-    if (data.user_id === data.self_id) {
-        let res = await bot.sendGroupMsg(data.group_id, "喵~")
-        if (res.retcode)
-            bot.setGroupLeave(data.group_id)
     }
 })
 
