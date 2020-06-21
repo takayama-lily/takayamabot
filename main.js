@@ -248,7 +248,7 @@ bot.on("message", async(data)=>{
             if (v.type === "text")
                 message += v.data.text
             else if (v.type === "at")
-                message += `'[CQ:at,qq=${v.data.at}]'`
+                message += `'[CQ:at,qq=${v.data.qq}]'`
             else {
                 message += `[CQ:${v.type}`
                 for (let k in v.data)
