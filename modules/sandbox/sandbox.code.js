@@ -145,7 +145,7 @@ const error403 = new Error("403 forbidden")
 const self = ()=>this.database[qun()]
 const group_proxy_handler = {
 	get: (o, k)=>{
-		if (!qq())
+		if (isMaster())
 			return o[k]
 		if (parseInt(k) !== qun())
 			throw error403
@@ -166,7 +166,7 @@ const group_proxy_handler = {
 		throw error403
 	},
 	ownKeys: (o)=>{
-		if (!qq())
+		if (isMaster())
 			return Reflect.ownKeys(o)
 		throw error403
 	},
