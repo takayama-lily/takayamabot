@@ -60,20 +60,17 @@ context = new Proxy(context, {
         }
         return Reflect.set(o, k, v)
     },
-    // defineProperty: (o, k, d)=>{
-    //     if (!init_finished || o.isMaster())
-    //         return Object.defineProperty(o, k, d)
-    //     else 
-    //         return false
-    // },
-    deleteProperty: (o, k)=>{
+    defineProperty: (o, k, d)=>{
         if (!init_finished)
+            return Object.defineProperty(o, k, d)
+        else 
+            return false
+    },
+    deleteProperty: (o, k)=>{
+        if (!init_finished || !protected_properties.includes(k))
             return Reflect.deleteProperty(o, k)
-        else {
-            if (protected_properties.includes(k) && !o.isMaster())
-                return false
-            return Reflect.deleteProperty(o, k)
-        }
+        else
+            return false
     },
     preventExtensions: (o)=>{
         return false
