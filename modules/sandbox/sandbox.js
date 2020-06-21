@@ -37,7 +37,7 @@ const protected_properties = [
   'escape',             'unescape',       'eval',
   'isFinite',           'isNaN',          'SharedArrayBuffer',
   'Atomics',            'WebAssembly',
-  'onEvents','master','帮助','help','高级','advance','小游戏'
+  'onEvents','master','blacklist','帮助','help','高级','advance','小游戏'
 ]
 
 //把context包装成proxy对象，来捕捉一些操作
@@ -153,6 +153,7 @@ module.exports.run = (code, isAdmin = false)=>{
         return String.fromCharCode(s.charCodeAt(0) - 65248)
     })
     try {
+        vm.runInContext(`if (typeof this.blacklist === "string" && this.blacklist.includes(qq())) throw error_blacklist;`, context)
         return vm.runInContext(code, context, {timeout: timeout})
     } catch(e) {
         if (debug) {

@@ -140,6 +140,7 @@ const isMaster = this.isMaster = ()=>{
 	return !qq() || this.master.includes(qq().toString())
 }
 
+const error_blacklist = new Error("你被拉黑了，无法使用沙盒，申诉请联系管理员。")
 const error403 = new Error("403 forbidden")
 
 const self = ()=>this.database[qun()]
@@ -205,7 +206,7 @@ this.set_history = new Proxy(this.set_history, {
 		throw error403
 	},
 	ownKeys: (o)=>{
-		if (!qq())
+		if (isMaster())
 			return Reflect.ownKeys(o)
 		throw error403
 	},
