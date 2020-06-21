@@ -105,7 +105,7 @@ const reboot = ()=>{
 const bot = new QQPlugin()
 const fff = {limit: 1000} //群发言频率限制每秒1条
 
-require("./api_passon")(bot)
+const $ = require("./api_passon")(bot)
 
 let groups = {}
 const initQQData = async()=>{
@@ -123,10 +123,25 @@ const initQQData = async()=>{
     }
     groups = groups_tmp
 }
-sandbox.require("getGroupInfo", ()=>{
+$.getGroupInfo = ()=>{
     let gid = sandbox.getContext().data.group_id
     if (groups.hasOwnProperty(gid))
         return groups[gid]
+}
+sandbox.require("$", $)
+sandbox.require("向听", require("syanten"))
+
+bot.on("message.group", (data)=>{
+    sandbox.setEnv(data)
+    sandbox.run(`this.onEvents()`, true)
+})
+bot.on("notice", (data)=>{
+    sandbox.setEnv(data)
+    sandbox.run(`this.onEvents()`, true)
+})
+bot.on("request.group.add", (data)=>{
+    sandbox.setEnv(data)
+    sandbox.run(`this.onEvents()`, true)
 })
 
 bot.on("request.friend", (data)=>{

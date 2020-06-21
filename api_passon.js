@@ -8,13 +8,14 @@ $.help = `● 以下是QQAPI：
 　　　发送私聊: $.sendPrivateMsg(uid,msg)
 　　　发送群聊: $.sendGroupMsg(gid,msg)
 　　　撤回消息: $.deleteMsg(message_id)
-　　设置群名片: $.setGroupCard(gid,uid,card)
+　　设置群名片: $.setGroupCard(uid,card)
 　处理加群请求: $.setGroupRequest(flag,approve=true,reason=undefined) ※flag可以在群事件中拿到，reason仅在拒绝时有效
-　　发布群公告: $.sendGroupNotice(gid,title,content)
-　　　　群踢人: $.setGroupKick(gid,uid)
-　　　　群禁言: $.setGroupBan(gid,uid,duration=60)
-设置或取消管理: $.setGroupAdmin(gid,uid,enable=true)
-　　设置群头衔: $.setGroupSpecialTitle(gid,uid,title,duration=-1)
+　　发布群公告: $.sendGroupNotice(title,content)
+　　　　群踢人: $.setGroupKick(uid)
+　　　　群禁言: $.setGroupBan(uid,duration=60)
+设置或取消管理: $.setGroupAdmin(uid,enable=true)
+　　设置群头衔: $.setGroupSpecialTitle(uid,title,duration=-1)
+　　获取群信息: $.getGroupInfo() ※获取群名和成员列表等(group_name,memebers)
 ※uid表示QQ号，gid表示群号
 ※有调用频率限制，部分需要管理员或群主权限
 
@@ -50,6 +51,8 @@ const check_frequency = ()=>{
     --rest
 }
 
+const getGid = ()=>sandbox.getContext().data.group_id
+
 module.exports = (bot)=>{
     $.sendPrivateMsg = (uid, msg, escape = false)=>{
         check_frequency()
@@ -63,43 +66,53 @@ module.exports = (bot)=>{
         check_frequency()
         bot.deleteMsg(message_id)
     }
-    $.setGroupKick = (gid, uid, forever = false)=>{
+    $.setGroupKick = (uid, forever = false)=>{
+        let gid = getGid()
         check_frequency()
         bot.setGroupKick(gid, uid, forever)
     }
-    $.setGroupBan = (gid, uid, duration = 60)=>{
+    $.setGroupBan = (uid, duration = 60)=>{
+        let gid = getGid()
         check_frequency()
         bot.setGroupBan(gid, uid, duration)
     }
-    $.setGroupAnonymousBan = (gid, flag, duration = 60)=>{
+    $.setGroupAnonymousBan = (flag, duration = 60)=>{
+        let gid = getGid()
         check_frequency()
         bot.setGroupAnonymousBan(gid, flag, duration)
     }
-    $.setGroupAdmin = (gid, uid, enable = true)=>{
+    $.setGroupAdmin = (uid, enable = true)=>{
+        let gid = getGid()
         check_frequency()
         bot.setGroupAdmin(gid, uid, enable)
     }
-    $.setGroupWholeBan = (gid, enable = true)=>{
+    $.setGroupWholeBan = (enable = true)=>{
+        let gid = getGid()
         check_frequency()
         bot.setGroupWholeBan(gid, enable)
     }
-    $.setGroupAnonymous = (gid, enable = true)=>{
+    $.setGroupAnonymous = (enable = true)=>{
+        let gid = getGid()
         check_frequency()
         bot.setGroupAnonymous(gid, enable)
     }
-    $.setGroupCard = (gid, uid, card = undefined)=>{
+    $.setGroupCard = (uid, card = undefined)=>{
+        let gid = getGid()
         check_frequency()
         bot.setGroupCard(gid, uid, card)
     }
-    $.setGroupLeave = (gid, dismiss = false)=>{
-        check_frequency()
-        bot.setGroupLeave(gid, dismiss)
-    }
-    $.setGroupSpecialTitle = (gid, uid, title, duration = -1)=>{
+    // $.setGroupLeave = (gid, dismiss = false)=>{
+    //     let gid = getGid()
+    //     check_frequency()
+    //     bot.setGroupLeave(gid, dismiss)
+    // }
+    $.setGroupSpecialTitle = (uid, title, duration = -1)=>{
+        let gid = getGid()
         check_frequency()
         bot.setGroupSpecialTitle(gid, uid, title, duration)
     }
-    $.sendGroupNotice = (gid, title, content)=>{
+    $.sendGroupNotice = (title, content)=>{
+        let gid = getGid()
         check_frequency()
         bot.sendGroupNotice(gid, title, content)
     }
@@ -107,20 +120,5 @@ module.exports = (bot)=>{
         check_frequency()
         bot.setGroupRequest(flag, approve, reason)
     }
-    sandbox.require("$", $)
-
-    bot.on("message.group", (data)=>{
-        sandbox.setEnv(data)
-        sandbox.run(`this.onEvents()`, true)
-    })
-    bot.on("notice", (data)=>{
-        sandbox.setEnv(data)
-        sandbox.run(`this.onEvents()`, true)
-    })
-    bot.on("request.group.add", (data)=>{
-        sandbox.setEnv(data)
-        sandbox.run(`this.onEvents()`, true)
-    })
+    return $
 }
-
-sandbox.require("向听", require("syanten"))
