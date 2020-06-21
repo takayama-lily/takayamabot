@@ -137,7 +137,10 @@ if (!this.master)
 
 const master = undefined
 const isMaster = this.isMaster = ()=>{
-	return !qq() || this.master.includes(qq().toString())
+	return !qq() || this.master.includes(qq())
+}
+const isBlack = ()=>{
+	return typeof this.blacklist === "string" && this.blacklist.includes(qq())
 }
 
 const error_blacklist = new Error("你被拉黑了，无法使用沙盒，申诉请联系管理员。")
