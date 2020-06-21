@@ -51,10 +51,8 @@ context = new Proxy(context, {
             return false
         if (k === "data" && !set_env_allowed)
             return false
-        if (protected_properties.includes(k) && !o.isMaster()) {
-            throw new Error("这个变量只有管理能修改")
+        if (protected_properties.includes(k) && !o.isMaster())
             return false
-        }
         if (typeof o.recordSetHistory === "function") {
             o.set_history_allowed = true
             o.recordSetHistory(k)
