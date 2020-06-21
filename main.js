@@ -105,8 +105,7 @@ const reboot = ()=>{
 const bot = new QQPlugin()
 const fff = {limit: 1000} //群发言频率限制每秒1条
 
-const $ = require("./api_passon")(bot)
-
+//初始化数据，主要是获取群和群员列表
 let groups = {}
 const initQQData = async()=>{
     let res = await bot.getGroupList()
@@ -129,6 +128,9 @@ const initQQData = async()=>{
     }
     groups = groups_tmp
 }
+
+//传递给沙盒的变量
+const $ = require("./api_passon")(bot)
 $.getGroupInfo = ()=>{
     let gid = sandbox.getContext().data.group_id
     if (groups.hasOwnProperty(gid))
@@ -137,6 +139,7 @@ $.getGroupInfo = ()=>{
 sandbox.require("$", $)
 sandbox.require("向听", require("syanten"))
 
+//传递给沙盒的事件
 bot.on("message.group", (data)=>{
     sandbox.setEnv(data)
     sandbox.run(`this.onEvents()`, true)
@@ -150,12 +153,14 @@ bot.on("request.group.add", (data)=>{
     sandbox.run(`this.onEvents()`, true)
 })
 
+//加好友和加群处理
 bot.on("request.friend", (data)=>{
     bot.approve(data)
 })
 bot.on("request.group.invite", (data)=>{
     bot.approve(data)
 })
+
 const bans = {}
 bot.on("notice.group_ban.lift_ban", (data)=>{
     if (data.user_id === data.self_id) {
@@ -182,6 +187,7 @@ bot.on("notice.group_ban.ban", (data)=>{
     }
 })
 
+//固定指令触发前缀
 const prefix_list = ["-","/",".","?","!","？","！","－"]
 bot.on("message", async(data)=>{
     let me = data.self_id
@@ -237,8 +243,22 @@ bot.on("message", async(data)=>{
             return reply(await commands[command](param))
         }
     } else {
-        let code = data.raw_message.trim()
-        let atme = `[CQ:at,qq=${data.self_id}]`
+        message = ""
+        for (let v of data.message) {
+            if (v.type === "text")
+                message += v.data.text
+            else if (v.type === "at")
+                message += `'[CQ:at,qq=${v.data.at}]'`
+            else {
+                message += `[CQ:${v.type}`
+                for (let k in v.data)
+                    message += `,${k}=${v.data[k]}`
+                message += `]`
+            }
+
+        }
+        let code = message.trim()
+        let atme = `'[CQ:at,qq=${data.self_id}]'`
         while (code.startsWith(atme))
             code = code.replace(atme, "").trim()
         sandbox.setEnv(data)
