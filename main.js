@@ -107,6 +107,28 @@ const fff = {limit: 1000} //群发言频率限制每秒1条
 
 require("./api_passon")(bot)
 
+let groups = {}
+const initQQData = async()=>{
+    let res = await bot.getGroupList()
+    let groups_tmp = {}
+    if (!res.retcode && res.data instanceof Array) {
+        for (let group of res.data) {
+            groups_tmp[group.group_id] = (await bot.getGroupInfo(group.group_id)).data
+            if (!groups_tmp[group.group_id])
+                groups_tmp[group.group_id] = {}
+            groups_tmp[group.group_id].members = (await bot.getGroupMemberList(group.group_id)).data
+        }
+    } else {
+        return
+    }
+    groups = groups_tmp
+}
+sandbox.require("getGroupInfo", ()=>{
+    let gid = sandbox.getContext().data.group_id
+    if (groups.hasOwnProperty(gid))
+        return groups[gid]
+})
+
 bot.on("request.friend", (data)=>{
     bot.approve(data)
 })
@@ -172,6 +194,9 @@ bot.on("message", async(data)=>{
             }
             return reply(result)
         }
+        if (isMaster(uid) && command === "update") {
+            return initQQData()
+        }
         if (command === "vip") {
             if (!param)
                 param = uid.toString()
@@ -215,5 +240,6 @@ ws.on("connection", (conn)=>{
     conn.on("message", (data)=>{
         bot.onEvent(data)
     })
+    initQQData()
 })
 server.listen(3000)
