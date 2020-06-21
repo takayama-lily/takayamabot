@@ -173,6 +173,7 @@ module.exports.setEnv = setEnv
 
 //传递一个外部对象到context
 module.exports.require = (name, object)=>{
+    Object.setPrototypeOf(object, null)
     context[name] = object
     vm.runInContext(`const ${name} = this.${name}
 delete this.${name}

@@ -211,9 +211,9 @@ bot.on("message", async(data)=>{
 //开启ws服务器处理bot请求
 const ws = new WebSocket.Server({server})
 ws.on("connection", (conn)=>{
+    bot.conn = conn
     conn.on("message", (data)=>{
-        bot.conn = conn
         bot.onEvent(data)
-    })   
+    })
 })
 server.listen(3000)
