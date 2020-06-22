@@ -236,7 +236,7 @@ Object.defineProperty(this, "recordSetHistory", {
 				qq: qq(),
 				name: user(0),
 				group: qun(),
-				gname: $.getGroupInfo() ? $.getGroupInfo().group_name
+				gname: $.getGroupInfo() ? $.getGroupInfo().group_name,
 				card: qun() ? user(1) : undefined,
 				time: Date.now()
 			}
