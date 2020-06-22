@@ -128,6 +128,15 @@ const initQQData = async()=>{
     }
     groups = groups_tmp
 }
+const updateGroupCache = async(gid)=>{
+    let group = (await bot.getGroupInfo(gid, false)).data
+    let members = (await bot.getGroupMemberList(gid)).data
+    if (!group || !members)
+        return
+    for (let member of members)
+        group.members[member.user_id] = member
+    groups[gid] = group
+}
 
 //传递给沙盒的变量
 const $ = require("./api_passon")(bot)
@@ -136,15 +145,9 @@ $.getGroupInfo = ()=>{
     if (groups.hasOwnProperty(gid))
         return groups[gid]
 }
-$.updateGroupCache = async()=>{
+$.updateGroupCache = ()=>{
     let gid = sandbox.getContext().data.group_id
-    let group = (await bot.getGroupInfo(gid, false)).data
-    let members = (await bot.getGroupMemberList(gid)).data
-    if (!group || !members)
-        return
-    for (let member of members)
-        group.members[member.user_id] = member
-    groups[gid] = group
+    updateGroupCache(gid)
 }
 sandbox.require("$", $)
 sandbox.require("向听", require("syanten"))
