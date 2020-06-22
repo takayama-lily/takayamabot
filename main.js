@@ -136,6 +136,16 @@ $.getGroupInfo = ()=>{
     if (groups.hasOwnProperty(gid))
         return groups[gid]
 }
+$.updateGroupCache = async()=>{
+    let gid = sandbox.getContext().data.group_id
+    let group = (await bot.getGroupInfo(gid, false)).data
+    let members = (await bot.getGroupMemberList(gid)).data
+    if (!group || !members)
+        return
+    for (let member of members)
+        group.members[member.user_id] = member
+    groups[gid] = group
+}
 sandbox.require("$", $)
 sandbox.require("向听", require("syanten"))
 

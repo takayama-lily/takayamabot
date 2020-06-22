@@ -16,6 +16,7 @@ $.help = `● 以下是QQAPI：
 设置或取消管理: $.setGroupAdmin(uid,enable=true)
 　　设置群头衔: $.setGroupSpecialTitle(uid,title,duration=-1)
 　　获取群信息: $.getGroupInfo() ※获取群名和成员列表等(group_name,memebers)
+更新群信息缓存: $.updateGroupCache()
 ※uid表示QQ号，gid表示群号
 ※有调用频率限制，部分需要管理员或群主权限
 
