@@ -107,8 +107,8 @@ const shuibiao = async(words, jp = false)=>{
             let furikomi = o ? Math.round((o.sum) / mode.round_count_sum * 100) : 0
             let riichi = Math.round(mode.liqi_count_sum/mode.round_count_sum*100)
             let furo = Math.round(mode.ming_count_sum/mode.round_count_sum*100)
-            format += `\n四麻${mode.game_count_sum}戦${rank4} 一${top}% 末${last}% 飛${fly}%
-　摸${tsumo}% 栄${ron}% 銃${furikomi}% 立${riichi}% 鳴${furo}%`
+            format += `\n四麻${mode.game_count_sum}戦${rank4}(${account.level.score}pt) 一位${top}% 末位${last}% 飛${fly}%
+　自摸${tsumo}% 栄和${ron}% 放銃${furikomi}% 立直${riichi}% 副露${furo}%`
         }
         if (mode23) {
             let mode = mode23
@@ -123,8 +123,8 @@ const shuibiao = async(words, jp = false)=>{
             let furikomi = o ? Math.round((o.sum) / mode.round_count_sum * 100) : 0
             let riichi = Math.round(mode.liqi_count_sum/mode.round_count_sum*100)
             let furo = Math.round(mode.ming_count_sum/mode.round_count_sum*100)
-            format += `\n三麻${mode.game_count_sum}戦${rank3} 一${top}% 末${last}% 飛${fly}%
-　摸${tsumo}% 栄${ron}% 銃${furikomi}% 立${riichi}% 鳴${furo}%`
+            format += `\n三麻${mode.game_count_sum}戦${rank3}(pt) 一位${top}% 末位${last}% 飛${fly}%
+　自摸${tsumo}% 栄和${ron}% 放銃${furikomi}% 立直${riichi}% 副露${furo}%`
         }
 //         let p = {1:[],2:[],11:[],12:[],sum1:0,sum2:0,sum11:0,sum12:0}
 //         if (statistic)
