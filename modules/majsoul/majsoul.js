@@ -123,7 +123,7 @@ const shuibiao = async(words, jp = false)=>{
             let furikomi = o ? Math.round((o.sum) / mode.round_count_sum * 100) : 0
             let riichi = Math.round(mode.liqi_count_sum/mode.round_count_sum*100)
             let furo = Math.round(mode.ming_count_sum/mode.round_count_sum*100)
-            format += `\n三麻${mode.game_count_sum}戦${rank3}(pt) 一位${top}% 末位${last}% 飛${fly}%
+            format += `\n三麻${mode.game_count_sum}戦${rank3}(${account.level3.score}pt) 一位${top}% 末位${last}% 飛${fly}%
 　自摸${tsumo}% 栄和${ron}% 放銃${furikomi}% 立直${riichi}% 副露${furo}%`
         }
 //         let p = {1:[],2:[],11:[],12:[],sum1:0,sum2:0,sum11:0,sum12:0}
