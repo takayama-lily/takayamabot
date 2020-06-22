@@ -129,17 +129,14 @@ const initQQData = async()=>{
     groups = groups_tmp
 }
 const updateGroupCache = async(gid)=>{
-    try {
-        let group = (await bot.getGroupInfo(gid, false)).data
-        let members = (await bot.getGroupMemberList(gid)).data
-        if (!group || !members)
-            return
-        for (let member of members)
-            group.members[member.user_id] = member
-        groups[gid] = group
-    } catch (e) {
-        console.log(e)
-    }
+    let group = (await bot.getGroupInfo(gid, false)).data
+    let members = (await bot.getGroupMemberList(gid)).data
+    if (!group || !members)
+        return
+    group.members = {}
+    for (let member of members)
+        group.members[member.user_id] = member
+    groups[gid] = group
 }
 
 //传递给沙盒的变量
