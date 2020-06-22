@@ -30,15 +30,16 @@ user(card=1) ※返回调用者的群名片或昵称，card参数为真时优先
 data ※环境变量
 
 ● 自定义群事件处理：
-需要自行实现"on_notice_群号"和"on_message_群号"函数，例如群号为1234567，则实现
-
-//该函数在有群事件时触发(入群、退群、加群请求等)
-function on_event_1234567(data) { 
-    alert(data)
-}
+需要自行重写"on_message_群号"和"on_notice_群号"函数，例如群号为1234567，则重写
 
 //该函数在有群消息时触发
 function on_message_1234567(data) { 
+    if (data.raw_message == "你好")
+        alert("你也好")
+}
+
+//该函数在有群事件时触发(入群、退群、加群请求等)
+function on_event_1234567(data) { 
     alert(data)
 }`
 
