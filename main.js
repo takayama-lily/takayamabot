@@ -277,13 +277,13 @@ bot.on("message", async(data)=>{
             code = code.replace(atme, "").trim()
         sandbox.setEnv(data)
         let res = sandbox.run(code, isMaster(uid))
-        if (gid) {
-            const now = Date.now()
-            if (fff[gid] && now - fff[gid] <= fff.limit)
-                return
-            if (res !== undefined && res !== "")
-                fff[gid] = now
-        }
+        // if (gid) {
+        //     const now = Date.now()
+        //     if (fff[gid] && now - fff[gid] <= fff.limit)
+        //         return
+        //     if (res !== undefined && res !== "")
+        //         fff[gid] = now
+        // }
         return reply(res)
     }
 })
