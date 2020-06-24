@@ -40,6 +40,8 @@ const getRank = id=>{
     let res = rank[id[2]-1] + id[4]
     return res ===  '魂天1' ? '魂天' : res
 }
+const eid2id = (t)=>{var e=67108863&(t-=1e7);return e=(131071&e)<<9|e>>17,e=(131071&e)<<9|e>>17,e=(131071&e)<<9|e>>17,e=(131071&e)<<9|e>>17,e=(131071&e)<<9|e>>17,(-67108864&t)+e^6139246}
+const id2eid = (t)=>{var e=67108863&(t^=6139246);return e=(511&e)<<17|e>>9,e=(511&e)<<17|e>>9,e=(511&e)<<17|e>>9,e=(511&e)<<17|e>>9,(e=(511&e)<<17|e>>9)+(-67108864&t)+1e7}
 const shuibiao = async(words, jp = false)=>{
     let deepAdd = (o1, o2)=>{
         if (o1===undefined) return o2
@@ -64,12 +66,12 @@ const shuibiao = async(words, jp = false)=>{
     }
     try {
         let client = jp ? mjsoulJP : mjsoul
-        let result = await client.sendAsync('searchAccountByPattern', {pattern: words})
+        // let result = await client.sendAsync('searchAccountByPattern', {pattern: words})
         // if (result.match_accounts.length === 0)
-        if (!result.decode_id)
-            return `ID为 ${words} 的玩家不存在`
+        // if (!result.decode_id)
+        //     return `ID为 ${words} 的玩家不存在`
         // let account_id = result.match_accounts.shift()
-        let account_id = result.decode_id
+        let account_id = eid2id(words)
         let [account, statistic, state] = await Promise.all([
             client.sendAsync('fetchAccountInfo', {account_id: account_id}),
             client.sendAsync('fetchAccountStatisticInfo', {account_id: account_id}),
@@ -141,7 +143,7 @@ const shuibiao = async(words, jp = false)=>{
         return format
     } catch (e) {
         console.log(e)
-        return '暂时无法查询，可能在维护或别的原因。'
+        return '玩家不存在。'
     }
 }
 
