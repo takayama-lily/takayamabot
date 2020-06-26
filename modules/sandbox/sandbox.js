@@ -182,6 +182,10 @@ module.exports.require = (name, object)=>{
     vm.runInContext(`const ${name} = this.${name}
 delete this.${name}
 Object.setPrototypeOf(${name}, null)
+for (let k in ${name}) {
+    if (typeof ${name}[k] === "object" && ${name}[k])
+        Object.setPrototypeOf(${name}[k], null)
+}
 Object.freeze(${name})
 Object.freeze(${name}.prototype)`, context)
 }
