@@ -12,8 +12,10 @@ if (!fs.existsSync(dataPath)) {
 //初始化context数据
 let context = Object.create(null)
 if (fs.existsSync(contextFile)) {
-    context = JSON.parse(fs.readFileSync(contextFile))
-    Object.setPrototypeOf(context, null)
+    context = JSON.parse(fs.readFileSync(contextFile), (k, v)=>{
+        Object.setPrototypeOf(v, null)
+        return v
+    })
 }
 
 const protected_properties = [
