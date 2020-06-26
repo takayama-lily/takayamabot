@@ -180,15 +180,8 @@ module.exports.setEnv = setEnv
 module.exports.require = (name, object)=>{
     context[name] = object
     vm.runInContext(`const ${name} = this.${name}
-delete this.${name}`, context)
-
-    if (object instanceof String) {
-        vm.runInContext(`Object.setPrototypeOf(${name}, new String())`, context)
-    } else {
-        vm.runInContext(`Object.setPrototypeOf(${name}, typeof ${name} === "function" ? Function : {})`, context)
-    }
-
-    vm.runInContext(`
+delete this.${name}
+Object.setPrototypeOf(${name}, typeof ${name} === "function" ? Function : {})
 for (let k in ${name}) {
     if (typeof ${name}[k] === "function")
         Object.setPrototypeOf(${name}[k], Function)

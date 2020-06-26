@@ -10,10 +10,7 @@ const filter = (msg)=>{
         msg = `[Function: ${msg.name?msg.name:"anonymous"}]`
     if (typeof msg === "object") {
         try {
-            if (msg instanceof String === false)
-                msg = JSON.stringify(msg)
-            else
-                msg = msg.toString()
+            msg = JSON.stringify(msg)
         } catch (e) {
             msg = e.name + ": " + e.message
         }
