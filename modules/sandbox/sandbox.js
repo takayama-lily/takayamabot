@@ -183,7 +183,7 @@ module.exports.require = (name, object)=>{
 delete this.${name}`, context)
 
     if (object instanceof String) {
-        vm.runInContext(`Object.setPrototypeOf(${name}, String)`, context)
+        vm.runInContext(`Object.setPrototypeOf(${name}, new String())`, context)
     } else {
         vm.runInContext(`Object.setPrototypeOf(${name}, typeof ${name} === "function" ? Function : {})`, context)
     }
