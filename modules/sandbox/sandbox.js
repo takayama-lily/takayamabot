@@ -13,7 +13,8 @@ if (!fs.existsSync(dataPath)) {
 let context = Object.create(null)
 if (fs.existsSync(contextFile)) {
     context = JSON.parse(fs.readFileSync(contextFile), (k, v)=>{
-        Object.setPrototypeOf(v, null)
+        if (typeof v === "object" && v)
+            Object.setPrototypeOf(v, null)
         return v
     })
 }
