@@ -13,10 +13,11 @@ if (!fs.existsSync(dataPath)) {
 let context = Object.create(null)
 if (fs.existsSync(contextFile)) {
     context = JSON.parse(fs.readFileSync(contextFile), (k, v)=>{
-        if (typeof v === "object" && v)
-            Object.setPrototypeOf(v, null)
+        // if (typeof v === "object" && v)
+        //     Object.setPrototypeOf(v, null)
         return v
     })
+    Object.setPrototypeOf(context, null)
 }
 
 const protected_properties = [
