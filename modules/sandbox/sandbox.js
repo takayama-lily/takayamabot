@@ -183,7 +183,7 @@ module.exports.require = (name, object)=>{
 delete this.${name}
 Object.setPrototypeOf(${name}, null)
 for (let k in ${name}) {
-    if (typeof ${name}[k] === "object" && ${name}[k])
+    if (typeof ${name}[k] === "object" || typeof ${name}[k] === "function")
         Object.setPrototypeOf(${name}[k], null)
 }
 Object.freeze(${name})
