@@ -233,9 +233,10 @@ class Bot extends EventEmitter {
         this.status = Bot.GAMING
         this.current.connect_token = data.connect_token
         this.current.game_uuid = data.game_uuid
-        if (this.lobby.url[this.lobby.url.length-1] === "/")
-            this.lobby.url = this.lobby.url.substr(0, this.lobby.url.length-1)
-        let url = this.lobby.url.substr(0, this.lobby.url.length - 2) + "02"
+        // if (this.lobby.url[this.lobby.url.length-1] === "/")
+        //     this.lobby.url = this.lobby.url.substr(0, this.lobby.url.length-1)
+        // let url = this.lobby.url.substr(0, this.lobby.url.length - 2) + "02"
+        let url = "wss://gateway-v2.maj-soul.com:7443"
         this.game = new MJSoul({
             url: url,
             timeout: this.lobby.timeout,
