@@ -57,12 +57,8 @@ const check_frequency = ()=>{
 }
 
 const ajax_queue = []
-let ajax_queue_running = false
 setInterval(()=>{
-    if (ajax_queue_running)
-        return
     while (ajax_queue.length) {
-        ajax_queue_running = true
         let {url, cb} = ajax_queue.shift()
         url = encodeURI(url.trim())
         let protocol = url.substr(0, 5) === "https" ? https : http
@@ -76,8 +72,7 @@ setInterval(()=>{
             cb(e)
         }
     }
-    ajax_queue_running = false
-}, 1000)
+}, 200)
 
 const getGid = ()=>sandbox.getContext().data.group_id
 
