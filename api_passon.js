@@ -153,8 +153,9 @@ module.exports = (bot)=>{
             throw new TypeError("The first param must be a string")
         if (typeof callback !== "function")
             throw new TypeError("The second param must be a function")
+        let env = sandbox.getContext().data
         let cb = (data)=>{
-            sandbox.setEnv(sandbox.getContext().data)
+            sandbox.setEnv(env)
             callback(data)
         }
         ajax_queue.push({
