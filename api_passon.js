@@ -1,3 +1,5 @@
+const http = require("http")
+const https = require("https")
 const sandbox = require("./modules/sandbox/sandbox")
 const $ = new String(`这是一个完整的ECMAScript6沙箱
 聊天窗口可以看做一个与之交互的命令行界面
@@ -28,6 +30,7 @@ qq() ※返回调用者的QQ号
 qun() ※返回调用者的群号
 user(card=1) ※返回调用者的群名片或昵称，card参数为真时优先取群名片，否则取QQ昵称
 data ※环境变量
+$.ajax(url, callback) ※暂时只支持get方法
 
 ● 自定义群事件处理：
 需要自行重写"on_message_群号"和"on_notice_群号"函数，例如群号为1234567，则重写
@@ -52,6 +55,25 @@ const check_frequency = ()=>{
         throw new Error("调用频率太快")
     --rest
 }
+
+const ajax_queue = []
+let ajax_queue_running = false
+setInterval(()=>{
+    if (ajax_queue_running)
+        return
+    while (ajax_queue.length) {
+        ajax_queue_running = true
+        let {url, cb} = ajax_queue.shift()
+        url = encodeURIComponent(url.trim())
+        let protocol = url.substr(0, 5) === "https" ? https : http
+        let data = []
+        protocol.get(url, (res)=>{
+            res.on("data", chunk=>data.push(chunk))
+            res.on("end", ()=>cb(data))
+        }).on("error", err=>cb(err))
+    }
+    ajax_queue_running = false
+}, 1000)
 
 const getGid = ()=>sandbox.getContext().data.group_id
 
@@ -121,6 +143,15 @@ module.exports = (bot)=>{
     $.setGroupRequest = (flag, approve = true, reason = undefined)=>{
         check_frequency()
         bot.setGroupRequest(flag, approve, reason)
+    }
+    $.ajax = (url, cb)=>{
+        if (typeof url !== "string")
+            throw new TypeError("The first param must be a string")
+        if (typeof cb !== "function")
+            throw new TypeError("The second param must be a function")
+        ajax_queue.push({
+            url, cb
+        })
     }
     return $
 }
