@@ -64,13 +64,17 @@ setInterval(()=>{
     while (ajax_queue.length) {
         ajax_queue_running = true
         let {url, cb} = ajax_queue.shift()
-        url = encodeURIComponent(url.trim())
+        url = encodeURI(url.trim())
         let protocol = url.substr(0, 5) === "https" ? https : http
         let data = []
-        protocol.get(url, (res)=>{
-            res.on("data", chunk=>data.push(chunk))
-            res.on("end", ()=>cb(data))
-        }).on("error", err=>cb(err))
+        try {
+            protocol.get(url, (res)=>{
+                res.on("data", chunk=>data.push(chunk))
+                res.on("end", ()=>cb(data))
+            }).on("error", err=>cb(err))
+        } catch (e) {
+            cb(e)
+        }
     }
     ajax_queue_running = false
 }, 1000)
