@@ -156,7 +156,11 @@ module.exports = (bot)=>{
         let env = sandbox.getContext().data
         let cb = (data)=>{
             sandbox.setEnv(env)
-            callback(data)
+            let function_name = "tmp"+Date.now()
+            sandbox.getContext()[function_name] = callback
+            sandbox.run(`Object.setPrototypeOf(this.${function_name}, Function)`)
+            sandbox.run(`this.${function_name}(${JSON.stringify(data)})`)
+            sandbox.run(`delete this.${function_name}`)
         }
         ajax_queue.push({
             url, cb
