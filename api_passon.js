@@ -70,7 +70,7 @@ setInterval(()=>{
         try {
             protocol.get(url, (res)=>{
                 res.on("data", chunk=>data.push(chunk))
-                res.on("end", ()=>cb(data))
+                res.on("end", ()=>cb(Buffer.concat(data).toString()))
             }).on("error", err=>cb(err))
         } catch (e) {
             cb(e)
