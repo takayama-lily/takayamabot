@@ -151,7 +151,7 @@ module.exports = (bot)=>{
     $.ajax = (url, callback)=>{
         if (typeof url !== "string")
             throw new TypeError("The first param must be a string")
-        if (typeof cb !== "function")
+        if (typeof callback !== "function")
             throw new TypeError("The second param must be a function")
         let cb = (data)=>{
             sandbox.setEnv(sandbox.getContext().data)
