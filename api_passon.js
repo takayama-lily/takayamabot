@@ -17,7 +17,7 @@ self() ※返回当前群的数据库根对象(不会串群)
 env() ※返回环境变量对象(包含调用者的QQ信息和群信息等)
 $.ajax(url, callback, headers=null) ※暂时只支持GET
 
-● 以下是QQ相关API(除群信息外无返回值)：
+● 以下是QQ相关API(除获取群信息外无返回值)：
 　　　发送私聊: $.sendPrivateMsg(uid,msg)
 　　　发送群聊: $.sendGroupMsg(gid,msg)
 　　　撤回消息: $.deleteMsg(message_id)
@@ -72,9 +72,9 @@ setInterval(()=>{
         url = encodeURI(url.trim())
         let protocol = url.substr(0, 5) === "https" ? https : http
         let data = []
-        let options = null
+        const options = {}
         if (headers) {
-            options = {headers}
+            options.headers = headers
         }
         try {
             protocol.get(url, options, (res)=>{
