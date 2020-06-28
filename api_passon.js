@@ -30,7 +30,7 @@ qq() ※返回调用者的QQ号
 qun() ※返回调用者的群号
 user(card=1) ※返回调用者的群名片或昵称，card参数为真时优先取群名片，否则取QQ昵称
 data ※环境变量
-$.ajax(url, callback) ※暂时只支持get方法
+$.ajax(url, callback, headers=null) ※暂时只支持GET
 
 ● 自定义群事件处理：
 需要自行重写"on_message_群号"和"on_notice_群号"函数，例如群号为1234567，则重写
@@ -59,12 +59,20 @@ const check_frequency = ()=>{
 const ajax_queue = []
 setInterval(()=>{
     while (ajax_queue.length) {
-        let {url, cb} = ajax_queue.shift()
+        let {url, cb, headers} = ajax_queue.shift()
         url = encodeURI(url.trim())
         let protocol = url.substr(0, 5) === "https" ? https : http
         let data = []
+        let options = null
+        if (headers) {
+            options = {headers}
+        }
         try {
-            protocol.get(url, (res)=>{
+            protocol.get(url, options, (res)=>{
+                if (res.statusCode !== 200) {
+                    cb(res)
+                    return
+                }
                 res.on("data", chunk=>data.push(chunk))
                 res.on("end", ()=>cb(Buffer.concat(data).toString()))
             }).on("error", err=>cb(err))
@@ -143,11 +151,13 @@ module.exports = (bot)=>{
         check_frequency()
         bot.setGroupRequest(flag, approve, reason)
     }
-    $.ajax = (url, callback)=>{
+    $.ajax = (url, callback, headers = null)=>{
         if (typeof url !== "string")
             throw new TypeError("The first param must be a string")
         if (typeof callback !== "function")
             throw new TypeError("The second param must be a function")
+        if (typeof headers !== "object")
+            throw new TypeError("The third param must be an object")
         let env = sandbox.getContext().data
         let cb = (data)=>{
             sandbox.setEnv(env)
@@ -157,7 +167,7 @@ module.exports = (bot)=>{
             sandbox.run(`delete ${function_name}`)
         }
         ajax_queue.push({
-            url, cb
+            url, cb, headers
         })
     }
     return $
