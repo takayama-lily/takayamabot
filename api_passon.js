@@ -79,7 +79,7 @@ setInterval(()=>{
         try {
             protocol.get(url, options, (res)=>{
                 if (res.statusCode !== 200) {
-                    cb(res)
+                    cb({statusCode: res.statusCode})
                     return
                 }
                 res.on("data", chunk=>data.push(chunk))
