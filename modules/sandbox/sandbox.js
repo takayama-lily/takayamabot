@@ -182,7 +182,7 @@ module.exports.require = (name, object)=>{
     context[name] = object
     vm.runInContext(`const ${name} = this.${name}
 delete this.${name}
-if (!(${name} instanceof Object) || !(${name} instanceof Function))
+if (!(${name} instanceof Object) && !(${name} instanceof Function))
     Object.setPrototypeOf(${name}, typeof ${name} === "function" ? Function : {})
 for (let k in ${name}) {
     if (typeof ${name}[k] === "function" && !(${name}[k] instanceof Function))
