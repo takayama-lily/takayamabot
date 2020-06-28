@@ -161,6 +161,7 @@ module.exports = (bot)=>{
         bot.setGroupRequest(flag, approve, reason)
     }
     $.ajax = (url, callback, headers = null)=>{
+        check_frequency()
         if (typeof url !== "string")
             throw new TypeError("The first param must be a string")
         if (typeof callback !== "function")
