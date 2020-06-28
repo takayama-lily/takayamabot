@@ -1,11 +1,11 @@
 const http = require("http")
 const https = require("https")
 const sandbox = require("./modules/sandbox/sandbox")
-const $ = new String(`这是一个完整的ECMAScript6沙箱
+const $ = sandbox.run(`new String(\`这是一个完整的ECMAScript6沙箱
 聊天窗口可以看做一个与之交互的命令行界面
 你刚才输入的"$"是一个全局变量
 输入$.help查看开发文档
-※本文档可能需要一定的编程基础才能充分理解`)
+※本文档可能需要一定的编程基础才能充分理解\`)`)
 $.help = `● 以下是QQAPI：
 　　　发送私聊: $.sendPrivateMsg(uid,msg)
 　　　发送群聊: $.sendGroupMsg(gid,msg)
@@ -153,7 +153,6 @@ module.exports = (bot)=>{
             sandbox.setEnv(env)
             let function_name = "tmp"+Date.now()
             sandbox.getContext()[function_name] = callback
-            sandbox.run(`Object.setPrototypeOf(${function_name}, Function)`)
             sandbox.run(`${function_name}(${JSON.stringify(data)})`)
             sandbox.run(`delete ${function_name}`)
         }
