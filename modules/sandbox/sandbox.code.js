@@ -93,6 +93,7 @@ Object.defineProperty(this, "data", {
 	value: {}
 })
 
+const env = ()=>this.data
 const qq = ()=>this.data.user_id
 const qun = ()=>this.data.group_id
 const user = (card=1)=>{
