@@ -16,7 +16,8 @@ $.help = `● 前言
 alert(msg) ※输出内容到调用的群或私聊(无返回值)
 self() ※返回当前群的数据库根对象(不会串群)
 env() ※返回环境变量对象(包含调用者的QQ信息和群信息等)
-$.ajax(url, callback, headers=null) ※暂时只支持GET方法
+$.ajax(url, callback, headers=null) ※暂时只支持GET方法，callback函数有一个参数，在成功时为string，失败时为object
+※由于安全原因，环境内不支持其它异步操作
 
 ● 以下是QQ相关API(除获取群信息外无返回值)：
 　　　发送私聊: $.sendPrivateMsg(uid,msg)
