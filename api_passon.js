@@ -1,21 +1,22 @@
 const http = require("http")
 const https = require("https")
 const sandbox = require("./modules/sandbox/sandbox")
-const $ = sandbox.run(`new String(\`这是一个完整的ECMAScript6环境
-聊天窗口可以看做一个与之交互的命令行界面
-你刚才输入的"$"是一个全局变量
-输入$.help查看详细开发文档
-※该文档可能需要一定的编程基础才能充分理解\`)`)
+const $ = sandbox.run(`new String(\`这是一个完整的云JavaScript环境。
+聊天窗口可以看做一个个与之交互的命令行界面。
+这里有详细的开发文档，但是可能需要一定的编程基础才能充分理解。
+准备好了吗？
+准备好了就输入$.help查看文档吧！
+\`)`)
 $.help = `● 前言
-该环境中无法使用this、async、const关键字
+由于安全问题，该环境中无法使用this、async、const关键字
 调式方法是在代码前加上反斜杠"\\"
-只包含js原生api，不要在环境中尝试使用浏览器api(这不是浏览器)
+只包含ECMAScript6原生api，不要在环境中尝试使用浏览器或者nodejs的api
 
 ● 以下是通用增强API：
 alert(msg) ※输出内容到调用的群或私聊(无返回值)
 self() ※返回当前群的数据库根对象(不会串群)
 env() ※返回环境变量对象(包含调用者的QQ信息和群信息等)
-$.ajax(url, callback, headers=null) ※暂时只支持GET
+$.ajax(url, callback, headers=null) ※暂时只支持GET方法
 
 ● 以下是QQ相关API(除获取群信息外无返回值)：
 　　　发送私聊: $.sendPrivateMsg(uid,msg)
@@ -48,7 +49,7 @@ function on_event_1234567(data) {
 }
 
 ● 其他可用函数：
-at(qq) ※返回at一个人(string)，默认为调用者
+at(QQ号) ※返回at一个人(string)，默认为调用者
 qq() ※返回调用者的QQ号(number)
 qun() ※返回调用者的群号(number)
 user(card=1) ※返回调用者的群名片或昵称(string)，card参数为真时优先取群名片，否则取QQ昵称
