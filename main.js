@@ -128,6 +128,7 @@ const initQQData = async()=>{
     }
     groups = groups_tmp
 }
+setInterval(initQQData, 300000)
 const updateGroupCache = async(gid)=>{
     let group = (await bot.getGroupInfo(gid, false)).data
     let members = (await bot.getGroupMemberList(gid)).data
