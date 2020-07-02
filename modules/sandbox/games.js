@@ -706,8 +706,10 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
 			return "花枝招展"
 		if (pt<32768)
 			return "绝代佳人"
+		if (pt<65536)
+			return "万世流芳"
 		else
-			return "千古流芳"
+			return "神"
 	}else{
 		if (pt<64)
 			return "工具人"
@@ -726,3 +728,178 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
 	}
 }
 
+拼点禁言=(q, max_time = 100)=>{
+  if (q===undefined)
+  	return `和群内成员拼点, 拼输的受到禁言惩罚。
+※机器人的权限>惩罚对象的时候, 才会真正执行惩罚。
+※禁言秒数=双方的点差(默认上限为100)。
+※被发起的一方输了, 只会受到一半时间的惩罚。
+※使用方法：拼点禁言(@对方)
+※设置roll点上限为1000：拼点禁言(@对方,1000)`
+  if (max_time > 86400*30)
+    return "上限不能超过30天(2592000)"
+  if (data.anonymous)
+    return "匿名用户无法参加"
+  q=parseQQ(q)
+  if (q===qq())
+  	return '不能和自己拼点'
+  if (!$.getGroupInfo()) {
+  	$.updateGroupCache()
+  	return '首次进群，已更新群数据缓存，请重试一次。'
+  }
+  let members = $.getGroupInfo().members
+  if (!members[q])
+    return '拼点对象不在群内'
+  let my_roll = random(0,max_time)
+  let his_roll = random(0,max_time)
+  let res = at() + `掷出了${my_roll}, ${at(q)}掷出了${his_roll}\n`
+  let time = Math.abs(my_roll-his_roll)
+  if (my_roll > his_roll) {
+  	time = Math.ceil(time/2)
+    res += at(q) + `被禁言${time}秒`
+    $.setGroupBan(q,time)
+    $.sendGroupMsg(机器人情报站, `${q}(${members[q].nickname})在群${qun()}(${data.group_name})拼点失败，被禁言${time}秒`)
+  } else if (my_roll < his_roll) {
+    res += at() + `被禁言${time}秒`
+    $.setGroupBan(qq(),time)
+    $.sendGroupMsg(机器人情报站, `${qq()}(${user(0)})在群${qun()}(${data.group_name})拼点失败，被禁言${time}秒`)
+  } else {
+    res += `可惜是平手`
+  }
+  return res
+}
+
+分组=(n)=>{
+	if ((n-1)%3 !== 0 || n%4!==0)
+		return "必须输入一个能被4整除，并且减1后能被3整除的数"
+	let res = ""
+	let g1=g2=g3=[]
+	for (let i = 0; i < (n-1)/3; ++i) {
+		g2 = []
+		for (let j = 0; j < n/4; ++j) {
+			g2.push([])
+		}
+		g1.push(g2)
+	}
+
+	//当前第i轮
+	for (let i = 0; i < g1.length; ++i) {
+		
+		//第k名选手
+		k:
+		for (let k = 0; k < n; ++k) {
+
+			//属于第j组
+			j:
+			for (let j = 0; j < g1[i].length; ++j) {
+				//当前组没人加入
+				if (!g1[i][j].length) {
+					g1[i][j].push(k)
+					continue k
+				}
+				//当前组满下一组
+				if (g1[i][j].length === 4) {
+					continue
+				}
+				//之前轮次如果遇到过下一组
+				for (let l = 0; l < i; ++l) {
+					for (let m of g1[l]) {
+						if (m.includes(k)) {
+							for (let u = 0; u < 4; ++u) {
+								if (g1[i][j].includes(m[u])) {
+									continue j
+								}
+							}
+						}
+					}
+				}
+				g1[i][j].push(k)
+				continue k
+			}
+		}
+	}
+	for (let l = 0; l < g1.length; ++l) {
+		res += `第${l+1}轮：` + JSON.stringify(g1[l]) + `\n`
+	}
+	return res
+}
+
+分组2=(n)=>{
+	if ((n-1)%3 !== 0 || n%4!==0)
+		return "必须输入一个能被4整除，并且减1后能被3整除的数"
+	let couples = []
+	let fn = (d)=>{
+		if (d > n)
+			return
+		else {
+			for (let i = d+1; i <= n; ++i) {
+				couples.push([d,i])
+			}
+			fn(d+1)
+		}
+	}
+	fn(1)
+	let arr = []
+	let fn2 = ()=>{
+		let current = []
+		let values
+		for (let i = 0; i < couples.length; ++i) {
+			if (!couples[i])
+				continue
+			values = current
+			if (current.length === 0) {
+				current.push(couples[i])
+				delete couples[i]
+				continue
+			}
+			if (current.length === 1 && couples[i].includes(values[0][0])) {
+				current.push(couples[i])
+				delete couples[i]
+				continue
+			}
+			if (current.length === 2 && couples[i].includes(values[0].filter(v => values[1].includes(v))[0])){
+				current.push(couples[i])
+				delete couples[i]
+				continue
+			}
+			if (current.length === 3) {
+				let diff = values[0].concat(values[1]).filter(v => !values[0].includes(v) || !values[1].includes(v))
+				if (couples[i].includes(diff[0]) && couples[i].includes(diff[1])) {
+					current.push(couples[i])
+					delete couples[i]
+					continue
+				}
+			}
+			if (current.length === 4) {
+				let diff = values[0].concat(values[2]).filter(v => !values[0].includes(v) || !values[2].includes(v))
+				if (couples[i].includes(diff[0]) && couples[i].includes(diff[1])) {
+					current.push(couples[i])
+					delete couples[i]
+					continue
+				}
+			}
+			if (current.length === 5) {
+				let diff = values[3].concat(values[4]).filter(v => !values[3].includes(v) || !values[4].includes(v))
+				if (couples[i].includes(diff[0]) && couples[i].includes(diff[1])) {
+					current.push(couples[i])
+					delete couples[i]
+					break
+				}
+			}
+		}
+		if (!current.length)
+			return
+		console.log(current)
+		let tmp = []
+		for (let v of current) {
+			if (!tmp.includes(v[0]))
+				tmp.push(v[0])
+			if (!tmp.includes(v[1]))
+				tmp.push(v[1])
+		}
+		arr.push(tmp)
+		fn2()
+	}
+	fn2()
+	return arr
+}

@@ -710,6 +710,7 @@ class NaniKiru {
             }
         }
 
+        // 第一旬碰后无法拔北
         if (this.hai === "4z" && this.round.hints.includes(OPERATION.KITA))
             this.type = OPERATION.KITA
         else
