@@ -1,6 +1,8 @@
 const fs = require("fs")
 const path = require("path")
 const vm = require("vm")
+const crypto = require("crypto")
+const querystring = require("querystring")
 const dataPath = path.join(__dirname, "data")
 const contextFile = path.join(dataPath, "context")
 const fnFile = path.join(dataPath, "context.fn")
@@ -178,7 +180,7 @@ const setEnv = (env = {})=>{
 module.exports.setEnv = setEnv
 
 //传递一个外部对象到context
-module.exports.require = (name, object)=>{
+const include = (name, object)=>{
     context[name] = object
     vm.runInContext(`const ${name} = this.${name}
 delete this.${name}
@@ -193,6 +195,16 @@ for (let k in ${name}) {
 Object.freeze(${name})
 Object.freeze(${name}.prototype)`, context)
 }
+module.exports.require = include
 
 //返回context
 module.exports.getContext = ()=>context
+
+//导入一些工具函数(hash,hmac,querystring)
+include("hash", (algo, data)=>{
+    return crypto.createHash(algo).update(data.toString()).digest("hex")
+})
+include("hmac", (algo, key, data)=>{
+    return crypto.createHmac(algo, key.toString()).update(data.toString()).digest("hex")
+})
+include("querystring", querystring)
