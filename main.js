@@ -28,7 +28,6 @@ const fn = async(req)=>{
 
     //牌谱请求
     if (r.pathname === "/record") {
-        console.log(Date(), query)
         return await mjsoul.getParsedRecord(query.id)
     }
     
@@ -173,7 +172,7 @@ bot.on("request.friend", (data)=>{
     bot.approve(data)
 })
 bot.on("request.group.invite", (data)=>{
-    bot.approve(data)
+    // bot.approve(data)
 })
 
 const bans = {}
