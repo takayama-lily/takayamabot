@@ -210,3 +210,9 @@ include("hmac", (algo, key, data)=>{
     return crypto.createHmac(algo, key.toString()).update(data.toString()).digest("hex")
 })
 include("querystring", querystring)
+include("base64Encode", (s)=>{
+    return Buffer.from(s.toString(), "utf-8").toString('base64')
+})
+include("base64Decode", (s)=>{
+    return Buffer.from(s.toString(), "base64").toString('utf-8')
+})

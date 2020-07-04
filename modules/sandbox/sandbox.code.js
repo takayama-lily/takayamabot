@@ -109,12 +109,17 @@ const parseQQ=(str)=>{
 		return parseInt(str)
 	return parseInt(str.replace(/[^(0-9)]/g,""))
 }
+const protectQQ=(q)=>{
+	q=parseQQ(q).toString()
+	return q.substr(0, 2) + "***" + q.substr(q.length-2, 2)
+}
 const at=(q=qq())=>`[CQ:at,qq=${parseQQ(q)}]`
 const seed=(q=qq())=>Math.abs(0xffffffffffffffff%parseQQ(q)^0xffffffffffffffff%((Date.now()+28800000)/864/10**5|0))
 const img=(url,cache=1)=>{
 	cache=cache?1:0
 	return `[CQ:image,cache=${cache},file=${encodeURI(url)}]`
 }
+const random=(a,b)=>Math.floor(Math.random()*(b-a)+a)
 const qqhead=(q=qq(),cache=true)=>{
 	if (q===false||q ===0)
 		cache=false,q=qq()
@@ -124,6 +129,20 @@ const grouphead=(gid=qun(),cache=true)=>{
 	if (gid===false||gid===0)
 		cache=false,gid=qun()
 	return img("http://p.qlogo.cn/gh/"+gid+"/"+gid+"/640",cache)
+}
+const time2str=(timestamp)=>{
+	if (timestamp < 0xffffffff)
+		timestamp *= 1000
+	let time = Math.floor((Date.now() - timestamp)/1000)
+    if (time >= 86400)
+        time = Math.floor(time / 86400) + "天"
+    else if (time >= 3600)
+        time = Math.floor(time / 3600) + "小时"
+    else if (time >= 60)
+        time = Math.floor(time / 60) + "分钟"
+    else
+        time = Math.floor(time) + "秒"
+    return time + "前"
 }
 
 const alert = (msg, escape = false)=>{

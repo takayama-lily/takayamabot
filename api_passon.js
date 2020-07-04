@@ -49,15 +49,17 @@ function on_event_1234567(data) {
     alert(data)
 }
 
-● 其他可用api：
+● 其他可用函数：
 at(QQ号) ※返回at一个人(string)，默认为调用者
-qq() ※返回调用者的QQ号(number)
-qun() ※返回调用者的群号(number)
-user(card=1) ※返回调用者的群名片或昵称(string)，card参数为真时优先取群名片，否则取QQ昵称
-parseQQ(string) ※返回从at文中解析出的QQ号(number)
+qq(), qun() ※返回调用者的QQ号,群号(number)
+user(card=1) ※返回调用者的群名片或昵称(string)，card参数为真时优先取群名片
 img(url, cache=true) ※返回一张图片(string)
-hash(algorithm, data) ※用法: hash("md5", "abc") 支持md5，sha1等算法
-hmac(algorithm, key, data) ※用法: hmac("md5", "secret-key", "abc")
+random(min,max) ※随机返回一个min到max-1的整数(number)
+time2str(timestamp) ※把时间戳转换为一个容易理解的时间(string)
+protectQQ(QQ号或at文) ※隐藏部分QQ号起到保护作用(string)
+base64Encode(str), base64Decode(str) ※base64编解码
+hash(algorithm, data) ※用法: hash("md5","str") 已封装md5(),sha1(),sha256()等函数
+hmac(algorithm, key, data) ※用法: hmac("md5","secret-key","str")
 querystring ※nodejs的querystring模块
 
 ※欢迎加入小兔子俱乐部(892703008)
