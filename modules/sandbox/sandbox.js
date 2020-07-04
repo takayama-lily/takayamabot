@@ -1,4 +1,4 @@
-const fs = require("fs")
+ const fs = require("fs")
 const path = require("path")
 const vm = require("vm")
 const crypto = require("crypto")
@@ -11,16 +11,8 @@ if (!fs.existsSync(dataPath)) {
     fs.mkdirSync(dataPath, {recursive: true, mode: 0o700})
 }
 
-//初始化context数据
+//初始化context
 let context = Object.create(null)
-if (fs.existsSync(contextFile)) {
-    context = JSON.parse(fs.readFileSync(contextFile), (k, v)=>{
-        // if (typeof v === "object" && v)
-        //     Object.setPrototypeOf(v, null)
-        return v
-    })
-    Object.setPrototypeOf(context, null)
-}
 
 const protected_properties = [
   'Object',             'Function',       'Array',
@@ -94,12 +86,22 @@ vm.createContext(context, {
     }
 })
 
+//还原context中的数据
+if (fs.existsSync(contextFile)) {
+    let tmp = JSON.parse(fs.readFileSync(contextFile))
+    for (let k in tmp) {
+        try {
+            vm.runInContext(`this["${k}"]=` + JSON.stringify(tmp[k]), context)
+        } catch(e) {}
+    }
+}
+
 //还原context中的函数
 if (fs.existsSync(fnFile)) {
     let fn = JSON.parse(fs.readFileSync(fnFile))
     for (let k in fn) {
         try {
-            vm.runInContext(k + "=" + fn[k], context)
+            vm.runInContext(`this["${k}"]=` + fn[k], context)
         } catch(e) {}
     }
 }
