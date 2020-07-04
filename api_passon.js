@@ -2,24 +2,30 @@ const http = require("http")
 const https = require("https")
 const sandbox = require("./modules/sandbox/sandbox")
 
-const $ = sandbox.run(`new String(\`这是一个完整的云JavaScript环境。
-聊天窗口可以看做一个个与之交互的命令行界面。
-这里有详细的开发文档，但是可能需要一定的编程基础才能充分理解。
-准备好了就输入$.help查看文档吧！\`)`)
+const $ = sandbox.run(`new String(\`这是一个云JavaScript环境。聊天窗口就是控制台。
+程序会读取用户发送消息并尝试作为JS代码执行，如果有结果则返回，出错则丢弃。
 
-$.help = `● 前言
-由于安全问题，环境中无法使用this、async、const关键字
-调式方法是在代码前加上反斜杠"\\"
-只包含ECMAScript6原生api，不要尝试使用浏览器或者nodejs的api
+该文档可能需要一定的编程基础才能充分理解。
+该文档默认你会使用JavaScript，或其他类似语言。
+准备好了就输入$.help或$.doc查看文档吧！\`)`)
+
+$.help = $.doc = `● 前言
+请勿设置任何可能导致封号的敏感违规内容。
+调式手段是在代码前加上反斜杠"\\"，这样会输出错误信息。
+支持使用CQ码定义图片等消息。
+环境内只包含ECMAScript6原生API，和一些增强API，不要尝试使用浏览器或nodejs的特有API。
+由于安全原因，无法使用this、async、const关键字，并且不支持eval和Promise异步操作。
 
 ● 以下是增强API：
+env() ※返回环境变量对象(包含发言者的QQ信息和群信息等)
+self() ※返回当前群的根数据对象
 alert(msg) ※输出内容到调用的群或私聊(无返回值)
-env() ※返回环境变量对象(包含调用者的QQ信息和群信息等)
-self() ※返回当前群的数据库根对象(不会串群)
-$.ajax(url, callback, headers=null) ※暂时只支持GET方法，callback函数有一个参数，在成功时为string，失败时为object
-※由于安全原因，环境内不支持Promise和其它异步操作
+$.ajax(url, callback, headers=null) ※暂时不支持POST
+※用法: $.ajax("https://www.example.com", function(data){
+    alert(data)
+})
 
-● 以下是QQ相关API(除获取群信息外无返回值)：
+● 以下是QQ相关增强API(除获取群信息外无返回值)：
 　　　发送私聊: $.sendPrivateMsg(uid,msg)
 　　　发送群聊: $.sendGroupMsg(gid,msg)
 　　　撤回消息: $.deleteMsg(message_id)
@@ -30,7 +36,7 @@ $.ajax(url, callback, headers=null) ※暂时只支持GET方法，callback函数
 　　　　群禁言: $.setGroupBan(uid,duration=60)
 设置或取消管理: $.setGroupAdmin(uid,enable=true)
 　　设置群头衔: $.setGroupSpecialTitle(uid,title,duration=-1)
-　　获取群信息: $.getGroupInfo() ※返回一个对象
+　　获取群信息: $.getGroupInfo() ※返回一个包含当前群数据的对象
 更新群信息缓存: $.updateGroupCache()
 ※uid表示QQ号，gid表示群号
 ※有调用频率限制，部分需要管理员或群主权限
@@ -43,27 +49,31 @@ function on_message_1234567(data) {
     if (data.raw_message == "你好")
         alert("你也好")
 }
-
 //该函数在有群事件时触发(入群、退群、加群请求等)
 function on_event_1234567(data) { 
     alert(data)
 }
 
 ● 其他可用函数：
-at(QQ号) ※返回at一个人(string)，默认为调用者
-qq(), qun() ※返回调用者的QQ号,群号(number)
-user(card=1) ※返回调用者的群名片或昵称(string)，card参数为真时优先取群名片
+at(QQ号) ※返回at一个人(string)，默认为发言者
+qq(), qun() ※返回发言者的QQ号,群号(number)
+user(card=1) ※返回发言者的群名片或昵称(string)，card参数为真时优先取群名片
 img(url, cache=true) ※返回一张图片(string)
 random(min,max) ※随机返回一个min到max-1的整数(number)
 time2str(timestamp) ※把时间戳转换为一个容易理解的时间(string)
+parseQQ(at文) ※从at文中解析出QQ号(number)
 protectQQ(QQ号或at文) ※隐藏部分QQ号起到保护作用(string)
 base64Encode(str), base64Decode(str) ※base64编解码
 hash(algorithm, data) ※用法: hash("md5","str") 已封装md5(),sha1(),sha256()等函数
 hmac(algorithm, key, data) ※用法: hmac("md5","secret-key","str")
 querystring ※nodejs的querystring模块
 
+● 注意
+宿主进程有时会重启，此时环境内所有全局对象都会经历一次序列化和反序列化，
+会导致以下数据会丢失：对象间的继承关系，对象中的成员函数。
+
 ※欢迎加入小兔子俱乐部(892703008)
-※20200630`
+※20200705`
 
 let rest = 3
 setInterval(()=>{
