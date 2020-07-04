@@ -689,7 +689,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
     return "什么都没有"
   let res = at(q)+` 当前的成长值：${浇水成长值[q].value}(${浇水称号(浇水成长值[q].value)})。好感度：`
   for (let k in 浇水成长值[q].fans)
-    res+="\n"+at(k)+`(${k}) / ${浇水成长值[q].fans[k].value}(${浇水称号(浇水成长值[q].fans[k].value, 2)})`
+    res+="\n"+at(k)+`(${protectQQ(k)}) / ${浇水成长值[q].fans[k].value}(${浇水称号(浇水成长值[q].fans[k].value, 2)})`
   return res
 }
 浇水称号=(pt,type=1)=>{
@@ -902,4 +902,70 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
 	}
 	fn2()
 	return arr
+}
+
+time2string=(timestamp)=>{
+	let time = Math.floor((Date.now() - timestamp)/1000)
+    if (time >= 86400)
+        time = Math.floor(time / 86400) + "天"
+    else if (time >= 3600)
+        time = Math.floor(time / 3600) + "小时"
+    else if (time >= 60)
+        time = Math.floor(time / 60) + "分钟"
+    else
+        time = Math.floor(time) + "秒"
+    return time + "前"
+}
+
+protectQQ=(q)=>{
+	q=parseQQ(q).toString()
+	return q.substr(0, 2) + "***" + q.substr(q.length-2, 2)
+}
+
+knowledges=[]
+wiki=(title, content)=>{
+	if (title===undefined) {
+		let res = "当前最新问题: "
+		for (let i = knowledges.length - 1; i >= 0; --i) {
+			if (i < knowledges.length - 20) break
+			res += `\n${i}. ${knowledges[i].title} (回答数:${knowledges[i].answers.length} 提问者:${knowledges[i].name})`
+		}
+		res += "\n※要查看问题内容和回答输入: wiki(编号)"
+		res += `\n※要发起提问输入: wiki("标题","内容")`
+		return res
+	}
+	if (typeof title === "number") {
+		if (!knowledges[title])
+			return "问题编号不存在。"
+		else {
+			let res = ""
+			let question = knowledges[title]
+			if (content===undefined) {
+				question.views++
+				res += `※该问题由 ${question.name}(${protectQQ(question.qq)}) 于${time2string(question.time)}发起 (${question.views}次查看)`
+				res += `\n※要回答该问题输入: wiki(${title},"内容")`
+				res += `\n标题: ${question.title}`
+				res += `\n内容: ${question.content}`
+				for (let v of question.answers) {
+					res += `\n╭ 回答者: ${v.name}(${protectQQ(v.qq)}) ${time2string(v.time)}`
+					res += `\n╰ ` + v.content
+				}
+			} else {
+				let answer = {
+					qq: qq(), name: user(0), time: Date.now(), content: content.toString().trim()
+				}
+				question.answers.unshift(answer)
+				res += "回答提交成功。"
+			}
+			return res
+		}
+	}
+	if (typeof title === "string" && title) {
+		let question = {
+			qq: qq(), name: user(0), time: Date.now(), answers: [],
+			title: title.trim(), content : content?content.toString().trim():"rt", views: 0
+		}
+		knowledges.push(question)
+		return `问题已提交。要查看该问题输入: wiki(${knowledges.length - 1})`
+	}
 }
