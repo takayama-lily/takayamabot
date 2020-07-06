@@ -60,7 +60,7 @@ context = new Proxy(context, {
     },
     defineProperty: (o, k, d)=>{
         if (!init_finished)
-            return Object.defineProperty(o, k, d)
+            return Reflect.defineProperty(o, k, d)
         else 
             return false
     },
