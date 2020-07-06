@@ -131,9 +131,10 @@ const grouphead=(gid=qun(),cache=true)=>{
 	return img("http://p.qlogo.cn/gh/"+gid+"/"+gid+"/640",cache)
 }
 const time2str=(timestamp)=>{
+	let now = Date.now()
 	if (timestamp < 0xffffffff)
 		timestamp *= 1000
-	let time = Math.floor((Date.now() - timestamp)/1000)
+	let time = Math.floor((now - timestamp)/1000)
     if (time >= 86400)
         time = Math.floor(time / 86400) + "天"
     else if (time >= 3600)
@@ -142,7 +143,7 @@ const time2str=(timestamp)=>{
         time = Math.floor(time / 60) + "分钟"
     else
         time = Math.floor(time) + "秒"
-    return time + "前"
+    return Math.abs(time) + (timestamp <= now ? "前" : "后")
 }
 
 const alert = (msg, escape = false)=>{
