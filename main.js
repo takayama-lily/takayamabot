@@ -21,7 +21,7 @@ const fn = async(req)=>{
     let r = url.parse(req.url)
     let query = querystring.parse(r.query)
 
-    //机器人后台管理
+    //后台管理
     // if (r.pathname === "/manage/bot") {
     //     return manager()
     // }
@@ -42,7 +42,7 @@ const fn = async(req)=>{
         return await mjsoul.jp.sendAsync(query.m, query)
     }
     
-    //处理github push请求
+    //github webhock
     else if (r.pathname === "/youShouldPull") {
         return new Promise((resolve, reject)=>{
             spawn.exec("./up", (error, stdout, stderr) => {
