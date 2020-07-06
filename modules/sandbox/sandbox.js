@@ -141,7 +141,7 @@ setInterval(()=>{
 }, 1800000)
 
 //沙盒执行超时时间
-let timeout = 50
+let timeout = 500
 module.exports.setTimeout = (t)=>timeout=t
 
 //执行代码
