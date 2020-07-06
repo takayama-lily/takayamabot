@@ -284,6 +284,8 @@ bot.on("message", async(data)=>{
         //     if (res !== undefined && res !== "")
         //         fff[gid] = now
         // }
+        if (sandbox.run("isOff()") === true)
+            return
         return reply(res)
     }
 })

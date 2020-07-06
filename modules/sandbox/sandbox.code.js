@@ -213,6 +213,25 @@ Object.defineProperty(this, "database", {
 	value: this.database
 })
 
+const on = ()=>{
+	if (self()) {
+		self().js_function_on = true
+		return "JS功能已开启"
+	}
+}
+const off = ()=>{
+	if (self()) {
+		self().js_function_on = false
+		return "JS功能已关闭"
+	}
+}
+const isOff = ()=>{
+	if (self()) {
+		return self().js_function_on === false
+	}
+	return false
+}
+
 this.set_history = this.set_history && typeof this.set_history === "object" ? this.set_history : {}
 this.set_history = new Proxy(this.set_history, {
 	set: (o, k, v, r)=>{
