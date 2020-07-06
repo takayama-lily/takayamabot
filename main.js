@@ -172,7 +172,7 @@ bot.on("request.friend", (data)=>{
     bot.approve(data)
 })
 bot.on("request.group.invite", (data)=>{
-    // bot.approve(data)
+    bot.approve(data)
 })
 
 const bans = {}
