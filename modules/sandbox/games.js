@@ -752,7 +752,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
   let members = $.getGroupInfo().members
   if (!members[q])
     return '拼点对象不在群内'
-  let my_roll = random(0,max_time)
+  let my_roll = Math.ceil(random(0,max_time)/2)
   let his_roll = random(0,max_time)
   let res = at() + `掷出了${my_roll}, ${at(q)}掷出了${his_roll}\n`
   let time = Math.abs(my_roll-his_roll)
@@ -760,11 +760,11 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
   	time = Math.ceil(time/2)
     res += at(q) + `被禁言${time}秒`
     $.setGroupBan(q,time)
-    $.sendGroupMsg(机器人情报站, `${q}(${members[q].nickname})在群${qun()}(${data.group_name})拼点失败，被禁言${time}秒`)
+    // $.sendGroupMsg(机器人情报站, `${q}(${members[q].nickname})在群${qun()}(${data.group_name})拼点失败，被禁言${time}秒`)
   } else if (my_roll < his_roll) {
     res += at() + `被禁言${time}秒`
     $.setGroupBan(qq(),time)
-    $.sendGroupMsg(机器人情报站, `${qq()}(${user(0)})在群${qun()}(${data.group_name})拼点失败，被禁言${time}秒`)
+    // $.sendGroupMsg(机器人情报站, `${qq()}(${user(0)})在群${qun()}(${data.group_name})拼点失败，被禁言${time}秒`)
   } else {
     res += `可惜是平手`
   }
