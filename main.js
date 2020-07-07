@@ -113,13 +113,13 @@ const initQQData = async()=>{
         for (let group of res.data) {
             groups_tmp[group.group_id] = (await bot.getGroupInfo(group.group_id)).data
             if (!groups_tmp[group.group_id])
-                groups_tmp[group.group_id] = {}
+                return
             groups_tmp[group.group_id].members = {}
             let members = (await bot.getGroupMemberList(group.group_id)).data
-            if (members) {
-                for (let member of members) {
-                    groups_tmp[group.group_id].members[member.user_id] = member
-                }
+            if (!members)
+                return
+            for (let member of members) {
+                groups_tmp[group.group_id].members[member.user_id] = member
             }
         }
     } else {
@@ -127,7 +127,7 @@ const initQQData = async()=>{
     }
     groups = groups_tmp
 }
-setInterval(initQQData, 300000)
+setInterval(initQQData, 3600000)
 const updateGroupCache = async(gid)=>{
     let group = (await bot.getGroupInfo(gid, false)).data
     let members = (await bot.getGroupMemberList(gid)).data

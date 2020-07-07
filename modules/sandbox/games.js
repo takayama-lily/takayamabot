@@ -66,6 +66,8 @@ chess_phases = [
 	if (!gid) return "此命令只能在群里使用"
 	if (!chess_phases[index])
 		return "该残局不存在"
+	if (!current_chesses[gid])
+		current_chesses[gid] = {chess:[],step:0}
 	current_chesses[gid].chess = JSON.parse(JSON.stringify(chess_phases[index]))
 	current_chesses[gid].step = 1
 	return 象棋()
