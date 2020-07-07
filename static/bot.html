@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>高山实验室</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap"></script>
+    </head>
+    <body>
+        <br>
+        <div class="container">
+            <h2>机器人开发文档</h2>
+            <span class="badge badge-success">当前机器人代号：小兔子</span>
+            <br>
+            <br>
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#home">开始使用</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#function">可用函数</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#qqapi">QQ API</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#qqevent">QQ事件处理</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#end">其它</a>
+              </li>
+            </ul>
+          
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div id="home" class="container tab-pane active"><br>
+                    <h6 class="font-weight-bold">前言</h6>
+                    <ul>
+                        <li>这是一个开放式的可编程机器人，每个人都可以开发属于自己的功能。</li>
+                        <li>环境会将每条QQ消息当做JavaScript代码尝试执行，有结果则输出，无结果或出错则丢弃。</li>
+                        <li>环境构建在NodeJS之上，完整支持ECMAScript6。</li>
+                    </ul>
+                    <h6 class="font-weight-bold">限制</h6>
+                    <ul>
+                        <li>无法使用浏览器特有的函数和API。</li>
+                        <li>由于安全原因，暂时无法使用<code>this</code>、<code>async</code>、<code>const</code>三个关键字，以及<code>eval</code>和<code>Promise</code>异步。</li>
+                        <li>重要的事多说几遍，不要设置敏感违规内容。</li>
+                    </ul>
+                    <h6 class="font-weight-bold">调试</h6>
+                    <ul>
+                        <li>消息以反斜杠"\"开头，就会开启调试，bot会输出错误信息。</li>
+                    </ul>
+                    <h6 class="font-weight-bold">其它</h6>
+                    <ul>
+                        <li>由于输入习惯问题，以下全角字符会被自动转为半角：<code>（）“”，＝</code></li>
+                        <li>可以使用<a href="https://docs.cqp.im/manual/cqcode/" target="_blank">CQ码</a>字符串定义图片等消息。</li>
+                    </ul>
+                </div>
+                <div id="function" class="container tab-pane fade"><br>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                          <tr>
+                            <th>函数签名</th>
+                            <th>参数类型</th>
+                            <th>返回</th>
+                            <th>说明</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>env()</td>
+                                <td>无</td>
+                                <td>object</td>
+                                <td>环境变量(包含发言者的QQ信息和群信息等)</td>
+                            </tr>
+                            <tr>
+                                <td>alert(data)</td>
+                                <td><li>data: any</li></td>
+                                <td>无</td>
+                                <td>输出</td>
+                            </tr>
+                            <tr>
+                                <td>$.get(url, callback, headers=null)</td>
+                                <td>
+                                    <li>url: string</li>
+                                    <li>callback: function(data)</li>
+                                    <li>headers: object</li>
+                                </td>
+                                <td>无</td>
+                                <td>远程抓取数据（暂时不支持POST）<br>※回调函数无返回值，只能使用alert函数输出</td>
+                            </tr>
+                            <tr>
+                                <td>img(url, cache=true)</td>
+                                <td>
+                                    <li>url: string</li>
+                                    <li>cache: boolean</li>
+                                </td>
+                                <td>string</td>
+                                <td>※返回一张图片(CQ码)</td>
+                            </tr>
+                            <tr>
+                                <td>self()</td>
+                                <td>无</td>
+                                <td>object</td>
+                                <td>当前群的数据库</td>
+                            </tr>
+                            <tr>
+                                <td>at(uid=undefined)</td>
+                                <td><li>uid: number|string ※QQ号或一个at</li></td>
+                                <td>string</td>
+                                <td>at一个人(CQ码)，不传参数则at自己</td>
+                            </tr>
+                            <tr>
+                                <td>qq()</td>
+                                <td>无</td>
+                                <td>number</td>
+                                <td>获得QQ号</td>
+                            </tr>
+                            <tr>
+                                <td>qun()</td>
+                                <td>无</td>
+                                <td>number</td>
+                                <td>获得群号</td>
+                            </tr>
+                            <tr>
+                                <td>user(card=true)</td>
+                                <td><li>card: boolean</li></td>
+                                <td>string</td>
+                                <td>获得昵称(card为真优先获取群名片)</td>
+                            </tr>
+                            <tr>
+                                <td>random(min, max)</td>
+                                <td>
+                                    <li>min: number</li>
+                                    <li>max: number</li>
+                                </td>
+                                <td>number</td>
+                                <td>随机min~max-1的一个数</td>
+                            </tr>
+                            <tr>
+                                <td>time2str(timestamp)</td>
+                                <td><li>timestamp: number</li></td>
+                                <td>string</td>
+                                <td>时间戳转换为一个容易理解的时间</td>
+                            </tr>
+                            <tr>
+                                <td>parseQQ(s)</td>
+                                <td><li>s: number|string ※QQ号或一个at</li></td>
+                                <td>number</td>
+                                <td>从at中解析出QQ号</td>
+                            </tr>
+                            <tr>
+                                <td>protectQQ(s)</td>
+                                <td><li>s: number|string ※QQ号或一个at</li></td>
+                                <td>string</td>
+                                <td>隐藏部分QQ号起到保护作用</td>
+                            </tr>
+                            <tr>
+                                <td>base64Encode(data)</td>
+                                <td><li>data: string</li></td>
+                                <td>string</td>
+                                <td>base64编码</td>
+                            </tr>
+                            <tr>
+                                <td>base64Decode(data)</td>
+                                <td><li>data: string</li></td>
+                                <td>string</td>
+                                <td>base64解码</td>
+                            </tr>
+                            <tr>
+                                <td>hash(algorithm, data)</td>
+                                <td>
+                                    <li>algorithm: string ※md5,sha1等</li>
+                                    <li>data: string</li>
+                                </td>
+                                <td>string</td>
+                                <td>计算hash值</td>
+                            </tr>
+                            <tr>
+                                <td>hmac(algorithm, key, data)</td>
+                                <td>
+                                    <li>algorithm: string</li>
+                                    <li>key: string</li>
+                                    <li>data: string</li>
+                                </td>
+                                <td>string</td>
+                                <td>计算hash值(带密钥)</td>
+                            </tr>
+                            <tr>
+                                <td>querystring</td>
+                                <td></td>
+                                <td></td>
+                                <td>nodejs的querystring模块</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="qqapi" class="container tab-pane fade"><br>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                          <tr>
+                            <th>函数签名</th>
+                            <th>参数类型</th>
+                            <th>返回</th>
+                            <th>说明</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>$.sendPrivateMsg(uid,msg)</td>
+                                <td>
+                                    <li>uid: number</li>
+                                    <li>msg: string</li>
+                                </td>
+                                <td>无</td>
+                                <td>发送私聊</td>
+                            </tr>
+                            <tr>
+                                <td>$.sendGroupMsg(gid,msg)</td>
+                                <td>
+                                    <li>gid: number</li>
+                                    <li>msg: string</li>
+                                </td>
+                                <td>无</td>
+                                <td>发送群聊</td>
+                            </tr>
+                            <tr>
+                                <td>$.deleteMsg(message_id)</td>
+                                <td>
+                                    <li>message_id: number</li>
+                                </td>
+                                <td>无</td>
+                                <td>撤回消息</td>
+                            </tr>
+                            <tr>
+                                <td>$.setGroupCard(uid,card)</td>
+                                <td>
+                                    <li>uid: number</li>
+                                    <li>card: string</li>
+                                </td>
+                                <td>无</td>
+                                <td>设置群名片</td>
+                            </tr>
+                            <tr>
+                                <td>$.setGroupRequest(flag,approve=true,reason=undefined)</td>
+                                <td>
+                                    <li>flag: string ※群事件中拿到</li>
+                                    <li>approve: boolean ※是否通过</li>
+                                    <li>reason: string ※拒绝理由</li>
+                                </td>
+                                <td>无</td>
+                                <td>处理加群请求</td>
+                            </tr>
+                            <tr>
+                                <td>$.sendGroupNotice(title,content)</td>
+                                <td>
+                                    <li>title: string</li>
+                                    <li>content: string</li>
+                                </td>
+                                <td>无</td>
+                                <td>发布群公告</td>
+                            </tr>
+                            <tr>
+                                <td>$.setGroupKick(uid)</td>
+                                <td>
+                                    <li>uid: number</li>
+                                </td>
+                                <td>无</td>
+                                <td>群踢人</td>
+                            </tr>
+                            <tr>
+                                <td>$.setGroupBan(uid,duration=60)</td>
+                                <td>
+                                    <li>uid: number</li>
+                                    <li>duration: number</li>
+                                </td>
+                                <td>无</td>
+                                <td>群禁言</td>
+                            </tr>
+                            <tr>
+                                <td>$.setGroupAdmin(uid,enable=true)</td>
+                                <td>
+                                    <li>uid: number</li>
+                                    <li>enable: boolean</li>
+                                </td>
+                                <td>无</td>
+                                <td>设置/取消管理</td>
+                            </tr>
+                            <tr>
+                                <td>$.setGroupSpecialTitle(uid,title,duration=-1)</td>
+                                <td>
+                                    <li>uid: number</li>
+                                    <li>title: string</li>
+                                    <li>duration: number</li>
+                                </td>
+                                <td>无</td>
+                                <td>设置头衔</td>
+                            </tr>
+                            <tr>
+                                <td>$.getGroupInfo()</td>
+                                <td>无</td>
+                                <td>
+                                    object
+                                    <li>group_id: number</li>
+                                    <li>group_name: string</li>
+                                    <li>max_member_count: number</li>
+                                    <li>member_count: number</li>
+                                    <li>members: object</li>
+                                </td>
+                                <td>获取群信息</td>
+                            </tr>
+                            <tr>
+                                <td>$.updateGroupCache()</td>
+                                <td>无</td>
+                                <td>无</td>
+                                <td>刷新群信息缓存</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="qqevent" class="container tab-pane fade"><br>
+                    需要自行重写"on_message_群号"和"on_notice_群号"函数，例如群号为1234567，<br><br>
+                    在有群消息时，会触发on_message_1234567函数，重写这个函数即可处理群消息：<br>
+<pre>
+    function on_message_1234567(data) { 
+        //data与环境变量结构完全一样
+        if (data.raw_message == "你好")
+            alert("你也好")
+    }
+</pre>
+                    在有群通知时，会触发on_notice_1234567函数，重写这个函数即可处理群事件(禁言，退群，加群等)：<br>
+<pre>
+    function on_event_1234567(data) {
+        //data的结构也很简单，输出一下就能知道
+        alert(data)
+    }
+</pre>
+                </div>
+                <div id="end" class="container tab-pane fade"><br>
+                    <h6 class="font-weight-bold">开发交流群</h6>
+                    <ul>
+                        <li><a target="_blank" href="https://shang.qq.com/wpa/qunwpa?idkey=24d69cea1488899f826db2956e9d7bfd6944bb33a585d260ffede4727af5bee7">小兔子俱乐部</a>（892703008）</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

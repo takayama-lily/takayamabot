@@ -3,11 +3,9 @@ const https = require("https")
 const sandbox = require("./modules/sandbox/sandbox")
 
 const $ = sandbox.run(`new String(\`这是一个云JavaScript环境。聊天窗口就是控制台。
-程序会读取用户发送的消息并尝试作为JS代码执行, 如果有结果则返回, 出错则丢弃。
-
 该文档可能需要一定的编程基础才能充分理解。
 该文档默认你会使用JavaScript, 或其他类似语言。
-准备好了就输入$.help或$.doc查看文档吧！\`)`)
+http://usus.lietxia.bid/bot.html\`)`)
 
 $.help = $.doc = `● 前言
 请勿设置任何可能导致封号的敏感违规内容。
@@ -201,5 +199,6 @@ module.exports = (bot)=>{
             url, cb, headers
         })
     }
+    $.get = $.ajax
     return $
 }
