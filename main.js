@@ -261,8 +261,11 @@ bot.on("message", async(data)=>{
         for (let v of data.message) {
             if (v.type === "text")
                 message += v.data.text
-            else if (v.type === "at")
+            else if (v.type === "at") {
+                if (v.data.qq == data.self_id)
+                    continue
                 message += `'[CQ:at,qq=${v.data.qq}]'`
+            }
             else {
                 message += `[CQ:${v.type}`
                 for (let k in v.data)
@@ -271,12 +274,8 @@ bot.on("message", async(data)=>{
             }
 
         }
-        let code = message.trim()
-        let atme = `'[CQ:at,qq=${data.self_id}]'`
-        while (code.startsWith(atme))
-            code = code.replace(atme, "").trim()
         sandbox.setEnv(data)
-        let res = sandbox.run(code, isMaster(uid))
+        let res = sandbox.run(message, isMaster(uid))
         // if (gid) {
         //     const now = Date.now()
         //     if (fff[gid] && now - fff[gid] <= fff.limit)
