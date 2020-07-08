@@ -113,7 +113,7 @@ const groups = new Proxy(Object.create(null), {
             return o[k]
         } else {
             updateGroupCache(k)
-            return false
+            return undefined
         }
     }
 })
