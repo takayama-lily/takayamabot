@@ -121,7 +121,7 @@ const initQQData = async()=>{
     let res = await bot.getGroupList()
     if (!res.retcode && res.data instanceof Array) {
         for (let v of res.data) {
-            updateGroupCache(v.group_id, true)
+            await updateGroupCache(v.group_id, true)
         }
     }
 }
