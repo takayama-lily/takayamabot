@@ -147,6 +147,8 @@ const time2str=(timestamp)=>{
 }
 
 const alert = (msg, escape = false)=>{
+	if (isOff())
+		return
 	if (qun())
 		$.sendGroupMsg(qun(), msg, escape)
 	else

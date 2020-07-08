@@ -686,13 +686,19 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
 目标获得成长值${a}点。当前成长值${浇水成长值[q].value}(${浇水称号(浇水成长值[q].value)})。`
 }
 好感度=(q)=>{
-  q=parseQQ(q)
-  if (!浇水成长值[q])
-    return "什么都没有"
-  let res = at(q)+` 当前的成长值：${浇水成长值[q].value}(${浇水称号(浇水成长值[q].value)})。好感度：`
-  for (let k in 浇水成长值[q].fans)
-    res+="\n"+at(k)+`(${protectQQ(k)}) / ${浇水成长值[q].fans[k].value}(${浇水称号(浇水成长值[q].fans[k].value, 2)})`
-  return res
+	q=parseQQ(q)
+	if (!浇水成长值[q])
+		return "什么都没有"
+	let res = at(q)+`(${protectQQ(q)}) 当前的成长值：${浇水成长值[q].value}(${浇水称号(浇水成长值[q].value)})。好感度：`
+	let arr = Object.keys(浇水成长值[q].fans)
+	arr.sort((a,b)=>{
+		return 浇水成长值[q].fans[b].value - 浇水成长值[q].fans[a].value
+	})
+	arr = arr.splice(0, 20)
+	for (let k of arr) {
+		res+="\n"+at(k)+`(${protectQQ(k)}) / ${浇水成长值[q].fans[k].value}(${浇水称号(浇水成长值[q].fans[k].value, 2)})`
+	}
+	return res
 }
 浇水称号=(pt,type=1)=>{
 	if(type===1){
@@ -728,6 +734,18 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
 		else
 			return "生死不离"
 	}
+}
+浇水排行榜=()=>{
+	let arr = Object.keys(浇水成长值)
+	arr.sort((a,b)=>{
+		return 浇水成长值[b].value - 浇水成长值[a].value
+	})
+	arr = arr.splice(0, 10)
+	let res = "浇水排行榜："
+	for (let q of arr) {
+		res += "\n" + at(q) + `(${protectQQ(q)}) 成长值` + 浇水成长值[q].value
+	}
+	return res
 }
 
 拼点禁言=(q, max_time = 100)=>{
