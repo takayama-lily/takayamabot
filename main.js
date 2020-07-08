@@ -105,37 +105,37 @@ const bot = new QQPlugin()
 const fff = {limit: 1000} //群发言频率限制每秒1条
 
 //初始化数据，主要是获取群和群员列表
-let groups = {}
+const groups = new Proxy(Object.create(null), {
+    get: (o, k)=>{
+        if (o[k]) {
+            if (Date.now() - o[k].update_time >= 300000)
+                updateGroupCache(k)
+            return o[k]
+        } else {
+            updateGroupCache(k)
+            return false
+        }
+    }
+})
 const initQQData = async()=>{
     let res = await bot.getGroupList()
-    let groups_tmp = {}
     if (!res.retcode && res.data instanceof Array) {
-        for (let group of res.data) {
-            groups_tmp[group.group_id] = (await bot.getGroupInfo(group.group_id)).data
-            if (!groups_tmp[group.group_id])
-                return
-            groups_tmp[group.group_id].members = {}
-            let members = (await bot.getGroupMemberList(group.group_id)).data
-            if (!members)
-                return
-            for (let member of members) {
-                groups_tmp[group.group_id].members[member.user_id] = member
-            }
+        for (let v of res.data) {
+            updateGroupCache(v.group_id, true)
         }
-    } else {
-        return
     }
-    groups = groups_tmp
 }
-setInterval(initQQData, 3600000)
-const updateGroupCache = async(gid)=>{
-    let group = (await bot.getGroupInfo(gid, false)).data
+const updateGroupCache = async(gid, cache = false)=>{
+    gid = parseInt(gid)
+    let group = (await bot.getGroupInfo(gid, cache)).data
+    group.update_time = Date.now()
     let members = (await bot.getGroupMemberList(gid)).data
     if (!group || !members)
         return
-    group.members = {}
+    group = Object.setPrototypeOf(group, null)
+    group.members = Object.create(null)
     for (let member of members)
-        group.members[member.user_id] = member
+        group.members[member.user_id] = Object.setPrototypeOf(member, null)
     groups[gid] = group
 }
 
@@ -143,8 +143,7 @@ const updateGroupCache = async(gid)=>{
 const $ = require("./api_passon")(bot)
 $.getGroupInfo = ()=>{
     let gid = sandbox.getContext().data.group_id
-    if (groups.hasOwnProperty(gid))
-        return groups[gid]
+    return groups[gid]
 }
 $.updateGroupCache = ()=>{
     let gid = sandbox.getContext().data.group_id
