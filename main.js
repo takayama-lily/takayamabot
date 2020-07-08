@@ -128,14 +128,14 @@ const initQQData = async()=>{
 const updateGroupCache = async(gid, cache = false)=>{
     gid = parseInt(gid)
     let group = (await bot.getGroupInfo(gid, cache)).data
-    group.update_time = Date.now()
     let members = (await bot.getGroupMemberList(gid)).data
     if (!group || !members)
         return
+    group.update_time = Date.now()
     group = Object.setPrototypeOf(group, null)
     group.members = Object.create(null)
-    for (let member of members)
-        group.members[member.user_id] = Object.setPrototypeOf(member, null)
+    for (let v of members)
+        group.members[v.user_id] = Object.setPrototypeOf(v, null)
     groups[gid] = group
 }
 
