@@ -21,7 +21,7 @@ const ajax_queue = []
 setInterval(()=>{
     while (ajax_queue.length) {
         let {url, cb, headers} = ajax_queue.shift()
-        url = encodeURI(url.trim())
+        url = url.trim()
         let protocol = url.substr(0, 5) === "https" ? https : http
         let data = []
         const options = {}
