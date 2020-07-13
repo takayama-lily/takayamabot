@@ -134,9 +134,12 @@ const updateGroupCache = async(gid, cache = false)=>{
     group.update_time = Date.now()
     group = Object.setPrototypeOf(group, null)
     group.members = Object.create(null)
-    for (let v of members)
+    for (let v of members) {
         group.members[v.user_id] = Object.setPrototypeOf(v, null)
+        Object.freeze(group.members[v.user_id])
+    }
     groups[gid] = group
+    Object.freeze(groups[gid])
 }
 
 //传递给沙盒的变量
@@ -258,10 +261,11 @@ bot.on("message", async(data)=>{
     } else {
         message = ""
         for (let v of data.message) {
+            message = message.trim()
             if (v.type === "text")
                 message += v.data.text
             else if (v.type === "at") {
-                if (v.data.qq == data.self_id)
+                if (v.data.qq == data.self_id && !message)
                     continue
                 message += `'[CQ:at,qq=${v.data.qq}]'`
             }
