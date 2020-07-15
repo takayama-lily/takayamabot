@@ -162,11 +162,13 @@ const master = undefined
 const isMaster = this.isMaster = ()=>{
 	return !qq() || this.master.includes(qq())
 }
-const isBlack = ()=>{
-	return typeof this.blacklist === "string" && this.blacklist.includes(qq())
+const checkBlack = ()=>{
+	if (typeof this.blacklist === "string" && this.blacklist.includes(qq()))
+		throw new Error("你已被限制使用此功能，申请恢复请联系管理员。")
+	if (typeof this.blacklist2 === "string" && this.blacklist.includes(qun()))
+		throw new Error("该群已被限制使用此功能，申请恢复请联系管理员。")
 }
 
-const error_blacklist = new Error("你被拉黑了，无法使用沙盒，申诉请联系管理员。")
 const error403 = new Error("403 forbidden")
 
 const self = ()=>this.database[qun()]

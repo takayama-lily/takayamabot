@@ -286,8 +286,6 @@ bot.on("message", async(data)=>{
         //     if (res !== undefined && res !== "")
         //         fff[gid] = now
         // }
-        if (sandbox.run("isOff()") === true)
-            return
         if (["number","boolean"].includes(typeof res) && res.toString() === data.raw_message)
             return
         return reply(res)

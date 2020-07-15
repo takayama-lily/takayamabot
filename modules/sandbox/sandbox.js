@@ -35,7 +35,7 @@ const protected_properties = [
   'escape',             'unescape',       'eval',
   'isFinite',           'isNaN',          'SharedArrayBuffer',
   'Atomics',            'WebAssembly',
-  'onEvents','master','isMaster','blacklist','帮助','help','高级','advance','小游戏'
+  'onEvents','master','isMaster','blacklist','blacklist2','帮助','help','高级','advance','小游戏'
 ]
 
 //把context包装成proxy对象，来捕捉一些操作
@@ -146,7 +146,10 @@ module.exports.setTimeout = (t)=>timeout=t
 
 //执行代码
 module.exports.run = (code, isAdmin = false)=>{
+    code = code.trim()
     let debug = ["\\","＼"].includes(code.substr(0, 1))
+    if (!debug && vm.runInContext("isOff()", context) === true)
+        return
     if (!isAdmin && code.match(/([^\w]|^)+(this|async|const){1}([^\w]|$)+/))
         return debug ? "代码不要包含this、async、const关键字。" : undefined
     if (debug)
@@ -161,7 +164,7 @@ module.exports.run = (code, isAdmin = false)=>{
         return String.fromCharCode(s.charCodeAt(0) - 65248)
     })
     try {
-        vm.runInContext(`if (isBlack()) throw error_blacklist;`, context)
+        vm.runInContext(`checkBlack()`, context)
         return vm.runInContext(code, context, {timeout: timeout})
     } catch(e) {
         if (debug) {
