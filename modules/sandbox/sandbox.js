@@ -148,8 +148,6 @@ module.exports.setTimeout = (t)=>timeout=t
 module.exports.run = (code, isAdmin = false)=>{
     code = code.trim()
     let debug = ["\\","＼"].includes(code.substr(0, 1))
-    if (!debug && vm.runInContext("isOff()", context) === true)
-        return
     if (!isAdmin && code.match(/([^\w]|^)+(this|async|const){1}([^\w]|$)+/))
         return debug ? "代码不要包含this、async、const关键字。" : undefined
     if (debug)
@@ -165,7 +163,10 @@ module.exports.run = (code, isAdmin = false)=>{
     })
     try {
         vm.runInContext(`checkBlack()`, context)
-        return vm.runInContext(code, context, {timeout: timeout})
+        let res = vm.runInContext(code, context, {timeout: timeout})
+        if (!debug && vm.runInContext("isOff()", context) === true)
+            return
+        return res
     } catch(e) {
         if (debug) {
             let line = e.stack.split("\n")[0].split(":").pop()

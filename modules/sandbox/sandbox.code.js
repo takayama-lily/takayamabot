@@ -165,7 +165,7 @@ const isMaster = this.isMaster = ()=>{
 const checkBlack = ()=>{
 	if (typeof this.blacklist === "string" && this.blacklist.includes(qq()))
 		throw new Error("你已被限制使用此功能，申请恢复请联系管理员。")
-	if (typeof this.blacklist2 === "string" && this.blacklist.includes(qun()))
+	if (typeof this.blacklist2 === "string" && this.blacklist2.includes(qun()))
 		throw new Error("该群已被限制使用此功能，申请恢复请联系管理员。")
 }
 
