@@ -162,7 +162,7 @@ module.exports.run = (code, isAdmin = false)=>{
         return String.fromCharCode(s.charCodeAt(0) - 65248)
     })
     try {
-        vm.runInContext(`checkBlack()`, context)
+        vm.runInContext(`checkBlack();checkFrequency()`, context)
         let res = vm.runInContext(code, context, {timeout: timeout})
         if (!debug && vm.runInContext("isOff()", context) === true)
             return

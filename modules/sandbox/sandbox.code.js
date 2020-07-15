@@ -168,6 +168,18 @@ const checkBlack = ()=>{
 	if (typeof this.blacklist2 === "string" && this.blacklist2.includes(qun()))
 		throw new Error("该群已被限制使用此功能，申请恢复请联系管理员。")
 }
+const checkFrequency = ()=>{
+	if (qun()) {
+		try {
+			let last = self().history[qq()].time
+			if (!last || Date.now() - last > 2000)
+				return
+		} catch (e) {
+			return
+		}
+		throw new Error("发言频率过快。")
+	}
+}
 
 const error403 = new Error("403 forbidden")
 

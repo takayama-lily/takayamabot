@@ -91,7 +91,6 @@ const server = http.createServer(async(req, res)=>{
 const QQPlugin = require("./modules/qqplugin/cqhttp")
 const sandbox = require("./modules/sandbox/sandbox")
 const commands = require("./commands")
-const blacklist = [3507349275,429245111]
 const owner = 372914165
 const master = []
 const isMaster = (uid)=>{
@@ -102,7 +101,6 @@ const reboot = ()=>{
 }
 
 const bot = new QQPlugin()
-const fff = {limit: 1000} //群发言频率限制每秒1条
 
 //初始化数据，主要是获取群和群员列表
 const groups = new Proxy(Object.create(null), {
@@ -209,8 +207,6 @@ bot.on("message", async(data)=>{
     let me = data.self_id
     let uid = data.user_id
     let gid = data.group_id
-    if (blacklist.includes(uid))
-        return
     const reply = (msg)=>{
         bot.reply(data, msg, {at_sender: false})
     }
@@ -275,17 +271,9 @@ bot.on("message", async(data)=>{
                     message += `,${k}=${v.data[k]}`
                 message += `]`
             }
-
         }
         sandbox.setEnv(data)
         let res = sandbox.run(message, isMaster(uid))
-        // if (gid) {
-        //     const now = Date.now()
-        //     if (fff[gid] && now - fff[gid] <= fff.limit)
-        //         return
-        //     if (res !== undefined && res !== "")
-        //         fff[gid] = now
-        // }
         if (["number","boolean"].includes(typeof res) && res.toString() === data.raw_message)
             return
         return reply(res)
