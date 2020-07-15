@@ -31,14 +31,14 @@ setInterval(()=>{
         try {
             protocol.get(url, options, (res)=>{
                 if (res.statusCode !== 200) {
-                    cb({statusCode: res.statusCode})
+                    cb(JSON.stringify({code: res.statusCode}))
                     return
                 }
                 res.on("data", chunk=>data.push(chunk))
                 res.on("end", ()=>cb(Buffer.concat(data).toString()))
             }).on("error", err=>cb(err))
         } catch (e) {
-            cb(e)
+            cb(JSON.stringify(e))
         }
     }
 }, 200)
