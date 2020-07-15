@@ -172,7 +172,7 @@ const checkFrequency = ()=>{
 	if (qun()) {
 		try {
 			let last = self().history[qq()].time
-			if (!last || Date.now() - last > 2000)
+			if (!last || Date.now() - last > 1000)
 				return
 		} catch (e) {
 			return
