@@ -242,7 +242,7 @@ const off = ()=>{
 	}
 }
 const isOff = ()=>{
-	if (self()) {
+	if (qun() && self()) {
 		return self().js_function_on === false
 	}
 	return false
