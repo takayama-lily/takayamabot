@@ -1,4 +1,3 @@
-"use strict"
 const fs = require("fs")
 const url = require("url")
 const querystring = require("querystring")
