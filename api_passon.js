@@ -20,7 +20,9 @@ const checkFrequency = ()=>{
 const getGid = ()=>sandbox.getContext().data.group_id
 
 sandbox.include("向听", require("syanten"))
-sandbox.include("setTimeout", (fn, timeout = 1000, arguments = [])=>{
+sandbox.include("setTimeout", function(fn, timeout = 1000, argv = []) {
+    if (arguments.callee.caller === fn)
+        return
     timeout = parseInt(timeout)
     if (isNaN(timeout) || timeout < 1000)
         sandbox.throw("Error", "时间不能小于1000毫秒")
@@ -29,7 +31,7 @@ sandbox.include("setTimeout", (fn, timeout = 1000, arguments = [])=>{
         sandbox.setEnv(env)
         let function_name = "tmp"+Date.now()
         sandbox.getContext()[function_name] = fn
-        sandbox.run(`${function_name}.apply(null, ${JSON.stringify(arguments)})`)
+        sandbox.run(`${function_name}.apply(null, ${JSON.stringify(argv)})`)
         sandbox.run(`delete ${function_name}`)
     }, timeout);
 })
