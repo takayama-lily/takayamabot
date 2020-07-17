@@ -150,8 +150,7 @@ $.updateGroupCache = ()=>{
     let gid = sandbox.getContext().data.group_id
     updateGroupCache(gid)
 }
-sandbox.require("$", $)
-sandbox.require("向听", require("syanten"))
+sandbox.include("$", $)
 
 //传递给沙盒的事件
 bot.on("message.group", (data)=>{
@@ -202,7 +201,7 @@ bot.on("notice.group_ban.ban", (data)=>{
 })
 
 //固定指令触发前缀
-const prefix_list = ["-","/",".","?","!","？","！","－"]
+const prefix_list = ["-","/","?","？","！","－"]
 bot.on("message", async(data)=>{
     let me = data.self_id
     let uid = data.user_id

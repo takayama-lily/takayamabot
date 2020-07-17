@@ -202,10 +202,14 @@ for (let k in ${name}) {
 Object.freeze(${name})
 Object.freeze(${name}.prototype)`, context)
 }
-module.exports.require = include
+module.exports.include = include
 
 //返回context
 module.exports.getContext = ()=>context
+
+module.exports.throw = (type = "Error", msg = "")=>{
+    vm.runInContext(`throw new ${type}("${msg}")`)
+}
 
 //导入一些工具函数(hash,hmac,querystring)
 include("hash", (algo, data)=>{

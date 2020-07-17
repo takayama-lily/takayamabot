@@ -11,16 +11,115 @@ let rest = 3
 setInterval(()=>{
     rest = 3
 }, 50)
-const check_frequency = ()=>{
+const checkFrequency = ()=>{
     if (rest === 0)
         throw new Error("调用频率太快")
     --rest
 }
 
-const ajax_queue = []
-setInterval(()=>{
-    while (ajax_queue.length) {
-        let {url, cb, headers} = ajax_queue.shift()
+const getGid = ()=>sandbox.getContext().data.group_id
+
+sandbox.include("向听", require("syanten"))
+sandbox.include("setTimeout", (fn, timeout = 1000, arguments = [])=>{
+    timeout = parseInt(timeout)
+    if (isNaN(timeout) || timeout < 1000)
+        sandbox.throw("Error", "时间不能小于1000毫秒")
+    return setTimeout(()=>{
+        let env = sandbox.getContext().data
+        sandbox.setEnv(env)
+        let function_name = "tmp"+Date.now()
+        sandbox.getContext()[function_name] = fn
+        sandbox.run(`${function_name}.apply(null, ${JSON.stringify(arguments)})`)
+        sandbox.run(`delete ${function_name}`)
+    }, timeout);
+})
+sandbox.include("clearTimeout", (id)=>{
+    return clearTimeout(id)
+})
+
+module.exports = (bot)=>{
+    $.sendPrivateMsg = (uid, msg, escape = false)=>{
+        checkFrequency()
+        bot.sendPrivateMsg(uid, msg, escape)
+    }
+    $.sendGroupMsg = (gid, msg, escape = false)=>{
+        checkFrequency()
+        bot.sendGroupMsg(gid, msg, escape)
+    }
+    $.deleteMsg = (message_id)=>{
+        checkFrequency()
+        bot.deleteMsg(message_id)
+    }
+    $.setGroupKick = (uid, forever = false)=>{
+        let gid = getGid()
+        checkFrequency()
+        bot.setGroupKick(gid, uid, forever)
+    }
+    $.setGroupBan = (uid, duration = 60)=>{
+        let gid = getGid()
+        checkFrequency()
+        bot.setGroupBan(gid, uid, duration)
+    }
+    $.setGroupAnonymousBan = (flag, duration = 60)=>{
+        let gid = getGid()
+        checkFrequency()
+        bot.setGroupAnonymousBan(gid, flag, duration)
+    }
+    $.setGroupAdmin = (uid, enable = true)=>{
+        let gid = getGid()
+        checkFrequency()
+        bot.setGroupAdmin(gid, uid, enable)
+    }
+    $.setGroupWholeBan = (enable = true)=>{
+        let gid = getGid()
+        checkFrequency()
+        bot.setGroupWholeBan(gid, enable)
+    }
+    $.setGroupAnonymous = (enable = true)=>{
+        let gid = getGid()
+        checkFrequency()
+        bot.setGroupAnonymous(gid, enable)
+    }
+    $.setGroupCard = (uid, card = undefined)=>{
+        let gid = getGid()
+        checkFrequency()
+        bot.setGroupCard(gid, uid, card)
+    }
+    $.setGroupLeave = (dismiss = false)=>{
+        let gid = getGid()
+        checkFrequency()
+        bot.setGroupLeave(gid, dismiss)
+    }
+    $.setGroupSpecialTitle = (uid, title, duration = -1)=>{
+        let gid = getGid()
+        checkFrequency()
+        bot.setGroupSpecialTitle(gid, uid, title, duration)
+    }
+    $.sendGroupNotice = (title, content)=>{
+        let gid = getGid()
+        checkFrequency()
+        bot.sendGroupNotice(gid, title, content)
+    }
+    $.setGroupRequest = (flag, approve = true, reason = undefined)=>{
+        checkFrequency()
+        bot.setGroupRequest(flag, approve, reason)
+    }
+    $.ajax = (url, callback = ()=>{}, headers = null)=>{
+        checkFrequency()
+        if (typeof url !== "string")
+            sandbox.throw("TypeError", "The first param must be a string")
+        if (typeof callback !== "function")
+            sandbox.throw("TypeError", "The second param must be a function")
+        if (typeof headers !== "object")
+            sandbox.throw("TypeError", "The third param must be an object")
+        let env = sandbox.getContext().data
+        let cb = (data)=>{
+            sandbox.setEnv(env)
+            let function_name = "tmp"+Date.now()
+            sandbox.getContext()[function_name] = callback
+            sandbox.run(`${function_name}(${JSON.stringify(data)})`)
+            sandbox.run(`delete ${function_name}`)
+        }
         url = url.trim()
         let protocol = url.substr(0, 5) === "https" ? https : http
         let data = []
@@ -36,101 +135,10 @@ setInterval(()=>{
                 }
                 res.on("data", chunk=>data.push(chunk))
                 res.on("end", ()=>cb(Buffer.concat(data).toString()))
-            }).on("error", err=>cb(err))
+            }).on("error", err=>cb(JSON.stringify(err)))
         } catch (e) {
             cb(JSON.stringify(e))
         }
-    }
-}, 200)
-
-const getGid = ()=>sandbox.getContext().data.group_id
-
-module.exports = (bot)=>{
-    $.sendPrivateMsg = (uid, msg, escape = false)=>{
-        check_frequency()
-        bot.sendPrivateMsg(uid, msg, escape)
-    }
-    $.sendGroupMsg = (gid, msg, escape = false)=>{
-        check_frequency()
-        bot.sendGroupMsg(gid, msg, escape)
-    }
-    $.deleteMsg = (message_id)=>{
-        check_frequency()
-        bot.deleteMsg(message_id)
-    }
-    $.setGroupKick = (uid, forever = false)=>{
-        let gid = getGid()
-        check_frequency()
-        bot.setGroupKick(gid, uid, forever)
-    }
-    $.setGroupBan = (uid, duration = 60)=>{
-        let gid = getGid()
-        check_frequency()
-        bot.setGroupBan(gid, uid, duration)
-    }
-    $.setGroupAnonymousBan = (flag, duration = 60)=>{
-        let gid = getGid()
-        check_frequency()
-        bot.setGroupAnonymousBan(gid, flag, duration)
-    }
-    $.setGroupAdmin = (uid, enable = true)=>{
-        let gid = getGid()
-        check_frequency()
-        bot.setGroupAdmin(gid, uid, enable)
-    }
-    $.setGroupWholeBan = (enable = true)=>{
-        let gid = getGid()
-        check_frequency()
-        bot.setGroupWholeBan(gid, enable)
-    }
-    $.setGroupAnonymous = (enable = true)=>{
-        let gid = getGid()
-        check_frequency()
-        bot.setGroupAnonymous(gid, enable)
-    }
-    $.setGroupCard = (uid, card = undefined)=>{
-        let gid = getGid()
-        check_frequency()
-        bot.setGroupCard(gid, uid, card)
-    }
-    // $.setGroupLeave = (gid, dismiss = false)=>{
-    //     let gid = getGid()
-    //     check_frequency()
-    //     bot.setGroupLeave(gid, dismiss)
-    // }
-    $.setGroupSpecialTitle = (uid, title, duration = -1)=>{
-        let gid = getGid()
-        check_frequency()
-        bot.setGroupSpecialTitle(gid, uid, title, duration)
-    }
-    $.sendGroupNotice = (title, content)=>{
-        let gid = getGid()
-        check_frequency()
-        bot.sendGroupNotice(gid, title, content)
-    }
-    $.setGroupRequest = (flag, approve = true, reason = undefined)=>{
-        check_frequency()
-        bot.setGroupRequest(flag, approve, reason)
-    }
-    $.ajax = (url, callback = ()=>{}, headers = null)=>{
-        check_frequency()
-        if (typeof url !== "string")
-            throw new TypeError("The first param must be a string")
-        if (typeof callback !== "function")
-            throw new TypeError("The second param must be a function")
-        if (typeof headers !== "object")
-            throw new TypeError("The third param must be an object")
-        let env = sandbox.getContext().data
-        let cb = (data)=>{
-            sandbox.setEnv(env)
-            let function_name = "tmp"+Date.now()
-            sandbox.getContext()[function_name] = callback
-            sandbox.run(`${function_name}(${JSON.stringify(data)})`)
-            sandbox.run(`delete ${function_name}`)
-        }
-        ajax_queue.push({
-            url, cb, headers
-        })
     }
     $.get = $.ajax
     return $
