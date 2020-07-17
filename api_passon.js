@@ -24,7 +24,7 @@ sandbox.include("setTimeout", (fn, timeout = 1000, arguments = [])=>{
     timeout = parseInt(timeout)
     if (isNaN(timeout) || timeout < 1000)
         sandbox.throw("Error", "时间不能小于1000毫秒")
-    return setTimeout(()=>{
+    setTimeout(()=>{
         let env = sandbox.getContext().data
         sandbox.setEnv(env)
         let function_name = "tmp"+Date.now()
@@ -33,9 +33,9 @@ sandbox.include("setTimeout", (fn, timeout = 1000, arguments = [])=>{
         sandbox.run(`delete ${function_name}`)
     }, timeout);
 })
-sandbox.include("clearTimeout", (id)=>{
-    return clearTimeout(id)
-})
+// sandbox.include("clearTimeout", (id)=>{
+//     return clearTimeout(id)
+// })
 
 module.exports = (bot)=>{
     $.sendPrivateMsg = (uid, msg, escape = false)=>{

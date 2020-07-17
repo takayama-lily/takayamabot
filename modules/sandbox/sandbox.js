@@ -208,7 +208,7 @@ module.exports.include = include
 module.exports.getContext = ()=>context
 
 module.exports.throw = (type = "Error", msg = "")=>{
-    vm.runInContext(`throw new ${type}("${msg}")`)
+    vm.runInContext(`throw new ${type}("${msg}")`, context)
 }
 
 //导入一些工具函数(hash,hmac,querystring)
