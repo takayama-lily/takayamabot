@@ -188,7 +188,6 @@ bot.on("message", async(data)=>{
     } else {
         message = ""
         for (let v of data.message) {
-            message = message.trim()
             if (v.type === "text")
                 message += v.data.text
             else if (v.type === "at") {
@@ -203,9 +202,10 @@ bot.on("message", async(data)=>{
                 message += `]`
             }
         }
+        message = message.trim()
         sandbox.setEnv(data)
         let res = sandbox.run(message, isMaster(uid))
-        if (data.message.length === 1 && data.message[0].type === "at")
+        if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
             return
         if (res === null && data.raw_message === "null")
             return
