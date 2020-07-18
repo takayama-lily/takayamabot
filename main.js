@@ -151,20 +151,6 @@ $.updateGroupCache = ()=>{
 }
 sandbox.include("$", $)
 
-//传递给沙盒的事件
-bot.on("message", (data)=>{
-    sandbox.setEnv(data)
-    sandbox.run(`this.onEvents()`, true)
-})
-bot.on("notice", (data)=>{
-    sandbox.setEnv(data)
-    sandbox.run(`this.onEvents()`, true)
-})
-bot.on("request", (data)=>{
-    sandbox.setEnv(data)
-    sandbox.run(`this.onEvents()`, true)
-})
-
 //加好友和加群处理
 bot.on("request.friend", (data)=>{
     bot.approve(data)
@@ -276,6 +262,20 @@ bot.on("message", async(data)=>{
             return
         return reply(res)
     }
+})
+
+//传递给沙盒的事件
+bot.on("message", (data)=>{
+    sandbox.setEnv(data)
+    sandbox.run(`this.onEvents()`, true)
+})
+bot.on("notice", (data)=>{
+    sandbox.setEnv(data)
+    sandbox.run(`this.onEvents()`, true)
+})
+bot.on("request", (data)=>{
+    sandbox.setEnv(data)
+    sandbox.run(`this.onEvents()`, true)
 })
 
 //开启ws服务器处理bot请求
