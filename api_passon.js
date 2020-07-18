@@ -23,7 +23,8 @@ const getGid = ()=>sandbox.getContext().data.group_id
 sandbox.include("向听", require("syanten"))
 
 const set_timeout_queue = []
-sandbox.include("setTimeout", function(fn, timeout = 1000, argv = []) {
+sandbox.include("setTimeout", (fn, timeout = 1000, argv = [])=>{
+    checkFrequency()
     if (typeof fn !== "function")
         sandbox.throw("TypeError", "The first param must be a function")
     timeout = parseInt(timeout)
@@ -43,8 +44,55 @@ sandbox.include("setTimeout", function(fn, timeout = 1000, argv = []) {
         sandbox.run(`delete ${function_name}`)
         set_timeout_queue.splice(set_timeout_queue.indexOf(key), 1)
     }
-    setTimeout(cb, timeout);
+    setTimeout(cb, timeout)
 })
+const fetch = (url, callback = ()=>{}, headers = null)=>{
+    checkFrequency()
+    if (typeof url !== "string")
+        sandbox.throw("TypeError", "The first param must be a string")
+    if (typeof callback !== "function")
+        sandbox.throw("TypeError", "The second param must be a function")
+    if (typeof headers !== "object")
+        sandbox.throw("TypeError", "The third param must be an object")
+    let env = sandbox.getContext().data
+    let cb = (data)=>{
+        sandbox.setEnv(env)
+        let function_name = "tmp"+Date.now()
+        sandbox.getContext()[function_name] = callback
+        sandbox.run(`${function_name}(${JSON.stringify(data)})`)
+        sandbox.run(`delete ${function_name}`)
+    }
+    url = url.trim()
+    let protocol = url.substr(0, 5) === "https" ? https : http
+    let data = []
+    let size = 0
+    const options = {}
+    if (headers) {
+        options.headers = headers
+    }
+    try {
+        protocol.get(url, options, (res)=>{
+            if (res.statusCode !== 200) {
+                cb(JSON.stringify({code: res.statusCode}))
+                return
+            }
+            res.on("data", chunk=>{
+                size += chunk.length
+                if (size > 1000000) {
+                    res.destroy()
+                    return
+                }
+                data.push(chunk)
+            })
+            res.on("end", ()=>cb(Buffer.concat(data).toString()))
+        }).on("error", err=>cb(JSON.stringify(err)))
+    } catch (e) {
+        cb(JSON.stringify(e))
+    }
+}
+sandbox.include("fetch", fetch)
+$.ajax = fetch
+$.get = fetch
 
 module.exports = (bot)=>{
     $.sendPrivateMsg = (uid, msg, escape = false)=>{
@@ -113,42 +161,5 @@ module.exports = (bot)=>{
         checkFrequency()
         bot.setGroupRequest(flag, approve, reason)
     }
-    $.ajax = (url, callback = ()=>{}, headers = null)=>{
-        checkFrequency()
-        if (typeof url !== "string")
-            sandbox.throw("TypeError", "The first param must be a string")
-        if (typeof callback !== "function")
-            sandbox.throw("TypeError", "The second param must be a function")
-        if (typeof headers !== "object")
-            sandbox.throw("TypeError", "The third param must be an object")
-        let env = sandbox.getContext().data
-        let cb = (data)=>{
-            sandbox.setEnv(env)
-            let function_name = "tmp"+Date.now()
-            sandbox.getContext()[function_name] = callback
-            sandbox.run(`${function_name}(${JSON.stringify(data)})`)
-            sandbox.run(`delete ${function_name}`)
-        }
-        url = url.trim()
-        let protocol = url.substr(0, 5) === "https" ? https : http
-        let data = []
-        const options = {}
-        if (headers) {
-            options.headers = headers
-        }
-        try {
-            protocol.get(url, options, (res)=>{
-                if (res.statusCode !== 200) {
-                    cb(JSON.stringify({code: res.statusCode}))
-                    return
-                }
-                res.on("data", chunk=>data.push(chunk))
-                res.on("end", ()=>cb(Buffer.concat(data).toString()))
-            }).on("error", err=>cb(JSON.stringify(err)))
-        } catch (e) {
-            cb(JSON.stringify(e))
-        }
-    }
-    $.get = $.ajax
     return $
 }
