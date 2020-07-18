@@ -1,5 +1,6 @@
 const http = require("http")
 const https = require("https")
+const crypto = require("crypto")
 const sandbox = require("./modules/sandbox/sandbox")
 
 const $ = sandbox.run(`new String(\`这是一个云JavaScript环境。聊天窗口就是控制台。
@@ -20,24 +21,30 @@ const checkFrequency = ()=>{
 const getGid = ()=>sandbox.getContext().data.group_id
 
 sandbox.include("向听", require("syanten"))
+
+const set_timeout_queue = []
 sandbox.include("setTimeout", function(fn, timeout = 1000, argv = []) {
-    if (arguments.callee.caller === fn)
-        return
+    if (typeof fn !== "function")
+        sandbox.throw("TypeError", "The first param must be a function")
     timeout = parseInt(timeout)
     if (isNaN(timeout) || timeout < 1000)
         sandbox.throw("Error", "时间不能小于1000毫秒")
     let env = sandbox.getContext().data
-    setTimeout(()=>{
+    let key = crypto.createHash("md5").update(fn.toString() + JSON.stringify(env)).digest("hex")
+    if (set_timeout_queue.includes(key))
+        return
+    else
+        set_timeout_queue.push(key)
+    let cb = ()=>{
         sandbox.setEnv(env)
         let function_name = "tmp"+Date.now()
         sandbox.getContext()[function_name] = fn
         sandbox.run(`${function_name}.apply(null, ${JSON.stringify(argv)})`)
         sandbox.run(`delete ${function_name}`)
-    }, timeout);
+        set_timeout_queue.splice(set_timeout_queue.indexOf(key), 1)
+    }
+    setTimeout(cb, timeout);
 })
-// sandbox.include("clearTimeout", (id)=>{
-//     return clearTimeout(id)
-// })
 
 module.exports = (bot)=>{
     $.sendPrivateMsg = (uid, msg, escape = false)=>{
