@@ -205,6 +205,10 @@ bot.on("message", async(data)=>{
         }
         sandbox.setEnv(data)
         let res = sandbox.run(message, isMaster(uid))
+        if (data.message.length === 1 && data.message[0].type === "at")
+            return
+        if (res === null && data.raw_message === "null")
+            return
         if (["number","boolean"].includes(typeof res) && res.toString() === data.raw_message)
             return
         return reply(res)
