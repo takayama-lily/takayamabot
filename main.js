@@ -191,7 +191,7 @@ bot.on("message", async(data)=>{
             if (v.type === "text")
                 message += v.data.text
             else if (v.type === "at") {
-                if (v.data.qq == data.self_id && !message)
+                if (v.data.qq == data.self_id && !message.trim())
                     continue
                 message += `'[CQ:at,qq=${v.data.qq}]'`
             }
@@ -207,9 +207,9 @@ bot.on("message", async(data)=>{
         let res = sandbox.run(message, isMaster(uid))
         if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
             return
-        if (res === null && data.raw_message === "null")
+        if (res === null && message === "null")
             return
-        if (["number","boolean"].includes(typeof res) && res.toString() === data.raw_message)
+        if (["number","boolean"].includes(typeof res) && res.toString() === message)
             return
         return reply(res)
     }
