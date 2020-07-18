@@ -101,56 +101,6 @@ const reboot = ()=>{
 
 const bot = new QQPlugin()
 
-//初始化数据，主要是获取群和群员列表
-const groups = new Proxy(Object.create(null), {
-    get: (o, k)=>{
-        if (o[k]) {
-            if (Date.now() - o[k].update_time >= 300000)
-                updateGroupCache(k)
-            return o[k]
-        } else {
-            updateGroupCache(k)
-            return undefined
-        }
-    }
-})
-const initQQData = async()=>{
-    let res = await bot.getGroupList()
-    if (!res.retcode && res.data instanceof Array) {
-        for (let v of res.data) {
-            await updateGroupCache(v.group_id, true)
-        }
-    }
-}
-const updateGroupCache = async(gid, cache = false)=>{
-    gid = parseInt(gid)
-    let group = (await bot.getGroupInfo(gid, cache)).data
-    let members = (await bot.getGroupMemberList(gid)).data
-    if (!group || !members)
-        return
-    group.update_time = Date.now()
-    group = Object.setPrototypeOf(group, null)
-    group.members = Object.create(null)
-    for (let v of members) {
-        group.members[v.user_id] = Object.setPrototypeOf(v, null)
-        Object.freeze(group.members[v.user_id])
-    }
-    groups[gid] = group
-    Object.freeze(groups[gid])
-}
-
-//传递给沙盒的变量
-const $ = require("./api_passon")(bot)
-$.getGroupInfo = ()=>{
-    let gid = sandbox.getContext().data.group_id
-    return groups[gid]
-}
-$.updateGroupCache = ()=>{
-    let gid = sandbox.getContext().data.group_id
-    updateGroupCache(gid)
-}
-sandbox.include("$", $)
-
 //加好友和加群处理
 bot.on("request.friend", (data)=>{
     bot.approve(data)
@@ -217,9 +167,6 @@ bot.on("message", async(data)=>{
             }
             return reply(result)
         }
-        if (isMaster(uid) && command === "update") {
-            return initQQData()
-        }
         if (command === "vip") {
             if (!param)
                 param = uid.toString()
@@ -264,19 +211,7 @@ bot.on("message", async(data)=>{
     }
 })
 
-//传递给沙盒的事件
-bot.on("message", (data)=>{
-    sandbox.setEnv(data)
-    sandbox.run(`this.onEvents()`, true)
-})
-bot.on("notice", (data)=>{
-    sandbox.setEnv(data)
-    sandbox.run(`this.onEvents()`, true)
-})
-bot.on("request", (data)=>{
-    sandbox.setEnv(data)
-    sandbox.run(`this.onEvents()`, true)
-})
+require("./api_passon")(bot)
 
 //开启ws服务器处理bot请求
 const ws = new WebSocket.Server({server})
@@ -285,6 +220,6 @@ ws.on("connection", (conn)=>{
     conn.on("message", (data)=>{
         bot.onEvent(data)
     })
-    initQQData()
+    bot.emit("connection")
 })
 server.listen(3000)

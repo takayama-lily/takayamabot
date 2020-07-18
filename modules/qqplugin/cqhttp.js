@@ -102,9 +102,6 @@ class CQHttp extends Events {
         })
         return await this._request(data)
     }
-    // async sendMsg(type, id, msg, escape = false) {
-    // 不实现该方法
-    // }
     async deleteMsg(mid) {
         let data = this._buildData('delete_msg', {
             message_id: mid
@@ -194,7 +191,7 @@ class CQHttp extends Events {
         })
         return await this._request(data)
     }
-    async setFriendAddRequest(flag, approve = true, remark = undefined) {
+    async setFriendRequest(flag, approve = true, remark = undefined) {
         let data = this._buildData('set_friend_add_request', {
             flag: flag,
             approve: approve,
@@ -202,9 +199,6 @@ class CQHttp extends Events {
         })
         return await this._request(data)
     }
-    // setGroupAddRequest(flag, type, approve, reason) {
-    // 不实现该方法
-    // }
     async setGroupRequest(flag, approve = true, reason = undefined) {
         let data = this._buildData('set_group_add_request', {
             flag: flag,
