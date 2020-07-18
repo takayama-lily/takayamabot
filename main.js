@@ -152,7 +152,7 @@ $.updateGroupCache = ()=>{
 sandbox.include("$", $)
 
 //传递给沙盒的事件
-bot.on("message.group", (data)=>{
+bot.on("message", (data)=>{
     sandbox.setEnv(data)
     sandbox.run(`this.onEvents()`, true)
 })
@@ -160,7 +160,7 @@ bot.on("notice", (data)=>{
     sandbox.setEnv(data)
     sandbox.run(`this.onEvents()`, true)
 })
-bot.on("request.group.add", (data)=>{
+bot.on("request", (data)=>{
     sandbox.setEnv(data)
     sandbox.run(`this.onEvents()`, true)
 })
