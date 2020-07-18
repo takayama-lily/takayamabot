@@ -94,45 +94,45 @@ sandbox.include("fetch", fetch)
 $.ajax = fetch
 $.get = fetch
 
-//初始化数据，主要是获取群和群员列表
-const groups = new Proxy(Object.create(null), {
-    get: (o, k)=>{
-        if (o[k]) {
-            if (Date.now() - o[k].update_time >= 300000)
-                updateGroupCache(k)
-            return o[k]
-        } else {
-            updateGroupCache(k)
-            return undefined
-        }
-    }
-})
-const updateGroupCache = async(gid, cache = false)=>{
-    gid = parseInt(gid)
-    let group = (await bot.getGroupInfo(gid, cache)).data
-    let members = (await bot.getGroupMemberList(gid)).data
-    if (!group || !members)
-        return
-    group.update_time = Date.now()
-    group = Object.setPrototypeOf(group, null)
-    group.members = Object.create(null)
-    for (let v of members) {
-        group.members[v.user_id] = Object.setPrototypeOf(v, null)
-        Object.freeze(group.members[v.user_id])
-    }
-    groups[gid] = group
-    Object.freeze(groups[gid])
-}
-const initQQData = async()=>{
-    let res = await bot.getGroupList()
-    if (!res.retcode && res.data instanceof Array) {
-        for (let v of res.data) {
-            await updateGroupCache(v.group_id, true)
-        }
-    }
-}
-
 module.exports = (bot)=>{
+
+    //初始化数据，主要是获取群和群员列表
+    const groups = new Proxy(Object.create(null), {
+        get: (o, k)=>{
+            if (o[k]) {
+                if (Date.now() - o[k].update_time >= 300000)
+                    updateGroupCache(k)
+                return o[k]
+            } else {
+                updateGroupCache(k)
+                return undefined
+            }
+        }
+    })
+    const updateGroupCache = async(gid, cache = false)=>{
+        gid = parseInt(gid)
+        let group = (await bot.getGroupInfo(gid, cache)).data
+        let members = (await bot.getGroupMemberList(gid)).data
+        if (!group || !members)
+            return
+        group.update_time = Date.now()
+        group = Object.setPrototypeOf(group, null)
+        group.members = Object.create(null)
+        for (let v of members) {
+            group.members[v.user_id] = Object.setPrototypeOf(v, null)
+            Object.freeze(group.members[v.user_id])
+        }
+        groups[gid] = group
+        Object.freeze(groups[gid])
+    }
+    const initQQData = async()=>{
+        let res = await bot.getGroupList()
+        if (!res.retcode && res.data instanceof Array) {
+            for (let v of res.data) {
+                await updateGroupCache(v.group_id, true)
+            }
+        }
+    }
 
     bot.on("connection", ()=>{
         initQQData()
