@@ -99,35 +99,49 @@ if (fs.existsSync(contextFile)) {
 //还原context中的函数
 if (fs.existsSync(fnFile)) {
     let fn = JSON.parse(fs.readFileSync(fnFile))
-    for (let k in fn) {
-        try {
-            vm.runInContext(`this["${k}"]=` + fn[k], context)
-        } catch(e) {}
+    const restoreFunctions = (o, name)=>{
+        for (let k in o) {
+            let key = name + `["${k}"]`
+            if (typeof o[k] === "string") {
+                try {
+                    vm.runInContext(`${key}=` + o[k], context)
+                } catch(e) {}
+            } else if (typeof o[k] === "object") {
+                restoreFunctions(o[k], key)
+            }
+        }
     }
+    restoreFunctions(fn, "this")
 }
 
 //执行init代码
 vm.runInContext(fs.readFileSync(initCodeFile), context)
 init_finished = true
 
-//定时持久化context(30分钟)
-let fn = {}
+//定时持久化context(60分钟)
+let fn
+const saveFunctions = (o, mp)=>{
+    for (let k in o) {
+        if (typeof o[k] === "function") {
+            mp[k] = o[k].toString()
+        } else if (typeof o[k] === "object" && o[k] !== null) {
+            if (o === context) {
+                try {
+                    if (JSON.stringify(o[k]).length > 10485760)
+                        o[k] = undefined
+                } catch (e) {
+                    o[k] = undefined
+                }
+            }
+            mp[k] = {}
+            saveFunctions(o[k], mp[k])
+        }
+    }
+}
 const beforeSaveContext = ()=>{
     setEnv()
     fn = {}
-    for (let k in context) {
-        if (typeof context[k] === "function") {
-            fn[k] = context[k].toString()
-        }
-        if (typeof context[k] === "object") {
-            try {
-                if (JSON.stringify(context[k]).length > 10485760)
-                    delete context[k]
-            } catch (e) {
-                delete context[k]
-            }
-        }
-    }
+    saveFunctions(context, fn)
 }
 process.on("exit", (code)=>{
     beforeSaveContext()
@@ -138,7 +152,7 @@ setInterval(()=>{
     beforeSaveContext()
     fs.writeFile(fnFile, JSON.stringify(fn), (err)=>{})
     fs.writeFile(contextFile, JSON.stringify(context), (err)=>{})
-}, 1800000)
+}, 3600000)
 
 //沙盒执行超时时间
 let timeout = 50
@@ -180,7 +194,7 @@ module.exports.run = (code, isAdmin = false)=>{
 const setEnv = (env = {})=>{
     set_env_allowed = true
     vm.runInContext(`this.data=data=` + JSON.stringify(env), context)
-    vm.runInContext(`if ($.getGroupInfo()) this.data.group_name=$.getGroupInfo().group_name`, context)
+    vm.runInContext(`if (typeof $ === "object" && $.getGroupInfo()) this.data.group_name=$.getGroupInfo().group_name`, context)
     vm.runInContext(`Object.freeze(this.data);Object.freeze(this.data.sender);Object.freeze(this.data.anonymous);`, context)
     set_env_allowed = false
 }
