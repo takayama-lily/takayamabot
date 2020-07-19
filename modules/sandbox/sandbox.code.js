@@ -93,10 +93,10 @@ Object.defineProperty(this, "data", {
 	value: {}
 })
 
-const env = ()=>this.data
-const qq = ()=>this.data.user_id
-const qun = ()=>this.data.group_id
-const user = (card=1)=>{
+const env = this.env = ()=>this.data
+const qq = this.qq = ()=>this.data.user_id
+const qun = this.qun = ()=>this.data.group_id
+const user = this.user = (card=1)=>{
 	if(!card)
 		return this.data.sender.nickname
 	if(this.data.sender.card!=undefined&&this.data.sender.card.length)
@@ -178,6 +178,26 @@ const checkFrequency = ()=>{
 			return
 		}
 		throw new Error("发言频率过快。")
+	}
+}
+
+//是否群主和群管理
+const isOwner = this.isOwner = ()=>{
+	if (!qun())
+		return true
+	try {
+		return $.getGroupInfo().members[qq()].role === "owner"
+	} catch (e) {
+		return false
+	}
+}
+const isAdmin = this.isAdmin = ()=>{
+	if (!qun())
+		return true
+	try {
+		return ["owner","admin"].includes($.getGroupInfo().members[qq()].role)
+	} catch (e) {
+		return false
 	}
 }
 
