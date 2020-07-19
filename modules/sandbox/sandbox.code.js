@@ -250,7 +250,7 @@ Object.defineProperty(this, "database", {
 })
 
 const on = ()=>{
-	if (!isMaster())
+	if (!isAdmin())
 		return "管理员才能使用。"
 	if (self()) {
 		self().js_function_on = true
@@ -258,7 +258,7 @@ const on = ()=>{
 	}
 }
 const off = ()=>{
-	if (!isMaster())
+	if (!isAdmin())
 		return "管理员才能使用。"
 	if (self()) {
 		self().js_function_on = false
