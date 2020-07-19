@@ -101,14 +101,6 @@ const reboot = ()=>{
 
 const bot = new QQPlugin()
 
-//加好友和加群处理
-bot.on("request.friend", (data)=>{
-    bot.approve(data)
-})
-bot.on("request.group.invite", (data)=>{
-    bot.approve(data)
-})
-
 const bans = {}
 bot.on("notice.group_ban.lift_ban", (data)=>{
     if (data.user_id === data.self_id) {
