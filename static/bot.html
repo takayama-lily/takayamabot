@@ -257,41 +257,39 @@
                                 <td>设置群名片</td>
                             </tr>
                             <tr>
-                                <td>$.setGroupRequest(flag,approve=true,reason=undefined)</td>
-                                <td>
-                                    <li>flag: string ※群事件中拿到</li>
-                                    <li>approve: boolean ※是否通过</li>
-                                    <li>reason: string ※拒绝理由</li>
-                                </td>
-                                <td>无</td>
-                                <td>处理加群请求</td>
-                            </tr>
-                            <tr>
                                 <td>$.sendGroupNotice(title,content)</td>
                                 <td>
                                     <li>title: string</li>
                                     <li>content: string</li>
                                 </td>
                                 <td>无</td>
-                                <td>发布群公告</td>
+                                <td>发布群公告<br>※调用者必须是管理员</td>
                             </tr>
-                            <!-- <tr>
+                            <tr>
                                 <td>$.setGroupKick(uid)</td>
                                 <td>
                                     <li>uid: number</li>
                                 </td>
                                 <td>无</td>
-                                <td>群踢人</td>
-                            </tr> -->
-                            <!-- <tr>
+                                <td>群踢人<br>※调用者必须是管理员</td>
+                            </tr>
+                            <tr>
                                 <td>$.setGroupBan(uid,duration=60)</td>
                                 <td>
                                     <li>uid: number</li>
                                     <li>duration: number</li>
                                 </td>
                                 <td>无</td>
-                                <td>群禁言</td>
-                            </tr> -->
+                                <td>群禁言<br>※调用者必须是管理员</td>
+                            </tr>
+                            <tr>
+                                <td>$.setGroupLeave(dismiss=false)</td>
+                                <td>
+                                    <li>dismiss: boolean</li>
+                                </td>
+                                <td>无</td>
+                                <td>退群<br>※调用者必须是管理员</td>
+                            </tr>
                             <tr>
                                 <td>$.setGroupAdmin(uid,enable=true)</td>
                                 <td>
@@ -323,6 +321,16 @@
                                     <li>members: object</li>
                                 </td>
                                 <td>获取群信息</td>
+                            </tr>
+                            <tr>
+                                <td>$.setGroupRequest(flag,approve=true,reason=undefined)</td>
+                                <td>
+                                    <li>flag: string ※群事件中拿到</li>
+                                    <li>approve: boolean ※是否通过</li>
+                                    <li>reason: string ※拒绝理由</li>
+                                </td>
+                                <td>无</td>
+                                <td>处理加群请求</td>
                             </tr>
                         </tbody>
                     </table>
