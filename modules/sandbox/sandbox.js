@@ -133,6 +133,8 @@ const saveFunctions = (o, mp)=>{
                     o[k] = undefined
                 }
             }
+            if (o[k] === undefined)
+                continue
             mp[k] = {}
             saveFunctions(o[k], mp[k])
         }
