@@ -8,14 +8,19 @@ const $ = sandbox.run(`new String(\`这是一个云JavaScript环境。聊天窗�
 该文档默认你会使用JavaScript, 或其他类似语言。
 http://usus.lietxia.bid/bot.html\`)`)
 
-let rest = 3
-setInterval(()=>{
-    rest = 3
-}, 50)
+const buckets = {}
 const checkFrequency = ()=>{
-    if (rest === 0)
-        throw new Error("调用频率太快")
-    --rest
+    let uid = sandbox.getContext().qq()
+    if (!uid)
+        return
+    if (buckets.hasOwnProperty(uid) && Date.now() - buckets[uid].time > 50)
+        delete buckets[uid]
+    if (!buckets.hasOwnProperty(uid))
+        buckets[uid] = {time: 0, cnt: 0}
+    if (buckets[uid].cnt >= 3)
+        return sandbox.throw("Error", "调用频率太快")
+    buckets[uid].time = Date.now()
+    ++buckets[uid].cnt
 }
 
 const getGid = ()=>sandbox.getContext().data.group_id
@@ -231,13 +236,11 @@ module.exports = (bot)=>{
         bot.setGroupRequest(flag, approve, reason)
     }
     $.setFriendRequest = (flag, approve = true, remark = undefined)=>{
-        if (!sandbox.getContext().isMaster())
-            return
+        checkFrequency()
         bot.setFriendRequest(flag, approve, remark)
     }
     $.setGroupInvitation = (flag, approve = true, reason = undefined)=>{
-        if (!sandbox.getContext().isMaster())
-            return
+        checkFrequency()
         bot.setGroupInvitation(flag, approve, reason)
     }
 
