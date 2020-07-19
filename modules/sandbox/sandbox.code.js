@@ -250,12 +250,16 @@ Object.defineProperty(this, "database", {
 })
 
 const on = ()=>{
+	if (!isMaster())
+		return "管理员才能使用。"
 	if (self()) {
 		self().js_function_on = true
 		return "JS功能已开启"
 	}
 }
 const off = ()=>{
+	if (!isMaster())
+		return "管理员才能使用。"
 	if (self()) {
 		self().js_function_on = false
 		return "JS功能已关闭"

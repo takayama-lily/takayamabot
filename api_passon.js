@@ -182,6 +182,8 @@ module.exports = (bot)=>{
         bot.deleteMsg(message_id)
     }
     $.setGroupKick = (uid, forever = false)=>{
+        if (!sandbox.getContext().isAdmin())
+            return sandbox.throw("Error", "403 Forbidden")
         let gid = getGid()
         checkFrequency()
         bot.setGroupKick(gid, uid, forever)
@@ -202,6 +204,8 @@ module.exports = (bot)=>{
         bot.setGroupAdmin(gid, uid, enable)
     }
     $.setGroupWholeBan = (enable = true)=>{
+        if (!sandbox.getContext().isAdmin())
+            return sandbox.throw("Error", "403 Forbidden")
         let gid = getGid()
         checkFrequency()
         bot.setGroupWholeBan(gid, enable)
@@ -217,6 +221,8 @@ module.exports = (bot)=>{
         bot.setGroupCard(gid, uid, card)
     }
     $.setGroupLeave = (dismiss = false)=>{
+        if (!sandbox.getContext().isAdmin() && !sandbox.getContext().isMaster())
+            return sandbox.throw("Error", "403 Forbidden")
         let gid = getGid()
         checkFrequency()
         bot.setGroupLeave(gid, dismiss)
@@ -227,6 +233,8 @@ module.exports = (bot)=>{
         bot.setGroupSpecialTitle(gid, uid, title, duration)
     }
     $.sendGroupNotice = (title, content)=>{
+        if (!sandbox.getContext().isAdmin())
+            return sandbox.throw("Error", "403 Forbidden")
         let gid = getGid()
         checkFrequency()
         bot.sendGroupNotice(gid, title, content)
