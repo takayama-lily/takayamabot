@@ -765,8 +765,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
   if (q===qq())
   	return '不能和自己拼点'
   if (!$.getGroupInfo()) {
-  	$.updateGroupCache()
-  	return '首次进群，已更新群数据缓存，请重试一次。'
+  	return
   }
   let members = $.getGroupInfo().members
   if (!members[q])
@@ -989,4 +988,20 @@ wiki=(title, content)=>{
 		knowledges.push(question)
 		return `问题已提交。要查看该问题输入: wiki(${knowledges.length - 1})`
 	}
+}
+
+新番=()=>{
+	$.ajax("https://api.bgm.tv/calendar", (data)=>{
+		data=JSON.parse(data)
+		let res = ""
+		for (let v of data) {
+			res += `● ${v.weekday.cn}放送：\n`
+			for (let vv of v.items) {
+				vv.name_cn = vv.name_cn ? vv.name_cn : vv.name
+				res += `${vv.name_cn} / ${vv.air_date}\n`
+			}
+		}
+		res += "※放送时间为日本地区播出时间"
+		alert(res)
+	})
 }

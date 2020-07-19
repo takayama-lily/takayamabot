@@ -100,7 +100,7 @@ module.exports = (bot)=>{
     const groups = new Proxy(Object.create(null), {
         get: (o, k)=>{
             if (o[k]) {
-                if (Date.now() - o[k].update_time >= 300000)
+                if (Date.now() - o[k].update_time >= 1800000)
                     updateGroupCache(k)
                 return o[k]
             } else {
@@ -144,6 +144,8 @@ module.exports = (bot)=>{
         sandbox.run(`this.onEvents()`, true)
     })
     bot.on("notice", (data)=>{
+        if (["group_admin","group_decrease","group_increase"].includes(data.notice_type))
+            updateGroupCache(data.group_id)
         sandbox.setEnv(data)
         sandbox.run(`this.onEvents()`, true)
     })
@@ -157,11 +159,11 @@ module.exports = (bot)=>{
         let gid = getGid()
         return groups[gid]
     }
-    $.updateGroupCache = ()=>{
-        let gid = getGid()
-        checkFrequency()
-        updateGroupCache(gid)
-    }
+    // $.updateGroupCache = ()=>{
+    //     let gid = getGid()
+    //     checkFrequency()
+    //     updateGroupCache(gid)
+    // }
     $.sendPrivateMsg = (uid, msg, escape = false)=>{
         checkFrequency()
         bot.sendPrivateMsg(uid, msg, escape)
