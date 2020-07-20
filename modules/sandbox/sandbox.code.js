@@ -90,7 +90,6 @@ const alert = (msg, escape = false)=>{
 if (!this.master)
 	this.master = "372914165"
 
-const master = undefined
 const isMaster = this.isMaster = ()=>{
 	return !qq() || this.master.includes(qq())
 }
@@ -256,7 +255,7 @@ Object.defineProperty(this, "recordSetHistory", {
 	}
 })
 
-this.protected_properties = this.protected_properties && typeof this.protected_properties === "object" ? this.protected_properties : []
+this.protected_properties = this.protected_properties && typeof this.protected_properties === "object" ? this.protected_properties : ["master"]
 this.protected_properties = new Proxy(this.protected_properties, {
 	set: (o, k, v)=>{
 		if (isMaster())
