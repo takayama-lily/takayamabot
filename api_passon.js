@@ -144,7 +144,8 @@ module.exports = (bot)=>{
             return
         let uid = sandbox.getContext().data.user_id
         try {
-            return ["owner","admin"].includes(groups[gid].members[uid].role)
+            if (["owner","admin"].includes(groups[gid].members[uid].role))
+                return 
         } catch (e) {}
         sandbox.throw("Error", "403 Forbidden")
     }
