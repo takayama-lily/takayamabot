@@ -206,7 +206,7 @@ const isOff = ()=>{
 
 this.set_history = this.set_history && typeof this.set_history === "object" ? this.set_history : {}
 this.set_history = new Proxy(this.set_history, {
-	set: (o, k, v, r)=>{
+	set: (o, k, v)=>{
 		if (!this.set_history_allowed)
 			throw error403
 		return Reflect.set(o, k, v)
@@ -255,3 +255,35 @@ Object.defineProperty(this, "recordSetHistory", {
 		}
 	}
 })
+
+this.protected_properties = this.protected_properties && typeof this.protected_properties === "object" ? this.protected_properties : []
+this.protected_properties = new Proxy(this.protected_properties, {
+	set: (o, k, v)=>{
+		if (isMaster())
+			return Reflect.set(o, k, v)
+		throw error403
+	},
+	deleteProperty: (o, k)=>{
+		if (isMaster())
+			return Reflect.deleteProperty(o, k)
+		throw error403
+	},
+	defineProperty: (o, k, d)=>{
+		throw error403
+	},
+	preventExtensions: (o)=>{
+		throw error403
+	},
+	setPrototypeOf: (o, prototype)=>{
+		throw error403
+	}
+})
+Object.defineProperty(this, "protected_properties", {
+	configurable: false,
+	enumerable: true,
+	writable: false,
+	value: this.protected_properties
+})
+const isProtected = this.isProtected = (k)=>{
+	return this.protected_properties.includes(k)
+}

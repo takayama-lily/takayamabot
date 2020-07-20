@@ -14,11 +14,6 @@ if (!fs.existsSync(dataPath)) {
 //初始化context
 let context = Object.create(null)
 
-const protected_properties = [
-  'onEvents','master','isMaster','blacklist','blacklist2',
-  '帮助','help','小游戏','功能'
-]
-
 //把context包装成proxy对象，来捕捉一些操作
 let set_env_allowed = false
 let init_finished = false
@@ -30,7 +25,7 @@ context = new Proxy(context, {
             return false
         if (k === "data" && !set_env_allowed)
             return false
-        if (protected_properties.includes(k) && !o.isMaster())
+        if (o.isProtected(k) && !o.isMaster())
             return false
         if (typeof o.recordSetHistory === "function") {
             o.set_history_allowed = true
@@ -46,7 +41,7 @@ context = new Proxy(context, {
             return false
     },
     deleteProperty: (o, k)=>{
-        if (!init_finished || !protected_properties.includes(k))
+        if (!init_finished || o.isMaster() || !o.isProtected(k))
             return Reflect.deleteProperty(o, k)
         else
             return false
