@@ -1,3 +1,8 @@
+/*
+ * 该文件中的所有代码必须在sandbox中执行
+ */
+
+//函数定义中若包含CQ码，可用此原型方法查看
 this.Function.prototype.view = function() {
     return this.toString().replace(/[&\[\]]/g, (s)=>{
         if (s === "&") return "&amp;"
@@ -5,86 +10,13 @@ this.Function.prototype.view = function() {
         if (s === "]") return "&#93;"
     })
 }
-const Function = this.Function
-const Object = this.Object
-const Boolean = this.Boolean
-const Number = this.Number
-const BigInt = this.BigInt
-const Math = this.Math
-const Date = this.Date
-const String = this.String
-const RegExp = this.RegExp
-const Array = this.Array
-const Map = this.Map
-const Set = this.Set
-const ArrayBuffer = this.ArrayBuffer
-const SharedArrayBuffer = this.SharedArrayBuffer
-const JSON = this.JSON
-const Error = this.Error
-const WeakSet = this.WeakSet
-const WeakMap = this.WeakMap
-const Symbol = this.Symbol
-// const Proxy = this.Proxy
-const Reflect = this.Reflect
-const DataView = this.DataView
-const Atomics = this.Atomics
 
-const isFinite = this.isFinite
-const isNaN = this.isNaN
-const parseFloat = this.parseFloat
-const parseInt = this.parseInt
-const decodeURI = this.decodeURI
-const decodeURIComponent = this.decodeURIComponent
-const encodeURI = this.encodeURI
-const encodeURIComponent = this.encodeURIComponent
-const escape = this.escape
-const unescape = this.unescape
-const eval = this.eval
-
-Object.freeze(Function)
-Object.freeze(Function.prototype)
-Object.freeze(Object)
-Object.freeze(Object.prototype)
-Object.freeze(Boolean)
-Object.freeze(Boolean.prototype)
-Object.freeze(Number)
-Object.freeze(Number.prototype)
-Object.freeze(BigInt)
-Object.freeze(BigInt.prototype)
-Object.freeze(Math)
-Object.freeze(Date)
-Object.freeze(Date.prototype)
-Object.freeze(String)
-Object.freeze(String.prototype)
-Object.freeze(RegExp)
-Object.freeze(RegExp.prototype)
-Object.freeze(Array)
-Object.freeze(Array.prototype)
-Object.freeze(Map)
-Object.freeze(Map.prototype)
-Object.freeze(Set)
-Object.freeze(Set.prototype)
-Object.freeze(ArrayBuffer)
-Object.freeze(ArrayBuffer.prototype)
-Object.freeze(SharedArrayBuffer)
-Object.freeze(SharedArrayBuffer.prototype)
-Object.freeze(JSON)
-Object.freeze(Error)
-Object.freeze(Error.prototype)
-Object.freeze(WeakSet)
-Object.freeze(WeakSet.prototype)
-Object.freeze(WeakMap)
-Object.freeze(WeakMap.prototype)
-Object.freeze(Symbol)
-Object.freeze(Symbol.prototype)
-// Object.freeze(Proxy)
-Object.freeze(Reflect)
-Object.freeze(DataView)
-Object.freeze(DataView.prototype)
-Object.freeze(Atomics)
-delete Promise
 delete globalThis
+delete Promise
 delete console
+delete eval
+
+//环境变量(由于用户可以随意给let定义的变量赋值，直接使用data变量是不安全的，应该使用env()函数取得this.data)
 let data = {}
 Object.defineProperty(this, "data", {
 	configurable: false,
@@ -323,5 +255,3 @@ Object.defineProperty(this, "recordSetHistory", {
 		}
 	}
 })
-
-delete Proxy

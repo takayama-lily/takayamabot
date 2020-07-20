@@ -21,16 +21,19 @@
                 <a class="nav-link active" data-toggle="tab" href="#home">开始使用</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#function">可用函数</a>
+                <a class="nav-link" data-toggle="tab" href="#function">内置函数</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#qqapi">QQ API</a>
+                <a class="nav-link" data-toggle="tab" href="#qqapi">QQ API函数</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#qqevent">QQ事件处理</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#end">其它</a>
+                <a class="nav-link" data-toggle="tab" href="#ecma">ECMAScript6内置对象</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#end">最后</a>
               </li>
             </ul>
           
@@ -46,8 +49,8 @@
                     <h6 class="font-weight-bold">限制</h6>
                     <ul>
                         <li>无法使用浏览器特有的函数和API。</li>
-                        <li>由于安全原因，暂时无法使用<code>this</code>、<code>async</code>、<code>const</code>三个关键字</li>
-                        <li>无法使用<code>eval</code>和<code>Promise</code>异步。无法使用<code>Proxy</code>。</li>
+                        <li>由于安全原因，暂时无法使用<code>this</code>、<code>async</code>、<code>const</code>三个关键字。</li>
+                        <li>无法使用<code>eval</code>和<code>Promise</code>。</li>
                     </ul>
                     <h6 class="font-weight-bold">调试</h6>
                     <ul>
@@ -57,7 +60,7 @@
                     <ul>
                         <li>由于输入习惯问题，以下全角字符会被自动转为半角：<code>（）“”，＝</code></li>
                         <li>可以使用<a href="https://docs.cqp.im/manual/cqcode/" target="_blank">CQ码</a>字符串定义图片等消息。</li>
-                        <li>自定义原型链(类的继承关系)无法持久化保存，随时可能丢失。</li>
+                        <li>类的继承关系(自定义原型链)无法持久化保存，随时可能丢失。</li>
                     </ul>
                 </div>
                 <div id="function" class="container tab-pane fade"><br>
@@ -81,7 +84,7 @@
                                 <td>alert(data)</td>
                                 <td><li>data: any</li></td>
                                 <td>无</td>
-                                <td>输出(有频率限制)</td>
+                                <td>输出(有调用频率限制)</td>
                             </tr>
                             <tr>
                                 <td>fetch(url, callback, headers=null)</tdd>
@@ -210,7 +213,7 @@
                     </table>
                 </div>
                 <div id="qqapi" class="container tab-pane fade"><br>
-                    <h6 class="font-weight-bold">※这里的全部函数都有频率限制，请勿滥用</h6>
+                    <h6 class="font-weight-bold">※这里的全部函数都有调用频率限制，请勿滥用</h6>
                     <table class="table table-striped table-bordered">
                         <thead>
                           <tr>
@@ -354,6 +357,20 @@
     }
 </pre> -->
                 </div>
+                <div id="ecma" class="container tab-pane fade"><br>
+                    <h6 class="font-weight-bold">可用的</h6>
+                    <li>Object | Function | Array | Number | Boolean | String | Symbol</li>
+                    <li>Date | RegExp | JSON | Math | Proxy | Reflect | Intl</li>
+                    <li>parseFloat | parseInt | isFinite | isNaN | escape | unescape</li>
+                    <li>decodeURI | decodeURIComponent | encodeURI | encodeURIComponent</li>
+                    <li>BigInt | Map | Set | WeakMap | WeakSet</li>
+                    <li>Error | RangeError | ReferenceError | SyntaxError | TypeError | URIError</li>
+                    <li>ArrayBuffer | SharedArrayBuffer | Atomics | DataView | Uint8ClampedArray</li>
+                    <li>Uint8Array | Int8Array | Uint16Array | Int16Array | Uint32Array | Int32Array | Float32Array | Float64Array | BigUint64Array | BigInt64Array</li>
+                    <br>
+                    <h6 class="font-weight-bold">不可用的</h6>
+                    <li>global | globalThis | eval | Promise | console | WebAssembly</li>
+                </div>
                 <div id="end" class="container tab-pane fade"><br>
                     <h6 class="font-weight-bold">声明事项</h6>
                     <ul>
@@ -366,7 +383,7 @@
                     </ul>
                     <h6 class="font-weight-bold">项目地址</h6>
                     <ul>
-                        <li><a target="_blank" href="https://github.com/senjugakuen/takayamabot">https://github.com/senjugakuen/takayamabot</a></li>
+                        <li><a target="_blank" href="https://github.com/takayama-lily/takayamabot">https://github.com/takayama-lily/takayamabot</a></li>
                         <li>有功能建议，或发现安全漏洞等可以提issue。</li>
                     </ul>
                 </div>

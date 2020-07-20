@@ -6,7 +6,7 @@ const sandbox = require("./modules/sandbox/sandbox")
 const $ = sandbox.run(`new String(\`这是一个云JavaScript环境。聊天窗口就是控制台。
 该文档可能需要一定的编程基础才能充分理解。
 该文档默认你会使用JavaScript, 或其他类似语言。
-http://usus.lietxia.bid/bot.html\`)`)
+https://takayama-lily.github.io/takayamabot/static/bot.html\`)`)
 
 const buckets = {}
 const checkFrequency = ()=>{

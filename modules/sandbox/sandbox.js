@@ -15,27 +15,8 @@ if (!fs.existsSync(dataPath)) {
 let context = Object.create(null)
 
 const protected_properties = [
-  'Object',             'Function',       'Array',
-  'Number',             'parseFloat',     'parseInt',
-  'Infinity',           'NaN',            'undefined',
-  'Boolean',            'String',         'Symbol',
-  'Date',               'Promise',        'RegExp',
-  'Error',              'EvalError',      'RangeError',
-  'ReferenceError',     'SyntaxError',    'TypeError',
-  'URIError',           'globalThis',     'JSON',
-  'Math',               'console',        'Intl',
-  'ArrayBuffer',        'Uint8Array',     'Int8Array',
-  'Uint16Array',        'Int16Array',     'Uint32Array',
-  'Int32Array',         'Float32Array',   'Float64Array',
-  'Uint8ClampedArray',  'BigUint64Array', 'BigInt64Array',
-  'DataView',           'Map',            'BigInt',
-  'Set',                'WeakMap',        'WeakSet',
-  'Proxy',              'Reflect',        'decodeURI',
-  'decodeURIComponent', 'encodeURI',      'encodeURIComponent',
-  'escape',             'unescape',       'eval',
-  'isFinite',           'isNaN',          'SharedArrayBuffer',
-  'Atomics',            'WebAssembly',
-  'onEvents','master','isMaster','blacklist','blacklist2','帮助','help','高级','advance','小游戏'
+  'onEvents','master','isMaster','blacklist','blacklist2',
+  '帮助','help','小游戏','功能'
 ]
 
 //把context包装成proxy对象，来捕捉一些操作
@@ -116,6 +97,34 @@ if (fs.existsSync(fnFile)) {
 
 //执行init代码
 vm.runInContext(fs.readFileSync(initCodeFile), context)
+
+//冻结内置对象(不包括Promise,console,eval,globalThis)
+const internal_properties = [
+  'Object',             'Function',       'Array',
+  'Number',             'parseFloat',     'parseInt',
+  'Boolean',            'String',         'Symbol',
+  'Date',               'RegExp',
+  'Error',              'EvalError',      'RangeError',
+  'ReferenceError',     'SyntaxError',    'TypeError',
+  'URIError',           'JSON',
+  'Math',               'Intl',
+  'ArrayBuffer',        'Uint8Array',     'Int8Array',
+  'Uint16Array',        'Int16Array',     'Uint32Array',
+  'Int32Array',         'Float32Array',   'Float64Array',
+  'Uint8ClampedArray',  'BigUint64Array', 'BigInt64Array',
+  'DataView',           'Map',            'BigInt',
+  'Set',                'WeakMap',        'WeakSet',
+  'Proxy',              'Reflect',        'decodeURI',
+  'decodeURIComponent', 'encodeURI',      'encodeURIComponent',
+  'escape',             'unescape',
+  'isFinite',           'isNaN',          'SharedArrayBuffer',
+  'Atomics',            'WebAssembly'
+]
+for (let v of internal_properties) {
+    vm.runInContext(`this.Object.freeze(this.${v})
+this.Object.freeze(this.${v}.prototype)
+const ${v} = this.${v}`, context)
+}
 init_finished = true
 
 //定时持久化context(60分钟)
