@@ -16,8 +16,7 @@ delete Promise
 delete console
 delete eval
 
-//环境变量(由于用户可以随意给let定义的变量赋值，直接使用data变量是不安全的，应该使用env()函数取得this.data)
-let data = {}
+//环境变量
 Object.defineProperty(this, "data", {
     configurable: false,
     enumerable: false,
@@ -25,82 +24,26 @@ Object.defineProperty(this, "data", {
     value: {}
 })
 
-const env = this.env = ()=>this.data
-const qq = this.qq = ()=>this.data.user_id
-const qun = this.qun = ()=>this.data.group_id
-const user = this.user = (card=1)=>{
-    if(!card)
-        return this.data.sender.nickname
-    if(this.data.sender.card!=undefined&&this.data.sender.card.length)
-        return this.data.sender.card
-    else
-        return this.data.sender.nickname
-}
-const parseQQ=(str)=>{
-    if (!isNaN(str))
-        return parseInt(str)
-    return parseInt(str.replace(/[^(0-9)]/g,""))
-}
-const protectQQ=(q)=>{
-    q=parseQQ(q).toString()
-    return q.substr(0, 2) + "***" + q.substr(q.length-2, 2)
-}
-const at=(q=qq())=>`[CQ:at,qq=${parseQQ(q)}]`
-const seed=(q=qq())=>Math.abs(0xffffffffffffffff%parseQQ(q)^0xffffffffffffffff%((Date.now()+28800000)/864/10**5|0))
-const img=(url,cache=1)=>{
-    cache=cache?1:0
-    return `[CQ:image,cache=${cache},file=${encodeURI(url)}]`
-}
-const random=(a,b)=>Math.floor(Math.random()*(b-a)+a)
-const qqhead=(q=qq(),cache=true)=>{
-    if (q===false||q ===0)
-        cache=false,q=qq()
-    return img("http://q1.qlogo.cn/g?b=qq&s=640&nk="+parseQQ(q),cache)
-}
-const grouphead=(gid=qun(),cache=true)=>{
-    if (gid===false||gid===0)
-        cache=false,gid=qun()
-    return img("http://p.qlogo.cn/gh/"+gid+"/"+gid+"/640",cache)
-}
-const time2str=(timestamp)=>{
-    let now = Date.now()
-    if (timestamp < 0xffffffff)
-        timestamp *= 1000
-    let time = Math.floor(Math.abs(now - timestamp)/1000)
-    if (time >= 86400)
-        time = Math.floor(time / 86400) + "天"
-    else if (time >= 3600)
-        time = Math.floor(time / 3600) + "小时"
-    else if (time >= 60)
-        time = Math.floor(time / 60) + "分钟"
-    else
-        time = Math.floor(time) + "秒"
-    return time + (timestamp <= now ? "前" : "后")
-}
-
-const alert = (msg, escape = false)=>{
-    if (isOff())
-        return
-    if (qun())
-        $.sendGroupMsg(qun(), msg, escape)
-    else
-        $.sendPrivateMsg(qq(), msg, escape)
-}
-
-if (!this.master)
-    this.master = "372914165"
-const isMaster = this.isMaster = ()=>{
-    return !qq() || this.master.includes(qq())
-}
+//必须是包含qq号的字符串
+if (typeof this.master !== "string")
+    this.master = ""
+Object.defineProperty(this, "isMaster", {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: ()=>{
+        return !this.data.user_id || (typeof this.master === "string" && this.master.includes(this.data.user_id))
+    }
+})
 
 const error403 = new Error("403 forbidden")
 
-const self = ()=>this.database[qun()]
+const self = ()=>this.database[this.data.group_id]
 const group_proxy_handler = {
     get: (o, k)=>{
-        if (isMaster())
+        if (this.isMaster())
             return o[k]
-        if (parseInt(k) !== qun())
+        if (parseInt(k) !== this.data.group_id)
             throw error403
         if (!o.hasOwnProperty(k))
             o[k] = {}
@@ -119,7 +62,7 @@ const group_proxy_handler = {
         throw error403
     },
     ownKeys: (o)=>{
-        if (isMaster())
+        if (this.isMaster())
             return Reflect.ownKeys(o)
         throw error403
     },
@@ -158,7 +101,7 @@ this.set_history = new Proxy(this.set_history, {
         throw error403
     },
     ownKeys: (o)=>{
-        if (isMaster())
+        if (this.isMaster())
             return Reflect.ownKeys(o)
         throw error403
     },
@@ -180,13 +123,13 @@ Object.defineProperty(this, "recordSetHistory", {
     enumerable: false,
     writable: false,
     value: (k)=>{
-        if (k !== "data" && qq()) {
+        if (k !== "data" && this.data.user_id) {
             this.set_history[k] = {
-                qq: qq(),
-                name: user(0),
-                group: qun(),
-                gname: $.getGroupInfo() ? $.getGroupInfo().group_name : undefined,
-                card: qun() ? user(1) : undefined,
+                qq: this.data.user_id,
+                name: this.data.nickname,
+                group: this.data.group_id,
+                gname: this.data.group_name !== undefined ? this.data.group_name : undefined,
+                card: this.data.group_id ? this.data.sender.card : undefined,
                 time: Date.now()
             }
         }
@@ -207,12 +150,12 @@ if (typeof this.onEvents !== "function")
 this.protected_properties = this.protected_properties && typeof this.protected_properties === "object" ? this.protected_properties : ["master","beforeExec","afterExec","onEvents"]
 this.protected_properties = new Proxy(this.protected_properties, {
     set: (o, k, v)=>{
-        if (isMaster())
+        if (this.isMaster())
             return Reflect.set(o, k, v)
         throw error403
     },
     deleteProperty: (o, k)=>{
-        if (isMaster())
+        if (this.isMaster())
             return Reflect.deleteProperty(o, k)
         throw error403
     },

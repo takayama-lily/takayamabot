@@ -22,6 +22,9 @@ const checkFrequency = ()=>{
     buckets[uid].time = Date.now()
     ++buckets[uid].cnt
 }
+const checkAuth = ()=>{
+
+}
 
 const getGid = ()=>sandbox.getContext().data.group_id
 
@@ -146,17 +149,17 @@ module.exports = (bot)=>{
     //传递给沙盒的事件
     bot.on("message", (data)=>{
         sandbox.setEnv(data)
-        sandbox.run(`this.onEvents()`, true)
+        sandbox.run(`onEvents()`)
     })
     bot.on("notice", (data)=>{
         if (["group_admin","group_decrease","group_increase"].includes(data.notice_type))
             updateGroupCache(data.group_id)
         sandbox.setEnv(data)
-        sandbox.run(`this.onEvents()`, true)
+        sandbox.run(`onEvents()`)
     })
     bot.on("request", (data)=>{
         sandbox.setEnv(data)
-        sandbox.run(`this.onEvents()`, true)
+        sandbox.run(`onEvents()`)
     })
 
     // bot api
