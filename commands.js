@@ -26,52 +26,17 @@ const commands = {
             return "需要加上玩家ID。"
         if (isNaN(param))
             return '暂时无法使用昵称，只能使用ID来找到玩家。'
-        // if (!param.length)
-        //     return "没有输入用户名。输入例:\n-qhjp 千羽黒乃"
         else
             return await mjutil.shuibiao(param, true)
     },
-    "rank": async function(param) {
-        return await mjutil.ranking(param)
-    },
-    "rankjp": async function(param) {
-        return await mjutil.ranking(param, true)
-    },
     "bgm": async function(param) {
-        return await bgm.getCalendar(param)
+        return "该指令已不可用。请使用：新番()"
     },
     "anime": async function(param) {
-        if (!param.length)
-            return "没有输入名称。用法例:\n-动漫 公主连结"
-        else
-          return await bgm.getBangumi("anime", param)
+        return `该指令已不可用。请使用：动漫("公主连结")`
     },
     "yq": async function(param) {
-        let gbl = []
-        return new Promise(resolve=>{
-            https.get("https://api.inews.qq.com/newsqa/v1/automation/foreign/country/ranklist", res=>{
-                res.on("data", d=>gbl.push(d))
-                res.on("end", ()=>resolve())
-            }).on("error", err=>{})
-        }).then(()=>{
-            try {
-                gbl = Buffer.concat(gbl).toString()
-                gbl = JSON.parse(gbl).data
-                let msg = `${param?param:"国外"}疫情(${gbl[0].date.substr(1)}):\n`
-                for (let v of gbl) {
-                    if (param && !v.name.includes(param))
-                        continue
-                    if (!param && v.confirm < 1000)
-                        continue
-                    msg += v.name + `: 確` + v.confirm
-                    msg += v.confirmAdd ? `(+${v.confirmAdd})` : ""
-                    msg += "亡" + v.dead + "癒" + v.heal + "\n"
-                }
-                return msg
-            } catch (e) {
-                return "服务暂时不可用"
-            }
-        })
+        return `该指令已不可用。请使用：疫情("美国")`
     },
     "pl": async function(param) {
         param = param.trim()
@@ -157,26 +122,6 @@ https://github.com/takayama-lily/riichi`
         } catch(e) {
             return param + '\n手牌数量不正确或输入有误'
         }
-    },
-    "setu": async function(param) {
-        return new Promise(resolve=>{
-            let data = ""
-            https.get("https://api.lolicon.app/setu/?apikey=958955415e99d70b61c227&r18=0&size1200=true&keyword"+param, res=>{
-                res.on("data", chunk=>data+=chunk)
-                res.on("end", ()=>{
-                    try {
-                        data = JSON.parse(data)
-                        if (!data.data.length) resolve("没找到")
-                        let url = data.data[0].url
-                        resolve(buildImage(url))
-                    } catch(e) {
-                        resolve("服务暂时不可用")
-                    }
-                })
-            }).on("error", err=>{
-                resolve("服务暂时不可用")
-            })
-        })
     },
     "query": async(param)=>{
         let beachmark = Date.now()
@@ -285,11 +230,9 @@ https://github.com/takayama-lily/riichi`
     }
 }
 commands["雀魂"] = commands.qh
-commands["排名"] = commands.rank
 commands["牌理"] = commands.pl
 commands["疫情"] = commands.yq
 commands["新番"] = commands.bgm
 commands["动漫"] = commands.anime
-commands["色图"] = commands.setu
 
 module.exports = commands
