@@ -89,47 +89,8 @@ const alert = (msg, escape = false)=>{
 
 if (!this.master)
     this.master = "372914165"
-
 const isMaster = this.isMaster = ()=>{
     return !qq() || this.master.includes(qq())
-}
-const checkBlack = ()=>{
-    if (typeof this.blacklist === "string" && this.blacklist.includes(qq()))
-        throw new Error("你已被限制使用此功能，申请恢复请联系管理员。")
-    if (typeof this.blacklist2 === "string" && this.blacklist2.includes(qun()))
-        throw new Error("该群已被限制使用此功能，申请恢复请联系管理员。")
-}
-const checkFrequency = ()=>{
-    if (qun()) {
-        try {
-            let last = self().history[qq()].time
-            if (!last || Date.now() - last > 1000)
-                return
-        } catch (e) {
-            return
-        }
-        throw new Error("发言频率过快。")
-    }
-}
-
-//是否群主和群管理
-const isOwner = this.isOwner = ()=>{
-    if (!qun())
-        return true
-    try {
-        return $.getGroupInfo().members[qq()].role === "owner"
-    } catch (e) {
-        return false
-    }
-}
-const isAdmin = this.isAdmin = ()=>{
-    if (!qun())
-        return true
-    try {
-        return ["owner","admin"].includes($.getGroupInfo().members[qq()].role)
-    } catch (e) {
-        return false
-    }
 }
 
 const error403 = new Error("403 forbidden")
@@ -179,29 +140,6 @@ Object.defineProperty(this, "database", {
     writable: false,
     value: this.database
 })
-
-const on = ()=>{
-    if (!isAdmin())
-        return "管理员才能使用。"
-    if (self()) {
-        self().js_function_on = true
-        return "JS功能已开启"
-    }
-}
-const off = ()=>{
-    if (!isAdmin())
-        return "管理员才能使用。"
-    if (self()) {
-        self().js_function_on = false
-        return "JS功能已关闭"
-    }
-}
-const isOff = ()=>{
-    if (qun() && self()) {
-        return self().js_function_on === false
-    }
-    return false
-}
 
 this.set_history = this.set_history && typeof this.set_history === "object" ? this.set_history : {}
 this.set_history = new Proxy(this.set_history, {

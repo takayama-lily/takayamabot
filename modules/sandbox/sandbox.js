@@ -168,8 +168,6 @@ module.exports.setTimeout = (t)=>timeout=t
 module.exports.run = (code, isAdmin = false)=>{
     code = code.trim()
     let debug = ["\\","＼"].includes(code.substr(0, 1))
-    if (!isAdmin && code.match(/([^\w]|^)+(this|async|const|let){1}([^\w]|$)+/))
-        return debug ? "代码不能包含this、async、const、let关键字。\n声明块级变量请使用var" : undefined
     if (debug)
         code = code.substr(1)
     code = code.replace(/(（|）|，|″|“|”|＝)/g, (s)=>{
