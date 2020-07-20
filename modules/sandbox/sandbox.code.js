@@ -124,14 +124,16 @@ Object.defineProperty(this, "recordSetHistory", {
     writable: false,
     value: (k)=>{
         if (k !== "data" && this.data.user_id) {
-            this.set_history[k] = {
-                qq: this.data.user_id,
-                name: this.data.nickname,
-                group: this.data.group_id,
-                gname: this.data.group_name !== undefined ? this.data.group_name : undefined,
-                card: this.data.group_id ? this.data.sender.card : undefined,
-                time: Date.now()
-            }
+            try {
+                this.set_history[k] = {
+                    qq: this.data.user_id,
+                    name: this.data.sender.nickname,
+                    group: this.data.group_id,
+                    gname: this.data.group_name !== undefined ? this.data.group_name : undefined,
+                    card: this.data.group_id ? this.data.sender.card : undefined,
+                    time: Date.now()
+                }
+            } catch (e) {}
         }
     }
 })

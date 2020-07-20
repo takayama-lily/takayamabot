@@ -10,7 +10,7 @@ https://takayama-lily.github.io/takayamabot/static/bot.html\`)`)
 
 const buckets = {}
 const checkFrequency = ()=>{
-    let uid = sandbox.getContext().qq()
+    let uid = sandbox.getContext().data.user_id
     if (!uid)
         return
     if (buckets.hasOwnProperty(uid) && Date.now() - buckets[uid].time > 50)
@@ -21,9 +21,6 @@ const checkFrequency = ()=>{
         return sandbox.throw("Error", "调用频率太快")
     buckets[uid].time = Date.now()
     ++buckets[uid].cnt
-}
-const checkAuth = ()=>{
-
 }
 
 const getGid = ()=>sandbox.getContext().data.group_id
@@ -142,6 +139,16 @@ module.exports = (bot)=>{
         }
     }
 
+    const checkAuth = (gid)=>{
+        if (sandbox.getContext().isMaster())
+            return
+        let uid = sandbox.getContext().data.user_id
+        try {
+            return ["owner","admin"].includes(groups[gid].members[uid].role)
+        } catch (e) {}
+        sandbox.throw("Error", "403 Forbidden")
+    }
+
     bot.on("connection", ()=>{
         initQQData()
     })
@@ -167,11 +174,6 @@ module.exports = (bot)=>{
         let gid = getGid()
         return groups[gid]
     }
-    // $.updateGroupCache = ()=>{
-    //     let gid = getGid()
-    //     checkFrequency()
-    //     updateGroupCache(gid)
-    // }
     $.sendPrivateMsg = (uid, msg, escape = false)=>{
         checkFrequency()
         bot.sendPrivateMsg(uid, msg, escape)
@@ -185,9 +187,8 @@ module.exports = (bot)=>{
         bot.deleteMsg(message_id)
     }
     $.setGroupKick = (uid, forever = false)=>{
-        if (!sandbox.getContext().isAdmin())
-            return sandbox.throw("Error", "403 Forbidden")
         let gid = getGid()
+        checkAuth(gid)
         checkFrequency()
         bot.setGroupKick(gid, uid, forever)
     }
@@ -207,9 +208,8 @@ module.exports = (bot)=>{
         bot.setGroupAdmin(gid, uid, enable)
     }
     $.setGroupWholeBan = (enable = true)=>{
-        if (!sandbox.getContext().isAdmin())
-            return sandbox.throw("Error", "403 Forbidden")
         let gid = getGid()
+        checkAuth(gid)
         checkFrequency()
         bot.setGroupWholeBan(gid, enable)
     }
@@ -224,9 +224,8 @@ module.exports = (bot)=>{
         bot.setGroupCard(gid, uid, card)
     }
     $.setGroupLeave = (dismiss = false)=>{
-        if (!sandbox.getContext().isAdmin() && !sandbox.getContext().isMaster())
-            return sandbox.throw("Error", "403 Forbidden")
         let gid = getGid()
+        checkAuth(gid)
         checkFrequency()
         bot.setGroupLeave(gid, dismiss)
     }
@@ -236,9 +235,8 @@ module.exports = (bot)=>{
         bot.setGroupSpecialTitle(gid, uid, title, duration)
     }
     $.sendGroupNotice = (title, content)=>{
-        if (!sandbox.getContext().isAdmin())
-            return sandbox.throw("Error", "403 Forbidden")
         let gid = getGid()
+        checkAuth(gid)
         checkFrequency()
         bot.sendGroupNotice(gid, title, content)
     }
