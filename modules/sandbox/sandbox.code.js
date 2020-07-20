@@ -179,7 +179,7 @@ Object.defineProperty(this, "isProtected", {
     configurable: false,
     enumerable: false,
     writable: false,
-    value: ()=>{
+    value: (k)=>{
         return this.protected_properties.includes(k)
     }
 })
