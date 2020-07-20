@@ -12,9 +12,7 @@ this.Function.prototype.view = function() {
 }
 
 delete globalThis
-delete Promise
 delete console
-delete eval
 
 //环境变量
 Object.defineProperty(this, "data", {
@@ -137,17 +135,19 @@ Object.defineProperty(this, "isMaster", {
 })
 
 // 钩子函数
-if (typeof this.beforeExec !== "function")
-    this.beforeExec = ()=>{}
-if (typeof this.afterExec !== "function")
-    this.afterExec = ()=>{}
-if (typeof this.onEvents !== "function")
+if (typeof this.afterInit !== "function") //sandbox加载之后被执行
+    this.afterInit = ()=>{}
+if (typeof this.beforeExec !== "function") //用户代码执行之前被执行
+    this.beforeExec = (code)=>{}
+if (typeof this.afterExec !== "function") //用户代码执行之后被执行
+    this.afterExec = (res)=>{}
+if (typeof this.onEvents !== "function") //所有QQ事件
     this.onEvents = ()=>{}
 
 // 受保护属性只有主人可以设置和删除
 // 默认的受保护属性为 master,beforeExec,afterExec,onEvents 四个
 // 受保护属性不能是引用类型(对象&数组)，只能是基础类型或函数，否则无法被保护
-this.protected_properties = this.protected_properties && typeof this.protected_properties === "object" ? this.protected_properties : ["master","beforeExec","afterExec","onEvents"]
+this.protected_properties = this.protected_properties && typeof this.protected_properties === "object" ? this.protected_properties : ["master","afterInit","beforeExec","afterExec","onEvents"]
 this.protected_properties = new Proxy(this.protected_properties, {
     set: (o, k, v)=>{
         if (this.isMaster())
@@ -192,8 +192,9 @@ Object.defineProperty(this, "isProtected", {
 ● this.set_history ※变量定义历史记录
 ● this.protected_properties ※受保护的变量(只有master可以修改，this.isProtected()判断是被保护)
 
-三个事件函数(默认是被保护的，只有master可以修改)：
-● this.onEvents() ※接受所有qq事件
+钩子事件函数(默认是被保护的，只有master可以修改)：
+● this.afterInit() ※sandbox加载之后被执行
 ● this.beforeExec(code) ※执行用户代码之前执行，code是用户代码(如果该函数中抛出未捕获的错误，则用户代码不会被不会执行)
 ● this.afterExec(res) ※执行用户代码之后执行，res是用户代码执行结果(如果用户代码中抛出未捕获的错误，该函数不会被执行)
+● this.onEvents() ※所有qq事件
 */

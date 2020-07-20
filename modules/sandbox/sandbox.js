@@ -98,10 +98,10 @@ const internal_properties = [
   'Object',             'Function',       'Array',
   'Number',             'parseFloat',     'parseInt',
   'Boolean',            'String',         'Symbol',
-  'Date',               'RegExp',
+  'Date',               'RegExp',         'eval',
   'Error',              'EvalError',      'RangeError',
   'ReferenceError',     'SyntaxError',    'TypeError',
-  'URIError',           'JSON',
+  'URIError',           'JSON',           'Promise',
   'Math',               'Intl',
   'ArrayBuffer',        'Uint8Array',     'Int8Array',
   'Uint16Array',        'Int16Array',     'Uint32Array',
@@ -182,7 +182,7 @@ module.exports.run = (code)=>{
     try {
         vm.runInContext(`this.beforeExec(${JSON.stringify(code)})`, context, {timeout: timeout})
         let res = vm.runInContext(code, context, {timeout: timeout})
-        if (res instanceof Promise)
+        if (res instanceof vm.runInContext("Promise", context))
             res = undefined
         vm.runInContext(`this.afterExec(${JSON.stringify(res)})`, context, {timeout: timeout})
         return res
