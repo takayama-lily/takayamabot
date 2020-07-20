@@ -24,22 +24,11 @@ Object.defineProperty(this, "data", {
     value: {}
 })
 
-//必须是包含qq号的字符串
-if (typeof this.master !== "string")
-    this.master = ""
-Object.defineProperty(this, "isMaster", {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: ()=>{
-        return !this.data.user_id || (typeof this.master === "string" && this.master.includes(this.data.user_id))
-    }
-})
-
 const error403 = new Error("403 forbidden")
 
-const self = ()=>this.database[this.data.group_id]
-const group_proxy_handler = {
+//群数据库
+this.database = this.database && typeof this.database === "object" ? this.database : {}
+this.database = new Proxy(this.database, {
     get: (o, k)=>{
         if (this.isMaster())
             return o[k]
@@ -72,11 +61,7 @@ const group_proxy_handler = {
     setPrototypeOf: (o, prototype)=>{
         throw error403
     }
-}
-Object.freeze(group_proxy_handler)
-
-this.database = this.database && typeof this.database === "object" ? this.database : {}
-this.database = new Proxy(this.database, group_proxy_handler)
+})
 Object.defineProperty(this, "database", {
     configurable: false,
     enumerable: true,
@@ -84,6 +69,7 @@ Object.defineProperty(this, "database", {
     value: this.database
 })
 
+// set历史记录
 this.set_history = this.set_history && typeof this.set_history === "object" ? this.set_history : {}
 this.set_history = new Proxy(this.set_history, {
     set: (o, k, v)=>{
@@ -138,6 +124,18 @@ Object.defineProperty(this, "recordSetHistory", {
     }
 })
 
+//主人qq 必须是包含qq号的字符串
+if (typeof this.master !== "string")
+    this.master = ""
+Object.defineProperty(this, "isMaster", {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: ()=>{
+        return !this.data.user_id || (typeof this.master === "string" && this.master.includes(this.data.user_id))
+    }
+})
+
 // 钩子函数
 if (typeof this.beforeExec !== "function")
     this.beforeExec = ()=>{}
@@ -177,6 +175,11 @@ Object.defineProperty(this, "protected_properties", {
     writable: false,
     value: this.protected_properties
 })
-const isProtected = this.isProtected = (k)=>{
-    return this.protected_properties.includes(k)
-}
+Object.defineProperty(this, "isProtected", {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: ()=>{
+        return this.protected_properties.includes(k)
+    }
+})
