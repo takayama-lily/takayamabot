@@ -183,3 +183,17 @@ Object.defineProperty(this, "isProtected", {
         return this.protected_properties.includes(k)
     }
 })
+
+/*
+五个主要变量：
+● this.master ※主人qq列表(字符串，默认是被保护的)，使用this.isMaster()判断是否主人
+● this.data ※环境变量
+● this.database ※群数据库
+● this.set_history ※变量定义历史记录
+● this.protected_properties ※受保护的变量(只有master可以修改，this.isProtected()判断是被保护)
+
+三个事件函数(默认是被保护的，只有master可以修改)：
+● this.onEvents() ※接受所有qq事件
+● this.beforeExec(code) ※执行用户代码之前执行，code是用户代码(如果该函数中抛出未捕获的错误，则用户代码不会被不会执行)
+● this.afterExec(res) ※执行用户代码之后执行，res是用户代码执行结果(如果用户代码中抛出未捕获的错误，该函数不会被执行)
+*/
