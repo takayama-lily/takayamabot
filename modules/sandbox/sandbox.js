@@ -168,8 +168,8 @@ module.exports.setTimeout = (t)=>timeout=t
 module.exports.run = (code, isAdmin = false)=>{
     code = code.trim()
     let debug = ["\\","＼"].includes(code.substr(0, 1))
-    if (!isAdmin && code.match(/([^\w]|^)+(this|async|const){1}([^\w]|$)+/))
-        return debug ? "代码不要包含this、async、const关键字。" : undefined
+    if (!isAdmin && code.match(/([^\w]|^)+(this|async|const|let){1}([^\w]|$)+/))
+        return debug ? "代码不能包含this、async、const、let关键字。\n声明块级变量请使用var" : undefined
     if (debug)
         code = code.substr(1)
     code = code.replace(/(（|）|，|″|“|”|＝)/g, (s)=>{
@@ -182,11 +182,9 @@ module.exports.run = (code, isAdmin = false)=>{
         return String.fromCharCode(s.charCodeAt(0) - 65248)
     })
     try {
-        vm.runInContext(`checkBlack()`, context)
+        vm.runInContext(`this.beforeExec(${JSON.stringify(code)})`, context, {timeout: timeout})
         let res = vm.runInContext(code, context, {timeout: timeout})
-        if (!debug && vm.runInContext("isOff()", context) === true)
-            return
-        vm.runInContext(`checkFrequency()`, context)
+        vm.runInContext(`this.afterExec(${JSON.stringify(res)})`, context, {timeout: timeout})
         return res
     } catch(e) {
         if (debug) {
