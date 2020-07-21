@@ -13,7 +13,7 @@ const checkFrequency = ()=>{
     let uid = sandbox.getContext().data.user_id
     if (!uid)
         return
-    if (buckets.hasOwnProperty(uid) && Date.now() - buckets[uid].time > 50)
+    if (buckets.hasOwnProperty(uid) && Date.now() - buckets[uid].time > 300)
         delete buckets[uid]
     if (!buckets.hasOwnProperty(uid))
         buckets[uid] = {time: 0, cnt: 0}
