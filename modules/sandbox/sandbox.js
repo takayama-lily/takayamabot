@@ -35,7 +35,7 @@ context = new Proxy(context, {
         return Reflect.set(o, k, v)
     },
     defineProperty: (o, k, d)=>{
-        if (!init_finished)
+        if (!init_finished || o.isMaster())
             return Reflect.defineProperty(o, k, d)
         else 
             return false

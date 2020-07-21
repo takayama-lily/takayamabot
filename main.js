@@ -240,6 +240,7 @@ bot.on("message", async(data)=>{
         message = message.trim()
         sandbox.setEnv(data)
         let res = sandbox.run(message)
+        sandbox.setEnv({})
         if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
             return
         if (res === null && message === "null")

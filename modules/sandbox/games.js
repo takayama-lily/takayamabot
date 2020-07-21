@@ -60,7 +60,7 @@ chess_phases = [
 
 残局 = (index)=>{
 	if (index === undefined) {
-		return `当前记录了${chess_phases.length}个残局, 编号0~${chess_phases.length-1}, 开始残局输入: 残局(编号)`
+		return `当前记录了${chess_phases.length}个残局, 编号0~${chess_phases.length-1}, 开始残局输入: .残局 编号`
 	}
 	let gid = qun()
 	if (!gid) return "此命令只能在群里使用"
@@ -81,12 +81,12 @@ chess_phases = [
 	let chess = current_chesses[gid].chess
 	let step = current_chesses[gid].step
 	let str = ''
-	if (input === 1 || !chess.length) {
-		str += '※新的棋局开始了！红(帥)方先\n下棋方法是输入: 象棋("炮2平5")\n'
+	if (input == 1 || !chess.length) {
+		str += '※新的棋局开始了！红(帥)方先\n下棋方法是输入: .象棋 炮二平五\n'
 		create_chess(gid)
 	} else if (!input && chess.length > 0) {
 		let who = step % 2 ? '红(帥)' : '黑(將)'
-		str += `※当前轮到${who}方走，重开输入: 象棋(1)\n下棋方法是输入: 象棋("炮2平5")\n`
+		str += `※当前轮到${who}方走，重开输入: .象棋 1\n下棋方法是输入: .象棋 炮二平五\n`
 	} else if (typeof input === 'string' && chess.length) {
 		if (input === '仙人指路') input = '兵3进1'
 		input = input.trim().replace(/(進)/g, '进').replace(/(後)/g, '后')
@@ -278,7 +278,7 @@ chessss = (input = '')=>{
 	let current=step%2?'红(帥)方':'黑(將)方'
 	step++,current_chesses[gid].step++
 	let next=step%2?'红(帥)方':'黑(將)方'
-	str+=current+input+', '+next+'走。查看棋局输入: 象棋()'
+	str+=current+input+', '+next+'走。查看棋局输入: .象棋'
 	return str
 }
 
@@ -950,11 +950,11 @@ wiki=(title, content)=>{
 			if (i < knowledges.length - 20) break
 			res += `\n${i}. ${knowledges[i].title} (回答数:${knowledges[i].answers.length} 提问者:${knowledges[i].name})`
 		}
-		res += "\n※要查看问题内容和回答输入: wiki(编号)"
-		res += `\n※要发起提问输入: wiki("标题","内容")`
+		res += "\n※要查看问题内容和回答输入: .wiki 编号"
+		res += `\n※要发起提问输入: .wiki 标题 内容`
 		return res
 	}
-	if (typeof title === "number") {
+	if (!isNaN(title)) {
 		if (!knowledges[title])
 			return "问题编号不存在。"
 		else {
@@ -963,7 +963,7 @@ wiki=(title, content)=>{
 			if (content===undefined) {
 				question.views++
 				res += `※该问题由 ${question.name}(${protectQQ(question.qq)}) 于${time2string(question.time)}发起 (${question.views}次查看)`
-				res += `\n※要回答该问题输入: wiki(${title},"内容")`
+				res += `\n※要回答该问题输入: .wiki ${title} 内容`
 				res += `\n标题: ${question.title}`
 				res += `\n内容: ${question.content}`
 				for (let v of question.answers) {
@@ -980,13 +980,13 @@ wiki=(title, content)=>{
 			return res
 		}
 	}
-	if (typeof title === "string" && title) {
+	if (isNaN(title) && title) {
 		let question = {
 			qq: qq(), name: user(0), time: Date.now(), answers: [],
 			title: title.trim(), content : content?content.toString().trim():"rt", views: 0
 		}
 		knowledges.push(question)
-		return `问题已提交。要查看该问题输入: wiki(${knowledges.length - 1})`
+		return `问题已提交。要查看该问题输入: .wiki ${knowledges.length - 1}`
 	}
 }
 

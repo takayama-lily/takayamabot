@@ -158,16 +158,19 @@ module.exports = (bot)=>{
     bot.on("message", (data)=>{
         sandbox.setEnv(data)
         sandbox.run(`onEvents()`)
+        sandbox.setEnv({})
     })
     bot.on("notice", (data)=>{
         if (["group_admin","group_decrease","group_increase"].includes(data.notice_type))
             updateGroupCache(data.group_id)
         sandbox.setEnv(data)
         sandbox.run(`onEvents()`)
+        sandbox.setEnv({})
     })
     bot.on("request", (data)=>{
         sandbox.setEnv(data)
         sandbox.run(`onEvents()`)
+        sandbox.setEnv({})
     })
 
     // bot api
