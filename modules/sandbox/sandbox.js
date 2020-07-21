@@ -181,11 +181,15 @@ module.exports.run = (code)=>{
         return String.fromCharCode(s.charCodeAt(0) - 65248)
     })
     try {
-        vm.runInContext(`this.beforeExec(${JSON.stringify(code)})`, context, {timeout: timeout})
+        let code2 = vm.runInContext(`this.beforeExec(${JSON.stringify(code)})`, context, {timeout: timeout})
+        if (typeof code2 === "string")
+            code = code2
         let res = vm.runInContext(code, context, {timeout: timeout})
         if (res instanceof vm.runInContext("Promise", context))
             res = undefined
-        vm.runInContext(`this.afterExec(${JSON.stringify(res)})`, context, {timeout: timeout})
+        let res2 = vm.runInContext(`this.afterExec(${JSON.stringify(res)})`, context, {timeout: timeout})
+        if (typeof code2 !== "undefined")
+            res = res2
         return res
     } catch(e) {
         if (debug) {
