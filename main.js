@@ -251,7 +251,7 @@ bot.on("message", async(data)=>{
     }
 })
 
-require("./api_passon")(bot)
+require("./bridge")(bot)
 
 //开启ws服务器处理bot请求
 const ws = new WebSocket.Server({server})
