@@ -81,7 +81,7 @@ const fn = async(req)=>{
             tmp("bittert", "四"),
             tmp("bittert", "三")
         ])
-        resolve({4: result1, 3: result2})
+        return {4: result1, 3: result2}
     }
     
     //github webhock
