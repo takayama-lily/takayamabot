@@ -12,31 +12,16 @@ const db = new sqlite3.Database('/var/www/db/eventv2.db')
 
 const commands = {
     "qh": async function(param) {
-        if (!param.length)
-            return "需要加上玩家ID。"
-        if (isNaN(param))
-            return '暂时无法使用昵称，只能使用ID来找到玩家。'
-        return await mjutil.shuibiao(param)
-    },
-    "qhcn": async function(param) {
-        return await mjutil.shuibiao(param)
-    },
-    "qhjp": async function(param) {
-        if (!param.length)
-            return "需要加上玩家ID。"
-        if (isNaN(param))
-            return '暂时无法使用昵称，只能使用ID来找到玩家。'
-        else
-            return await mjutil.shuibiao(param, true)
+        return '请使用：.雀魂 ID'
     },
     "bgm": async function(param) {
-        return "该指令已不可用。请使用：新番()"
+        return "请使用：.新番"
     },
     "anime": async function(param) {
-        return `该指令已不可用。请使用：动漫("公主连结")`
+        return `请使用：.动漫 公主连结`
     },
     "yq": async function(param) {
-        return `该指令已不可用。请使用：疫情("美国")`
+        return `请使用：.疫情 美国`
     },
     "pl": async function(param) {
         param = param.trim()
