@@ -213,7 +213,6 @@ module.exports.setEnv = setEnv
 const include = (name, object)=>{
     context[name] = object
     vm.runInContext(`const ${name} = this.${name}
-delete this.${name}
 if (!(${name} instanceof Object) && !(${name} instanceof Function))
     Object.setPrototypeOf(${name}, typeof ${name} === "function" ? Function : {})
 for (let k in ${name}) {
