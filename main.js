@@ -77,14 +77,11 @@ const fn = async(req)=>{
                 req.end()
             })
         }
-        return new Promise(async(resolve)=>{
-            let result = ""
-            const [result1, result2] = await Promise.all([
-                tmp("bittert", "四"),
-                tmp("bittert", "三")
-            ])
-            resolve({4: result1, 3: result2})
-        })
+        const [result1, result2] = await Promise.all([
+            tmp("bittert", "四"),
+            tmp("bittert", "三")
+        ])
+        resolve({4: result1, 3: result2})
     }
     
     //github webhock
