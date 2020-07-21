@@ -45,12 +45,15 @@
                         <li>这是一个开放式的可编程机器人，每个人都可以开发自己想要的功能。</li>
                         <li>环境会将每条QQ消息当做JavaScript代码尝试执行，有结果则输出，无结果或出错则丢弃。</li>
                         <li>环境构建在NodeJS之上，完整支持ECMAScript6。</li>
+                        <li>不要设置敏感内容和违规内容。</li>
+                        <li>禁止恶意攻击、恶意套娃。</li>
                     </ul>
                     <h6 class="font-weight-bold">限制</h6>
                     <ul>
-                        <li>无法使用浏览器特有的函数和API。</li>
+                        <li>无法修改JS内置对象。不包含浏览器API和Node API。</li>
                         <li>由于安全原因，暂时无法使用<code>this</code>、<code>async</code>、<code>const</code>、<code>let</code>四个关键字。</li>
                         <li>无法使用<code>eval</code>和<code>Promise</code>。</li>
+                        <li>类的继承关系无法持久化保存，随时可能丢失。</li>
                     </ul>
                     <h6 class="font-weight-bold">调试</h6>
                     <ul>
@@ -59,8 +62,7 @@
                     <h6 class="font-weight-bold">其它</h6>
                     <ul>
                         <li>由于输入习惯问题，以下全角字符会被自动转为半角：<code>（）“”，＝</code></li>
-                        <li>可以使用<a href="https://docs.cqp.im/manual/cqcode/" target="_blank">CQ码</a>字符串定义图片等消息。</li>
-                        <li>类的继承关系(自定义原型链)无法持久化保存，随时可能丢失。</li>
+                        <li>可以使用<a href="https://docs.cqp.im/manual/cqcode/" target="_blank">CQ码</a>定义图片等消息。</li>
                     </ul>
                 </div>
                 <div id="function" class="container tab-pane fade"><br>
@@ -372,11 +374,6 @@
                     <li>global | globalThis | eval | Promise | console | WebAssembly</li>
                 </div>
                 <div id="end" class="container tab-pane fade"><br>
-                    <h6 class="font-weight-bold">声明事项</h6>
-                    <ul>
-                        <li>不要设置敏感违规内容。</li>
-                        <li>禁止恶意攻击、恶意套娃。</li>
-                    </ul>
                     <h6 class="font-weight-bold">开发交流群</h6>
                     <ul>
                         <li><a target="_blank" href="https://shang.qq.com/wpa/qunwpa?idkey=24d69cea1488899f826db2956e9d7bfd6944bb33a585d260ffede4727af5bee7">小兔子俱乐部</a>（892703008）</li>
