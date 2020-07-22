@@ -185,7 +185,7 @@ bot.on("message", async(data)=>{
         let split = message.substr(1).trim().split(" ")
         let command = split.shift()
         let param = split.join(" ")
-        if (command === "request" && param.length) {
+        if (isMaster(uid) && command === "request" && param.length) {
             let params = param.split(" ")
             let action = params.shift()
             if (typeof bot[action] === "function") {
@@ -213,10 +213,6 @@ bot.on("message", async(data)=>{
             }
             return
         }
-        if (command === "龙王")
-            param = gid
-        if (command === "发言")
-            param = [gid, uid]
         if (commands.hasOwnProperty(command)) {
             return reply(await commands[command](param))
         }

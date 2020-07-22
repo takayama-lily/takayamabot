@@ -6,178 +6,27 @@ const bgm = require("./modules/bangumi/bangumi")
 const at = (qq)=>`[CQ:at,qq=${qq}]`
 const buildImage = (url)=>`[CQ:image,file=${encodeURI(url)}]`
 
-// CQ数据库初始化
-const sqlite3 = require('sqlite3')
-const db = new sqlite3.Database('/var/www/db/eventv2.db')
-
 const commands = {
     "qh": async function(param) {
-        return '请使用：.雀魂 ID'
+        return '不再支持"-"前缀，请使用：.雀魂 昵称'
     },
     "bgm": async function(param) {
-        return "请使用：.新番"
+        return "不再支持"-"前缀，请使用：.新番"
     },
     "anime": async function(param) {
-        return `请使用：.动漫 公主连结`
+        return `不再支持"-"前缀，请使用如：.动漫 公主连结`
     },
     "yq": async function(param) {
-        return `请使用：.疫情 美国`
+        return `不再支持"-"前缀，请使用：.疫情 美国`
     },
     "pl": async function(param) {
-        param = param.trim()
-        if (!param) {
-            let s = `-----牌理使用方法-----
-自摸输入: -pl 111m234p567s1122z2z
-栄和输入: -pl 111m234p567s1122z+2z
-※mpsz=萬筒索字 1-7z=東南西北白發中 0=赤
-※未和牌的时候会自动计算向听数牌理
-※查看高级用法输入: -pl 高级`
-            return s
-        }
-        if (param === '高级') {
-            let s = `-----牌理高级用法-----
-● 副露和dora输入: -pl 33m+456p99s6666z777z+d56z
-※456p順子、9s暗槓、6z明槓、7z明刻 / 5z6z为dora
-● 付属役输入: -pl 11123456789999m+rih21
-※立直一発海底(南場東家)
-● 付属役一覧
-t=天和/地和/人和
-w=w立直  l(r)=立直  y(i)=一発
-h=海底/河底  k=槍槓/嶺上
-o=古役有効 (目前只有人和,大七星)
-● 場風自風設定 (default: 東場南家)
-11=東場東家  12=東場南家  13=東場西家  14=東場北家
-21=南場東家  22=南場南家  23=南場西家  24=南場北家
------Code Github-----
-https://github.com/takayama-lily/riichi`
-            return s
-        }
-        const mjhai = {
-            "1m": "🀇", "2m": "🀈", "3m": "🀉", "4m": "🀊", "5m": "🀋", "6m": "🀌", "7m": "🀍", "8m": "🀎", "9m": "🀏", "0m": "🀋", 
-            "1p": "🀙", "2p": "🀚", "3p": "🀛", "4p": "🀜", "5p": "🀝", "6p": "🀞", "7p": "🀟", "8p": "🀠", "9p": "🀡", "0p": "🀝", 
-            "1s": "🀐", "2s": "🀑", "3s": "🀒", "4s": "🀓", "5s": "🀔", "6s": "🀕", "7s": "🀖", "8s": "🀗", "9s": "🀘", "0s": "🀔", 
-            "1z": "🀀", "2z": "🀁", "3z": "🀂", "4z": "🀃", "5z": "🀆", "6z": "🀅", "7z": "🀄"
-        }
-        try {
-            let beachmark = Date.now()
-            let res = new MJ(param).calc()
-            let msg = param + ` (耗时${Date.now()-beachmark}ms)\n`
-            if (res.error) {
-                return param + '\n手牌数量不正确或输入有误'
-            } else if (!res.isAgari) {
-                let s = ''
-                if (res.hairi7and13.now !== -2 && res.hairi7and13.now < res.hairi.now)
-                    res.hairi = res.hairi7and13
-                if (!res.hairi.now) {
-                    s += '聴牌'
-                } else {
-                    s += res.hairi.now + '向聴'
-                }
-                if (res.hairi.hasOwnProperty('wait')) {
-                    s += ' 摸'
-                    let c = 0
-                    for (let i in res.hairi.wait) {
-                        s += mjhai[i]
-                        c += parseInt(res.hairi.wait[i])
-                    }
-                    s += `共${c}枚`
-                } else {
-                    for (let i in res.hairi) {
-                        if (i !== 'now' && Object.keys(res.hairi[i]).length > 0) {
-                            s += '\n打' + mjhai[i] + ' 摸'
-                            let c = 0
-                            for (let ii in res.hairi[i]) {
-                                s += mjhai[ii]
-                                c += parseInt(res.hairi[i][ii])
-                            }
-                            s += `共${c}枚`
-                        }
-                    }
-                }
-                return msg + s
-            } else {
-                let s = ''
-                for (let k in res.yaku)
-                    s += k + ' ' + res.yaku[k] + '\n'
-                s += res.text
-                if (!res.ten)
-                    s = '無役'
-                return msg + s
-            }
-        } catch(e) {
-            return param + '\n手牌数量不正确或输入有误'
-        }
-    },
-    "query": async(param)=>{
-        let beachmark = Date.now()
-        return new Promise((resolve, reject)=>{
-            db.get(param, (err, row)=>{
-                beachmark = Date.now() - beachmark
-                if (err)
-                    resolve(err.message)
-                else if (!row)
-                    resolve("没有结果(" + beachmark + "ms)")
-                else
-                    resolve(JSON.stringify(row) + `\n(Beachmark: ${beachmark}ms)`)
-            })
-        })
+        return `不再支持"-"前缀，请使用：.牌理 或 /牌理`
     },
     "龙王": async(param)=>{
-        let gid = param
-        if (!gid) return "请在群里使用该命令"
-        let offset = new Date().getTimezoneOffset() * 60000
-        let today = (new Date(new Date(Date.now() + offset + 8 * 3600000).toDateString()).getTime() - offset - 8 * 3600000) / 1000
-        let yesterday = today - 86400
-        let sql1 = `select count(1) as cnt,account from event
-            where type=2 and \`group\`='qq/group/${gid}' and account!='' and time>=${yesterday} and time<${today}
-            group by account order by cnt desc limit 1`
-        let sql2 = `select count(1) as cnt,account from event
-            where type=2 and \`group\`='qq/group/${gid}' and account!='' and time>=${today}
-            group by account order by cnt desc limit 1`
-        let [str1, str2] = await Promise.all([
-            new Promise((resolve, reject)=>{
-                db.get(sql1, (err, row)=>{
-                    if (!row)
-                        resolve("昨日没有记录")
-                    else
-                        resolve(`昨天本群发言最多的是${at(row.account.split("/").pop())}(${row.cnt}条)`)
-                })
-            }),
-            new Promise((resolve, reject)=>{
-                db.get(sql2, (err, row)=>{
-                    if (!row)
-                        resolve("今日没有记录")
-                    else
-                        resolve(`今天截至目前最多的是${at(row.account.split("/").pop())}(${row.cnt}条)`)
-                })
-            }),
-        ])
-        return str1 + "\n" + str2
+        return `不再支持"-"前缀，请使用：.龙王 或 /龙王`
     },
     "发言": async(param)=>{
-        let gid = param[0]
-        let uid = param[1]
-        if (!gid) return "请在群里使用该命令"
-        let offset = new Date().getTimezoneOffset() * 60000
-        let today = (new Date(new Date(Date.now() + offset + 8 * 3600000).toDateString()).getTime() - offset - 8 * 3600000) / 1000
-        let yesterday = today - 86400
-        let sql1 = `select count(1) as cnt from event
-            where type=2 and \`group\`='qq/group/${gid}' and account='qq/user/${uid}' and time>=${yesterday} and time<${today}`
-        let sql2 = `select count(1) as cnt from event
-            where type=2 and \`group\`='qq/group/${gid}' and account='qq/user/${uid}' and time>=${today}`
-        let [str1, str2] = await Promise.all([
-            new Promise((resolve, reject)=>{
-                db.get(sql1, (err, row)=>{
-                    resolve(` 昨天你在本群发言${row.cnt}条`)
-                })
-            }),
-            new Promise((resolve, reject)=>{
-                db.get(sql2, (err, row)=>{
-                    resolve(`今天截至目前你在本群发言${row.cnt}条`)
-                })
-            }),
-        ])
-        return at(uid) +str1 + "\n" + str2
+        return `不再支持"-"前缀，请使用：.发言 或 /发言`
     },
     "友人": async(param)=>{
         if (!param)
