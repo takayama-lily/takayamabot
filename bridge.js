@@ -3,10 +3,18 @@ const https = require("https")
 const crypto = require("crypto")
 const sandbox = require("./modules/sandbox/sandbox")
 
+// CQ数据库初始化
+// const sqlite3 = require('sqlite3')
+// const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
+
 const $ = sandbox.run(`new String(\`这是一个云JavaScript环境。聊天窗口就是控制台。
 该文档可能需要一定的编程基础才能充分理解。
 该文档默认你会使用JavaScript, 或其他类似语言。
 https://takayama-lily.github.io/takayamabot/static/bot.html\`)`)
+sandbox.include("向听", require("syanten"))
+sandbox.include("MJ", require("riichi"))
+
+const getGid = ()=>sandbox.getContext().data.group_id
 
 const buckets = {}
 const checkFrequency = ()=>{
@@ -23,9 +31,29 @@ const checkFrequency = ()=>{
     ++buckets[uid].cnt
 }
 
-const getGid = ()=>sandbox.getContext().data.group_id
-
-sandbox.include("向听", require("syanten"))
+// const query = (sql, callback)=>{
+//     checkFrequency()
+//     if (typeof sql !== "string")
+//         sandbox.throw("TypeError", "The first param must be a string")
+//     if (typeof callback !== "function")
+//         sandbox.throw("TypeError", "The second param must be a function")
+//     let env = sandbox.getContext().data
+//     let cb = (data)=>{
+//         sandbox.setEnv(env)
+//         let function_name = "tmp_query_"+Date.now()
+//         sandbox.getContext()[function_name] = callback
+//         sandbox.run(`${function_name}(${JSON.stringify(data)})`)
+//         sandbox.run(`delete ${function_name}`)
+//         sandbox.setEnv({})
+//     }
+//     db.get(sql, (err, row)=>{
+//         if (err)
+//             cb(JSON.stringify(err))
+//         else
+//             cb(JSON.stringify(row))
+//     })
+// }
+// sandbox.include("query", query)
 
 const set_timeout_queue = []
 sandbox.include("setTimeout", (fn, timeout = 1000, argv = [])=>{
@@ -43,10 +71,11 @@ sandbox.include("setTimeout", (fn, timeout = 1000, argv = [])=>{
         set_timeout_queue.push(key)
     let cb = ()=>{
         sandbox.setEnv(env)
-        let function_name = "tmp"+Date.now()
+        let function_name = "tmp_timeout_"+Date.now()
         sandbox.getContext()[function_name] = fn
         sandbox.run(`${function_name}.apply(null, ${JSON.stringify(argv)})`)
         sandbox.run(`delete ${function_name}`)
+        sandbox.setEnv({})
         set_timeout_queue.splice(set_timeout_queue.indexOf(key), 1)
     }
     setTimeout(cb, timeout)
@@ -62,10 +91,11 @@ const fetch = (url, callback = ()=>{}, headers = null)=>{
     let env = sandbox.getContext().data
     let cb = (data)=>{
         sandbox.setEnv(env)
-        let function_name = "tmp"+Date.now()
+        let function_name = "tmp_fetch_"+Date.now()
         sandbox.getContext()[function_name] = callback
         sandbox.run(`${function_name}(${JSON.stringify(data)})`)
         sandbox.run(`delete ${function_name}`)
+        sandbox.setEnv({})
     }
     url = url.trim()
     let protocol = url.substr(0, 5) === "https" ? https : http
