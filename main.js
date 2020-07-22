@@ -171,7 +171,7 @@ bot.on("notice.group_ban.ban", (data)=>{
 })
 
 //固定指令触发前缀
-const prefix_list = ["-","/","?","？","！","－"]
+const prefix_list = ["-"]
 bot.on("message", async(data)=>{
     let me = data.self_id
     let uid = data.user_id
