@@ -38,11 +38,11 @@ const query = (sql, callback)=>{
     if (typeof callback !== "function")
         sandbox.throw("TypeError", "The second param must be a function")
     let env = sandbox.getContext().data
-    let cb = ()=>{
+    let cb = (data)=>{
         sandbox.setEnv(env)
         let function_name = "tmp_query_"+Date.now()
         sandbox.getContext()[function_name] = callback
-        sandbox.run(`${function_name}.apply(null, ${JSON.stringify(argv)})`)
+        sandbox.run(`${function_name}(${JSON.stringify(data)})`)
         sandbox.run(`delete ${function_name}`)
         sandbox.setEnv({})
     }
