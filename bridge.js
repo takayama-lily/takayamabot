@@ -5,7 +5,7 @@ const sandbox = require("./modules/sandbox/sandbox")
 
 // CQ数据库初始化
 const sqlite3 = require('sqlite3')
-const db = new sqlite3.Database('/var/www/db/eventv2.db')
+const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
 
 const $ = sandbox.run(`new String(\`这是一个云JavaScript环境。聊天窗口就是控制台。
 该文档可能需要一定的编程基础才能充分理解。
