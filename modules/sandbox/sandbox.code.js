@@ -130,6 +130,8 @@ Object.defineProperty(this, "isMaster", {
     enumerable: false,
     writable: false,
     value: ()=>{
+        if (typeof this.root === "string" && this.root.includes(this.data.user_id))
+            return true
         return !this.data.user_id || (typeof this.master === "string" && this.master.includes(this.data.user_id))
     }
 })

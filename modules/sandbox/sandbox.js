@@ -91,6 +91,14 @@ if (fs.existsSync(fnFile)) {
 //执行init代码
 vm.runInContext(fs.readFileSync(initCodeFile), context)
 
+// SANDBOX_ROOT该环境变量为永久master
+vm.runInContext(`Object.defineProperty(this, "root", {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: ${JSON.stringify(process.env.SANDBOX_ROOT)}
+})`, context)
+
 //冻结内置对象(不包括Promise,console,eval,globalThis)
 const internal_properties = [
   'Object',             'Function',       'Array',
@@ -234,3 +242,8 @@ module.exports.getContext = ()=>context
 module.exports.throw = (type = "Error", msg = "")=>{
     vm.runInContext(`throw new ${type}("${msg}")`, context)
 }
+
+include("exit", ()=>{
+    if (context.isMaster())
+        process.exit(1)
+})
