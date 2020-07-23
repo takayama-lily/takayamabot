@@ -7,7 +7,7 @@ const sandbox = require("./modules/sandbox/sandbox")
 const sqlite3 = require('sqlite3')
 const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
 
-const $ = sandbox.run(`new String(\`这是一个云JavaScript环境。聊天窗口就是控制台。
+const $ = sandbox.exec(`new String(\`这是一个云JavaScript环境。聊天窗口就是控制台。
 该文档可能需要一定的编程基础才能充分理解。
 该文档默认你会使用JavaScript, 或其他类似语言。
 https://takayama-lily.github.io/takayamabot/static/bot.html\`)`)

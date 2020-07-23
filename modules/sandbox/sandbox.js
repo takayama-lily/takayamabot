@@ -198,6 +198,7 @@ module.exports.run = (code)=>{
         }
     }
 }
+module.exports.exec = (code)=>vm.runInContext(code, context)
 
 //设置环境变量
 const setEnv = (env = {})=>{
