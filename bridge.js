@@ -11,7 +11,13 @@ const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
 const $ = sandbox.exec(`new String(\`这是一个云JavaScript环境。聊天窗口就是控制台。
 该文档可能需要一定的编程基础才能充分理解。
 该文档默认你会使用JavaScript, 或其他类似语言。
-https://takayama-lily.github.io/takayamabot/static/bot.html\`)`)
+https://takayama-lily.github.io/takayamabot/static/bot.html
+--------------------
+①尝试实现一个自定义功能, 输入如下代码：
+hello = function() {
+    return "world"
+}
+②你定义了一个叫hello的功能。现在试着输入：.hello 或者 /hello\`)`)
 
 const getGid = ()=>sandbox.getContext().data.group_id
 
