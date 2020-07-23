@@ -197,7 +197,11 @@ module.exports.run = (code)=>{
         }
     }
 }
-module.exports.exec = (code)=>vm.runInContext(code, context)
+module.exports.exec = (code)=>{
+    try {
+        return vm.runInContext(code, context, {timeout: timeout})
+    } catch (e) {}
+}
 
 //设置环境变量
 const setEnv = (env = {})=>{

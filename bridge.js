@@ -42,8 +42,8 @@ const query = (sql, callback)=>{
         sandbox.setEnv(env)
         let function_name = "tmp_query_"+Date.now()
         sandbox.getContext()[function_name] = callback
-        sandbox.run(`${function_name}(${JSON.stringify(data)})`)
-        sandbox.run(`delete ${function_name}`)
+        sandbox.exec(`${function_name}(${JSON.stringify(data)})`)
+        sandbox.exec(`delete ${function_name}`)
     }
     db.get(sql, (err, row)=>{
         if (err)
@@ -72,8 +72,8 @@ sandbox.include("setTimeout", (fn, timeout = 1000, argv = [])=>{
         sandbox.setEnv(env)
         let function_name = "tmp_timeout_"+Date.now()
         sandbox.getContext()[function_name] = fn
-        sandbox.run(`${function_name}.apply(null, ${JSON.stringify(argv)})`)
-        sandbox.run(`delete ${function_name}`)
+        sandbox.exec(`${function_name}.apply(null, ${JSON.stringify(argv)})`)
+        sandbox.exec(`delete ${function_name}`)
         set_timeout_queue.splice(set_timeout_queue.indexOf(key), 1)
     }
     setTimeout(cb, timeout)
@@ -91,8 +91,8 @@ const fetch = (url, callback = ()=>{}, headers = null)=>{
         sandbox.setEnv(env)
         let function_name = "tmp_fetch_"+Date.now()
         sandbox.getContext()[function_name] = callback
-        sandbox.run(`${function_name}(${JSON.stringify(data)})`)
-        sandbox.run(`delete ${function_name}`)
+        sandbox.exec(`${function_name}(${JSON.stringify(data)})`)
+        sandbox.exec(`delete ${function_name}`)
     }
     url = url.trim()
     let protocol = url.substr(0, 5) === "https" ? https : http
@@ -179,23 +179,23 @@ module.exports = (bot)=>{
 
     bot.on("connection", ()=>{
         initQQData()
-        sandbox.run(`afterInit()`)
+        sandbox.exec(`this.afterInit()`)
     })
 
     //传递给沙盒的事件
     bot.on("message", (data)=>{
         sandbox.setEnv(data)
-        sandbox.run(`onEvents()`)
+        sandbox.exec(`this.onEvents()`)
     })
     bot.on("notice", (data)=>{
         if (["group_admin","group_decrease","group_increase"].includes(data.notice_type))
             updateGroupCache(data.group_id)
         sandbox.setEnv(data)
-        sandbox.run(`onEvents()`)
+        sandbox.exec(`this.onEvents()`)
     })
     bot.on("request", (data)=>{
         sandbox.setEnv(data)
-        sandbox.run(`onEvents()`)
+        sandbox.exec(`this.onEvents()`)
     })
 
     // bot api
