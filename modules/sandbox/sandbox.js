@@ -1,8 +1,6 @@
 const fs = require("fs")
 const path = require("path")
 const vm = require("vm")
-const crypto = require("crypto")
-const querystring = require("querystring")
 const dataPath = path.join(__dirname, "data")
 const contextFile = path.join(dataPath, "context")
 const fnFile = path.join(dataPath, "context.fn")
@@ -236,18 +234,3 @@ module.exports.getContext = ()=>context
 module.exports.throw = (type = "Error", msg = "")=>{
     vm.runInContext(`throw new ${type}("${msg}")`, context)
 }
-
-//导入一些工具函数(hash,hmac,querystring)
-include("hash", (algo, data)=>{
-    return crypto.createHash(algo).update(data.toString()).digest("hex")
-})
-include("hmac", (algo, key, data)=>{
-    return crypto.createHmac(algo, key.toString()).update(data.toString()).digest("hex")
-})
-include("querystring", querystring)
-include("base64Encode", (s)=>{
-    return Buffer.from(s.toString(), "utf-8").toString('base64')
-})
-include("base64Decode", (s)=>{
-    return Buffer.from(s.toString(), "base64").toString('utf-8')
-})

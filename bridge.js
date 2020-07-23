@@ -1,6 +1,7 @@
 const http = require("http")
 const https = require("https")
 const crypto = require("crypto")
+const querystring = require("querystring")
 const sandbox = require("./modules/sandbox/sandbox")
 
 // CQ数据库初始化
@@ -11,8 +12,6 @@ const $ = sandbox.exec(`new String(\`这是一个云JavaScript环境。聊天窗
 该文档可能需要一定的编程基础才能充分理解。
 该文档默认你会使用JavaScript, 或其他类似语言。
 https://takayama-lily.github.io/takayamabot/static/bot.html\`)`)
-sandbox.include("向听", require("syanten"))
-sandbox.include("MJ", require("riichi"))
 
 const getGid = ()=>sandbox.getContext().data.group_id
 
@@ -125,6 +124,23 @@ const fetch = (url, callback = ()=>{}, headers = null)=>{
 sandbox.include("fetch", fetch)
 $.ajax = fetch
 $.get = fetch
+
+//导入一些工具函数(hash,hmac,querystring)
+sandbox.include("向听", require("syanten"))
+sandbox.include("MJ", require("riichi"))
+sandbox.include("hash", (algo, data)=>{
+    return crypto.createHash(algo).update(data.toString()).digest("hex")
+})
+sandbox.include("hmac", (algo, key, data)=>{
+    return crypto.createHmac(algo, key.toString()).update(data.toString()).digest("hex")
+})
+sandbox.include("querystring", querystring)
+sandbox.include("base64Encode", (s)=>{
+    return Buffer.from(s.toString(), "utf-8").toString('base64')
+})
+sandbox.include("base64Decode", (s)=>{
+    return Buffer.from(s.toString(), "base64").toString('utf-8')
+})
 
 module.exports = (bot)=>{
 
