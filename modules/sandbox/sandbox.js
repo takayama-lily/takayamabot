@@ -121,6 +121,7 @@ this.Object.freeze(this.${v}.prototype)
 const ${v} = this.${v}`, context)
 }
 init_finished = true
+// vm.runInContext("this.afterInit()", context)
 
 //定时持久化context(60分钟)
 let fn
