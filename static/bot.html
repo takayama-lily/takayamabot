@@ -51,8 +51,8 @@
                     <h6 class="font-weight-bold">限制</h6>
                     <ul>
                         <li>无法修改JS内置对象。不包含浏览器API和Node API。</li>
-                        <li>由于安全原因，暂时无法使用<code>this</code>、<code>async</code>、<code>const</code>、<code>let</code>四个关键字。</li>
-                        <li>无法使用<code>eval</code>和<code>Promise</code>。</li>
+                        <li>非白名单用户暂时无法使用<code>this</code>、<code>async</code>、<code>const</code>、<code>let</code>、<code>Promise</code>关键字。</li>
+                        <li>无法使用<code>eval</code>和<code>new Function()</code>。</li>
                         <li>类的继承关系无法持久化保存，随时可能丢失。</li>
                     </ul>
                     <h6 class="font-weight-bold">调试</h6>
@@ -125,16 +125,16 @@
                                 <td>当前群的数据库</td>
                             </tr>
                             <tr>
-                                <td>at(uid=undefined)</td>
-                                <td><li>uid: number|string ※QQ号或一个at</li></td>
+                                <td>at(s=undefined)</td>
+                                <td><li>s: number|string ※QQ号或一个@</li></td>
                                 <td>string</td>
                                 <td>at一个人(CQ码)，不传参数则at自己</td>
                             </tr>
                             <tr>
-                                <td>qq()</td>
-                                <td>无</td>
+                                <td>qq(s=undefined)</td>
+                                <td><li>s: number|string ※QQ号或一个@</li></td>
                                 <td>number</td>
-                                <td>获得QQ号</td>
+                                <td>获得QQ号(默认自己)</td>
                             </tr>
                             <tr>
                                 <td>qun()</td>
@@ -147,6 +147,18 @@
                                 <td><li>card: boolean</li></td>
                                 <td>string</td>
                                 <td>获得昵称(card为真优先获取群名片)</td>
+                            </tr>
+                            <tr>
+                                <td>isAdmin(s=undefined)</td>
+                                <td><li>s: number|string ※QQ号或一个@</li></td>
+                                <td>boolean</td>
+                                <td>判断是否是管理员或群主(默认判断自己)</td>
+                            </tr>
+                            <tr>
+                                <td>isOwner(s=undefined)</td>
+                                <td><li>s: number|string ※QQ号或一个@</li></td>
+                                <td>boolean</td>
+                                <td>判断是否是群主(默认判断自己)</td>
                             </tr>
                             <tr>
                                 <td>random(min, max)</td>
@@ -164,16 +176,16 @@
                                 <td>时间戳转换为一个容易理解的时间</td>
                             </tr>
                             <tr>
-                                <td>parseQQ(s)</td>
-                                <td><li>s: number|string ※QQ号或一个at</li></td>
-                                <td>number</td>
-                                <td>从at中解析出QQ号</td>
+                                <td>protectQQ(s)</td>
+                                <td><li>s: number|string ※QQ号或一个@</li></td>
+                                <td>string</td>
+                                <td>隐藏部分QQ号或群号起到保护作用</td>
                             </tr>
                             <tr>
-                                <td>protectQQ(s)</td>
-                                <td><li>s: number|string ※QQ号或一个at</li></td>
-                                <td>string</td>
-                                <td>隐藏部分QQ号起到保护作用</td>
+                                <td>seed(s=undefined)</td>
+                                <td><li>s: number|string ※QQ号或一个@</li></td>
+                                <td>number</td>
+                                <td>根据QQ号和日期生成的种子随机数(默认自己)</td>
                             </tr>
                             <tr>
                                 <td>base64Encode(data)</td>
@@ -376,9 +388,10 @@
                     <li>Error | RangeError | ReferenceError | SyntaxError | TypeError | URIError</li>
                     <li>ArrayBuffer | SharedArrayBuffer | Atomics | DataView | Uint8ClampedArray</li>
                     <li>Uint8Array | Int8Array | Uint16Array | Int16Array | Uint32Array | Int32Array | Float32Array | Float64Array | BigUint64Array | BigInt64Array</li>
+                    <li>Promise (白名单用户可用)</li>
                     <br>
                     <h6 class="font-weight-bold">不可用的</h6>
-                    <li>global | globalThis | eval | Promise | console | WebAssembly</li>
+                    <li>global | globalThis | eval | console | WebAssembly</li>
                 </div>
                 <div id="end" class="container tab-pane fade"><br>
                     <h6 class="font-weight-bold">开发交流群</h6>
