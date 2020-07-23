@@ -8,7 +8,6 @@ const spawn = require("child_process")
 const cheerio = require("cheerio")
 process.on("uncaughtException", (e)=>{
     fs.appendFileSync("err.log", Date() + " " + e.stack + "\n")
-    process.exit(1)
 })
 process.on("unhandledRejection", (reason, promise)=>{
     fs.appendFileSync("err.log", Date() + " Unhandled Rejection at:" + JSON.stringify(promise) + "reason:" + JSON.stringify(reason) + "\n")
