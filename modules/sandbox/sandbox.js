@@ -244,6 +244,9 @@ module.exports.throw = (type = "Error", msg = "")=>{
 }
 
 include("exit", ()=>{
-    if (context.isMaster())
-        process.exit(1)
+    if (context.isMaster()) {
+        setTimeout(process.exit, 0)
+        return true
+    } else
+        vm.runInContext(`throw error403`, context)
 })
