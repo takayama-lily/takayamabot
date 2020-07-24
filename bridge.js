@@ -247,7 +247,7 @@ module.exports = (bot)=>{
             if (["number","boolean"].includes(typeof res) && res.toString() === message)
                 echo = false
             if (echo)
-                reply(res)
+                bot.reply(data, res, {at_sender: false})
         }
         sandbox.exec(`this.onEvents()`)
     })
