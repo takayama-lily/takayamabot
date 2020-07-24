@@ -2,21 +2,6 @@ const http = require("http")
 const https = require("https")
 const sandbox = require("./modules/sandbox/sandbox")
 
-//防止沙盒逃逸
-Function.prototype.view = Function.prototype.toString
-Function.prototype.constructor = new Proxy(Function, {
-    apply: ()=>{
-        throw Error("想跟妾身斗，汝还差得远呢。")
-    },
-    constructor: ()=>{
-        throw Error("想跟妾身斗，汝还差得远呢。")
-    }
-})
-Object.freeze(Object)
-Object.freeze(Object.prototype)
-Object.freeze(Function)
-// Object.freeze(Function.prototype)
-
 // CQ数据库初始化
 const sqlite3 = require('sqlite3')
 const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
@@ -140,20 +125,34 @@ $.get = fetch
 //导入一些工具模块
 sandbox.include("向听", require("syanten"))
 sandbox.include("MJ", require("riichi"))
+sandbox.include("cheerio", require("cheerio"))
+sandbox.include("moment", require("moment"))
 sandbox.include("assert", require("assert"))
 sandbox.include("crypto", require("crypto"))
 sandbox.include("querystring", require("querystring"))
-
 sandbox.include("path", require("path"))
 sandbox.include("url", require("url"))
 sandbox.include("string_decoder", require("string_decoder"))
 sandbox.include("util", require("util"))
-
 sandbox.include("os", require("os"))
 sandbox.include("vm", require("vm"))
-
 sandbox.include("Buffer", Buffer)
 // sandbox.include("Events", require("events"))
+
+//防止沙盒逃逸
+Function.prototype.view = Function.prototype.toString
+Function.prototype.constructor = new Proxy(Function, {
+    apply: ()=>{
+        throw Error("想跟妾身斗，汝还差得远呢。")
+    },
+    constructor: ()=>{
+        throw Error("想跟妾身斗，汝还差得远呢。")
+    }
+})
+Object.freeze(Object)
+Object.freeze(Object.prototype)
+Object.freeze(Function)
+Object.freeze(Function.prototype)
 
 module.exports = (bot)=>{
 
