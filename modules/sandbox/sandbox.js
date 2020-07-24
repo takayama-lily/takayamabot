@@ -206,9 +206,8 @@ module.exports.exec = (code)=>{
 //设置环境变量
 const setEnv = (env = {})=>{
     set_env_allowed = true
-    vm.runInContext(`this.data=` + JSON.stringify(env), context)
-    vm.runInContext(`if (typeof $ === "object" && $.getGroupInfo()) this.data.group_name=$.getGroupInfo().group_name`, context)
-    vm.runInContext(`Object.freeze(this.data);Object.freeze(this.data.sender);Object.freeze(this.data.anonymous);`, context)
+    vm.runInContext(`this.data=${JSON.stringify(env)}
+contextify(this.data)`, context)
     set_env_allowed = false
 }
 module.exports.setEnv = setEnv

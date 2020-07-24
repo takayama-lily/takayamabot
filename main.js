@@ -12,15 +12,9 @@ process.on("unhandledRejection", (reason, promise)=>{
 const server = http.createServer(require("./web_hooks"))
 
 const QQPlugin = require("./modules/qqplugin/cqhttp")
-const sandbox = require("./modules/sandbox/sandbox")
 const commands = require("./commands")
-const owner = 372914165
-const master = []
 const isMaster = (uid)=>{
-    return uid === owner || master.includes(uid)
-}
-const reboot = ()=>{
-    process.exit(1)
+    return [372914165].includes(uid)
 }
 
 const bot = new QQPlugin()
@@ -97,33 +91,6 @@ bot.on("message", async(data)=>{
         if (commands.hasOwnProperty(command)) {
             return reply(await commands[command](param))
         }
-    } else {
-        message = ""
-        for (let v of data.message) {
-            if (v.type === "text")
-                message += v.data.text
-            else if (v.type === "at") {
-                if (v.data.qq == data.self_id && !message.trim())
-                    continue
-                message += `'[CQ:at,qq=${v.data.qq}]'`
-            }
-            else {
-                message += `[CQ:${v.type}`
-                for (let k in v.data)
-                    message += `,${k}=${v.data[k]}`
-                message += `]`
-            }
-        }
-        message = message.trim()
-        sandbox.setEnv(data)
-        let res = sandbox.run(message)
-        if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
-            return
-        if (res === null && message === "null")
-            return
-        if (["number","boolean"].includes(typeof res) && res.toString() === message)
-            return
-        return reply(res)
     }
 })
 

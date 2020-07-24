@@ -210,19 +210,55 @@ module.exports = (bot)=>{
         sandbox.exec(`this.afterInit()`)
     })
 
+    const setEnv = (data)=>{
+        if (data.group_id && groups[data.group_id]) {
+            data.group_name = groups[data.group_id].group_name
+        }
+        sandbox.setEnv(data)
+    }
+
     //传递给沙盒的事件
     bot.on("message", (data)=>{
-        sandbox.setEnv(data)
+        setEnv(data)
+        if (data.raw_message.trim().substr(0,1) !== "-") {
+            let message = ""
+            for (let v of data.message) {
+                if (v.type === "text")
+                    message += v.data.text
+                else if (v.type === "at") {
+                    if (v.data.qq == data.self_id && !message.trim())
+                        continue
+                    message += `'[CQ:at,qq=${v.data.qq}]'`
+                }
+                else {
+                    message += `[CQ:${v.type}`
+                    for (let k in v.data)
+                        message += `,${k}=${v.data[k]}`
+                    message += `]`
+                }
+            }
+            message = message.trim()
+            let res = sandbox.run(message)
+            let echo = true
+            if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
+                echo = false
+            if (res === null && message === "null")
+                echo = false
+            if (["number","boolean"].includes(typeof res) && res.toString() === message)
+                echo = false
+            if (echo)
+                reply(res)
+        }
         sandbox.exec(`this.onEvents()`)
     })
     bot.on("notice", (data)=>{
         if (["group_admin","group_decrease","group_increase"].includes(data.notice_type))
             updateGroupCache(data.group_id)
-        sandbox.setEnv(data)
+        setEnv(data)
         sandbox.exec(`this.onEvents()`)
     })
     bot.on("request", (data)=>{
-        sandbox.setEnv(data)
+        setEnv(data)
         sandbox.exec(`this.onEvents()`)
     })
 
