@@ -181,7 +181,8 @@ class Bot extends EventEmitter {
      * @param {string} password 
      */
     async login(account, password) {
-        account = account.toString().trim()
+        if (account)
+            account = account.toString().trim()
         this.reOpen = async()=>{
             return await this.login(account, password)
         }
