@@ -23,6 +23,15 @@ const reboot = ()=>{
     process.exit(1)
 }
 
+Function.prototype.constructor = new Proxy(Function, {
+    apply: ()=>{
+        throw Error("能走到这里已经很强了，可惜你还是失败了。")
+    },
+    constructor: ()=>{
+        throw Error("能走到这里已经很强了，可惜你还是失败了。")
+    }
+})
+
 const bot = new QQPlugin()
 
 const bans = {}
