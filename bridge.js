@@ -140,6 +140,7 @@ $.get = fetch
 //导入一些工具模块
 sandbox.include("向听", require("syanten"))
 sandbox.include("MJ", require("riichi"))
+sandbox.include("assert", require("assert"))
 sandbox.include("crypto", require("crypto"))
 sandbox.include("querystring", require("querystring"))
 
