@@ -21,8 +21,10 @@ this.contextify = (o)=>{
         case "function":
             if (o !== null) {
                 Object.freeze(o)
-                for (let k of Reflect.ownKeys(o))
+                for (let k of Reflect.ownKeys(o)) {
+                    console.log(k)
                     this.contextify(o[k])
+                }
             }
             break
         default:
