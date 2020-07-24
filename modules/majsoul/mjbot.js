@@ -192,7 +192,7 @@ class Bot extends EventEmitter {
                 this.lobby.open(async()=>{
                     res_login = await this.lobby.sendAsync("oauth2Login", {
                         type: 10,
-                        access_token: token
+                        access_token: account
                     })
                     resolve()
                 })

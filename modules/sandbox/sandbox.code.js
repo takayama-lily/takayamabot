@@ -12,7 +12,7 @@ Function.prototype.view = function() {
 }
 
 delete globalThis
-delete console
+// delete console
 
 //这里不解决逃逸问题，只冻结对象
 this.contextify = (o)=>{
