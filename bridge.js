@@ -13,6 +13,10 @@ Function.prototype.constructor = new Proxy(Function, {
         throw Error("想跟妾身斗，汝还差得远呢。")
     }
 })
+Object.freeze(Object)
+Object.freeze(Object.prototype)
+Object.freeze(Function)
+Object.freeze(Function.prototype)
 
 // CQ数据库初始化
 const sqlite3 = require('sqlite3')
