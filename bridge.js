@@ -152,7 +152,7 @@ sandbox.include("os", require("os"))
 sandbox.include("vm", require("vm"))
 
 sandbox.include("Buffer", Buffer)
-sandbox.include("Events", require("events"))
+// sandbox.include("Events", require("events"))
 
 module.exports = (bot)=>{
 
