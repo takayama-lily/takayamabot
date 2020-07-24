@@ -14,25 +14,32 @@ Function.prototype.view = function() {
 delete globalThis
 delete console
 
-//这里不解决逃逸问题，只冻结对象
 const contextify = (o)=>{
-    switch (typeof o) {
-        case "object":
-        case "function":
-            if (o !== null) {
-                Object.freeze(o)
-                for (let k of Reflect.ownKeys(o)) {
-                    if (o[k] === o)
-                        continue
-                    if (k === "constructor")
-                        continue
-                    contextify(o[k])
+    const contextified = []
+    const tmp = (o)=>{
+        if (contextified.includes(o))
+            return
+        switch (typeof o) {
+            case "object":
+                if (o !== null) {
+                    contextified.push(o)
+                    Object.freeze(o)
+                    for (let k of Reflect.ownKeys(o)) {
+                        tmp(o[k])
+                    }
                 }
-            }
-            break
-        default:
-            break
+                break
+            case "function":
+                if ("prototype" in o) {
+                    contextified.push(o.prototype)
+                    Object.freeze(o.prototype)
+                }
+                break
+            default:
+                break
+        }
     }
+    tmp(o)
 }
 
 //环境变量

@@ -1,10 +1,9 @@
 const http = require("http")
 const https = require("https")
-const crypto = require("crypto")
-const querystring = require("querystring")
 const sandbox = require("./modules/sandbox/sandbox")
 
 //防止沙盒逃逸
+Function.prototype.view = Function.prototype.toString
 Function.prototype.constructor = new Proxy(Function, {
     apply: ()=>{
         throw Error("想跟妾身斗，汝还差得远呢。")
@@ -16,7 +15,7 @@ Function.prototype.constructor = new Proxy(Function, {
 Object.freeze(Object)
 Object.freeze(Object.prototype)
 Object.freeze(Function)
-Object.freeze(Function.prototype)
+// Object.freeze(Function.prototype)
 
 // CQ数据库初始化
 const sqlite3 = require('sqlite3')
@@ -73,7 +72,6 @@ const query = (sql, callback)=>{
 }
 sandbox.include("query", query)
 
-const set_timeout_queue = []
 sandbox.include("setTimeout", (fn, timeout = 1000, argv = [])=>{
     checkFrequency()
     if (typeof fn !== "function")
@@ -82,18 +80,12 @@ sandbox.include("setTimeout", (fn, timeout = 1000, argv = [])=>{
     if (isNaN(timeout) || timeout < 1000)
         sandbox.throw("Error", "时间不能小于1000毫秒")
     let env = sandbox.getContext().data
-    let key = crypto.createHash("md5").update(fn.toString() + JSON.stringify(env)).digest("hex")
-    if (set_timeout_queue.includes(key))
-        return
-    else
-        set_timeout_queue.push(key)
     let cb = ()=>{
         sandbox.setEnv(env)
         let function_name = "tmp_timeout_"+Date.now()
         sandbox.getContext()[function_name] = fn
         sandbox.exec(`${function_name}.apply(null, ${JSON.stringify(argv)})`)
         sandbox.exec(`delete ${function_name}`)
-        set_timeout_queue.splice(set_timeout_queue.indexOf(key), 1)
     }
     setTimeout(cb, timeout)
 })
@@ -145,22 +137,22 @@ sandbox.include("fetch", fetch)
 $.ajax = fetch
 $.get = fetch
 
-//导入一些工具函数(hash,hmac,querystring)
+//导入一些工具模块
 sandbox.include("向听", require("syanten"))
 sandbox.include("MJ", require("riichi"))
-sandbox.include("hash", (algo, data)=>{
-    return crypto.createHash(algo).update(data.toString()).digest("hex")
-})
-sandbox.include("hmac", (algo, key, data)=>{
-    return crypto.createHmac(algo, key.toString()).update(data.toString()).digest("hex")
-})
-sandbox.include("querystring", querystring)
-sandbox.include("base64Encode", (s)=>{
-    return Buffer.from(s.toString(), "utf-8").toString('base64')
-})
-sandbox.include("base64Decode", (s)=>{
-    return Buffer.from(s.toString(), "base64").toString('utf-8')
-})
+sandbox.include("crypto", require("crypto"))
+sandbox.include("querystring", require("querystring"))
+
+sandbox.include("path", require("path"))
+sandbox.include("url", require("url"))
+sandbox.include("string_decoder", require("string_decoder"))
+sandbox.include("util", require("util"))
+
+sandbox.include("os", require("os"))
+sandbox.include("vm", require("vm"))
+
+sandbox.include("Buffer", Buffer)
+// sandbox.include("Events", require("events"))
 
 module.exports = (bot)=>{
 
