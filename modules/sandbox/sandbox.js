@@ -10,7 +10,7 @@ if (!fs.existsSync(dataPath)) {
 }
 
 //初始化context
-let context = Object.create(null)
+let context = {}
 
 //把context包装成proxy对象，来捕捉一些操作
 let set_env_allowed = false
@@ -223,18 +223,7 @@ module.exports.setEnv = setEnv
 const include = (name, object)=>{
     context[name] = object
     vm.runInContext(`const ${name} = this.${name}
-//this.contextify(${name})
-// if (!(${name} instanceof Object) && !(${name} instanceof Function))
-//     Object.setPrototypeOf(${name}, typeof ${name} === "function" ? Function : {})
-// for (let k in ${name}) {
-//     if (typeof ${name}[k] === "function" && !(${name}[k] instanceof Function))
-//         Object.setPrototypeOf(${name}[k], Function)
-//     else if (typeof ${name}[k] === "object" && ${name}[k] && !(${name}[k] instanceof Object))
-//         Object.setPrototypeOf(${name}[k], {})
-// }
-Object.freeze(${name})
-Object.freeze(${name}.prototype)
-`, context)
+this.contextify(${name})`, context)
 }
 module.exports.include = include
 

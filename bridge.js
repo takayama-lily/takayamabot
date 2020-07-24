@@ -4,6 +4,16 @@ const crypto = require("crypto")
 const querystring = require("querystring")
 const sandbox = require("./modules/sandbox/sandbox")
 
+//防止沙盒逃逸
+Function.prototype.constructor = new Proxy(Function, {
+    apply: ()=>{
+        throw Error("能走到这里已经很强了，可惜你还是失败了。")
+    },
+    constructor: ()=>{
+        throw Error("能走到这里已经很强了，可惜你还是失败了。")
+    }
+})
+
 // CQ数据库初始化
 const sqlite3 = require('sqlite3')
 const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)

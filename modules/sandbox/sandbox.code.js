@@ -3,7 +3,7 @@
  */
 
 //函数定义中若包含CQ码，可用此原型方法查看
-this.Function.prototype.view = function() {
+Function.prototype.view = function() {
     return this.toString().replace(/[&\[\]]/g, (s)=>{
         if (s === "&") return "&amp;"
         if (s === "[") return "&#91;"
@@ -14,6 +14,22 @@ this.Function.prototype.view = function() {
 delete globalThis
 delete console
 
+//这里不解决逃逸问题，只冻结对象
+this.contextify = (o)=>{
+    switch (typeof o) {
+        case "object":
+        case "function":
+            if (o !== null) {
+                Object.freeze(o)
+                for (let k of Reflect.ownKeys(o))
+                    this.contextify(o[k])
+            }
+            break
+        default:
+            break
+    }
+}
+
 //环境变量
 Object.defineProperty(this, "data", {
     configurable: false,
@@ -22,7 +38,7 @@ Object.defineProperty(this, "data", {
     value: {}
 })
 
-const error403 = new Error("403 forbidden")
+const error403 = this.error403 = new Error("403 forbidden")
 
 //群数据库
 this.database = this.database && typeof this.database === "object" ? this.database : {}
