@@ -19,31 +19,31 @@ const isMaster = (uid)=>{
 
 const bot = new QQPlugin()
 
-const bans = {}
-bot.on("notice.group_ban.lift_ban", (data)=>{
-    if (data.user_id === data.self_id) {
-        if (bans.hasOwnProperty(data.group_id)) {
-            clearTimeout(bans[data.group_id])
-            delete bans[data.group_id]
-        }
-        bot.sendGroupMsg(data.group_id, "为什么要禁言我")
-    }
-})
-bot.on("notice.group_ban.ban", (data)=>{
-    if (data.user_id === data.self_id && data.duration > 86400)
-        bot.setGroupLeave(data.group_id)
-    else if (data.user_id === data.self_id) {
-        if (bans.hasOwnProperty(data.group_id)) {
-            clearTimeout(bans[data.group_id])
-            delete bans[data.group_id]
-        }
-        const id = setTimeout(()=>{
-            bot.sendGroupMsg(data.group_id, "为什么要禁言我")
-            delete bans[data.group_id]
-        }, data.duration * 1000)
-        bans[data.group_id] = id
-    }
-})
+// const bans = {}
+// bot.on("notice.group_ban.lift_ban", (data)=>{
+//     if (data.user_id === data.self_id) {
+//         if (bans.hasOwnProperty(data.group_id)) {
+//             clearTimeout(bans[data.group_id])
+//             delete bans[data.group_id]
+//         }
+//         bot.sendGroupMsg(data.group_id, "为什么要禁言我")
+//     }
+// })
+// bot.on("notice.group_ban.ban", (data)=>{
+//     if (data.user_id === data.self_id && data.duration > 86400)
+//         bot.setGroupLeave(data.group_id)
+//     else if (data.user_id === data.self_id) {
+//         if (bans.hasOwnProperty(data.group_id)) {
+//             clearTimeout(bans[data.group_id])
+//             delete bans[data.group_id]
+//         }
+//         const id = setTimeout(()=>{
+//             bot.sendGroupMsg(data.group_id, "为什么要禁言我")
+//             delete bans[data.group_id]
+//         }, data.duration * 1000)
+//         bans[data.group_id] = id
+//     }
+// })
 
 //固定指令触发前缀
 const prefix_list = ["-"]
