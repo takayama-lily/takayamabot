@@ -19,11 +19,11 @@ const contextify = (o)=>{
     const tmp = (o)=>{
         if (contextified.includes(o))
             return
+        contextified.push(o)
+        Object.freeze(o)
         switch (typeof o) {
             case "object":
                 if (o !== null) {
-                    contextified.push(o)
-                    Object.freeze(o)
                     for (let k of Reflect.ownKeys(o)) {
                         tmp(o[k])
                     }
