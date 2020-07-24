@@ -12,7 +12,7 @@ Function.prototype.view = function() {
 }
 
 delete globalThis
-// delete console
+delete console
 
 //这里不解决逃逸问题，只冻结对象
 this.contextify = (o)=>{
@@ -21,8 +21,11 @@ this.contextify = (o)=>{
         case "function":
             if (o !== null) {
                 Object.freeze(o)
-                console.log(Reflect.ownKeys(o))
                 for (let k of Reflect.ownKeys(o)) {
+                    if (o[k] === o)
+                        continue
+                    if (k === "constructor")
+                        continue
                     this.contextify(o[k])
                 }
             }
