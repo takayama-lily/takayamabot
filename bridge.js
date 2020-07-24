@@ -152,7 +152,7 @@ Function.prototype.constructor = new Proxy(Function, {
 Object.freeze(Object)
 Object.freeze(Object.prototype)
 Object.freeze(Function)
-Object.freeze(Function.prototype)
+// Object.freeze(Function.prototype)
 
 module.exports = (bot)=>{
 
