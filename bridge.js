@@ -72,8 +72,9 @@ sandbox.include("setTimeout", (fn, timeout = 1000, argv = [])=>{
         sandbox.exec(`${function_name}.apply(null, ${JSON.stringify(argv)})`)
         sandbox.exec(`delete ${function_name}`)
     }
-    setTimeout(cb, timeout)
+    return setTimeout(cb, timeout)
 })
+sandbox.include("clearTimeout", clearTimeout)
 const fetch = (url, callback = ()=>{}, headers = null)=>{
     checkFrequency()
     if (typeof url !== "string")
