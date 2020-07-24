@@ -7,10 +7,10 @@ const sandbox = require("./modules/sandbox/sandbox")
 //防止沙盒逃逸
 Function.prototype.constructor = new Proxy(Function, {
     apply: ()=>{
-        throw Error("能走到这里已经很强了，可惜你还是失败了。")
+        throw Error("想跟妾身斗，汝还差得远呢。")
     },
     constructor: ()=>{
-        throw Error("能走到这里已经很强了，可惜你还是失败了。")
+        throw Error("想跟妾身斗，汝还差得远呢。")
     }
 })
 

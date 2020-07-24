@@ -15,7 +15,7 @@ delete globalThis
 delete console
 
 //这里不解决逃逸问题，只冻结对象
-this.contextify = (o)=>{
+const contextify = (o)=>{
     switch (typeof o) {
         case "object":
         case "function":
@@ -26,7 +26,7 @@ this.contextify = (o)=>{
                         continue
                     if (k === "constructor")
                         continue
-                    this.contextify(o[k])
+                    contextify(o[k])
                 }
             }
             break
@@ -156,6 +156,7 @@ Object.defineProperty(this, "isMaster", {
         return !this.data.user_id || (typeof this.master === "string" && this.master.includes(this.data.user_id))
     }
 })
+const isMaster = this.isMaster
 
 // 钩子函数
 if (typeof this.afterInit !== "function") //sandbox加载之后被执行
@@ -206,6 +207,7 @@ Object.defineProperty(this, "isProtected", {
         return this.protected_properties.includes(k)
     }
 })
+const isProtected = this.isProtected
 
 /*
 五个主要变量：

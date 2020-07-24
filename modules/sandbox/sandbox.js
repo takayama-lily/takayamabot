@@ -11,6 +11,10 @@ if (!fs.existsSync(dataPath)) {
 
 //初始化context
 let context = {}
+//还原context中的数据
+if (fs.existsSync(contextFile)) {
+    context = JSON.parse(fs.readFileSync(contextFile))
+}
 
 //把context包装成proxy对象，来捕捉一些操作
 let set_env_allowed = false
@@ -60,16 +64,6 @@ vm.createContext(context, {
     }
 })
 
-//还原context中的数据
-if (fs.existsSync(contextFile)) {
-    let tmp = JSON.parse(fs.readFileSync(contextFile))
-    for (let k in tmp) {
-        try {
-            vm.runInContext(`this["${k}"]=` + JSON.stringify(tmp[k]), context)
-        } catch(e) {}
-    }
-}
-
 //还原context中的函数
 if (fs.existsSync(fnFile)) {
     let fn = JSON.parse(fs.readFileSync(fnFile))
@@ -99,7 +93,7 @@ vm.runInContext(`Object.defineProperty(this, "root", {
     value: ${JSON.stringify(process.env.SANDBOX_ROOT)}
 })`, context)
 
-//冻结内置对象(不包括Promise,console,eval,globalThis)
+//冻结内置对象(不包括console,globalThis)
 const internal_properties = [
   'Object',             'Function',       'Array',
   'Number',             'parseFloat',     'parseInt',
@@ -223,7 +217,7 @@ module.exports.setEnv = setEnv
 const include = (name, object)=>{
     context[name] = object
     vm.runInContext(`const ${name} = this.${name}
-this.contextify(${name})`, context)
+contextify(${name})`, context)
 }
 module.exports.include = include
 
