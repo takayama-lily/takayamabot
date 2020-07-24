@@ -50,7 +50,7 @@
                     </ul>
                     <h6 class="font-weight-bold">限制</h6>
                     <ul>
-                        <li>无法修改JS内置对象。不包含浏览器API和Node API。</li>
+                        <li>无法修改JS内置对象。不包含浏览器API和大部分Node API。</li>
                         <li>非白名单用户暂时无法使用<code>this</code>、<code>async</code>、<code>const</code>、<code>let</code>、<code>Promise</code>关键字。</li>
                         <li>无法使用<code>eval</code>和<code>new Function()</code>。</li>
                     </ul>
@@ -187,47 +187,33 @@
                                 <td>根据QQ号和日期生成的种子随机数(默认自己)</td>
                             </tr>
                             <tr>
-                                <td>base64Encode(data)</td>
+                                <td>base64Encode(data)<br>base64Decode(data)</td>
                                 <td><li>data: string</li></td>
                                 <td>string</td>
-                                <td>base64编码</td>
-                            </tr>
-                            <tr>
-                                <td>base64Decode(data)</td>
-                                <td><li>data: string</li></td>
-                                <td>string</td>
-                                <td>base64解码</td>
-                            </tr>
-                            <tr>
-                                <td>hash(algorithm, data)</td>
-                                <td>
-                                    <li>algorithm: string ※md5,sha1等</li>
-                                    <li>data: string</li>
-                                </td>
-                                <td>string</td>
-                                <td>计算hash值</td>
+                                <td>base64编解码</td>
                             </tr>
                             <tr>
                                 <td>md5(s),md4(s),sha1(s)<br>sha256(s),sha384(s)</td>
                                 <td><li>s: string</li></td>
                                 <td>string</td>
-                                <td>hash函数的封装</td>
+                                <td>可用的hash函数</td>
                             </tr>
                             <tr>
-                                <td>hmac(algorithm, key, data)</td>
                                 <td>
-                                    <li>algorithm: string</li>
-                                    <li>key: string</li>
-                                    <li>data: string</li>
+                                    <li>Buffer</li>
+                                    <li>assert</li>
+                                    <li>crypto</li>
+                                    <li>querystring</li>
+                                    <li>path</li>
+                                    <li>url</li>
+                                    <li>string_decoder</li>
+                                    <li>util</li>
+                                    <li>os</li>
+                                    <li>vm</li>
                                 </td>
-                                <td>string</td>
-                                <td>计算hash值(带密钥)</td>
-                            </tr>
-                            <tr>
-                                <td>querystring</td>
                                 <td></td>
                                 <td></td>
-                                <td>nodejs的querystring模块</td>
+                                <td>可用的<a href="http://nodejs.cn/api/" target="_blank">Nodejs模块</a></td>
                             </tr>
                         </tbody>
                     </table>
