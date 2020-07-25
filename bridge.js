@@ -14,9 +14,9 @@ https://takayama-lily.github.io/takayamabot/static/bot.html
 hello = function() {
     return "world"
 }
-②你定义了一个叫hello的功能。现在试着输入：.hello 或者 /hello\`)
+②你定义了一个叫hello的功能。现在试着输入：.hello 或者 /hello
 --------------------
-※友情提示：开头添加反斜杠"\\"可以打开调试`)
+※友情提示：开头添加反斜杠"\\\\"可以打开调试\`)`)
 
 const getGid = ()=>sandbox.getContext().data.group_id
 
