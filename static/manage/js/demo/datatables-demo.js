@@ -12,7 +12,7 @@ $(document).ready(function() {
               if (params[i].includes("="))
                 params[i] = params[i].slice(0,params[i].indexOf("="))
             }
-            let html = `<tr><td>${k}</td><td>.${k}&nbsp;&nbsp;${params.join("&nbsp;&nbsp;")}</td><td>${k}(${params2.join(", ")})</td></tr>`
+            let html = `<tr><td>${k}</td><td>.${k}&nbsp;&nbsp;${params.join("&nbsp;&nbsp;")}</td><td>${k}(${params2.join(", ")})</td><td>施工中</td></tr>`
             $("#dataTable tbody").append(html)
           }
           $('#dataTable').DataTable()

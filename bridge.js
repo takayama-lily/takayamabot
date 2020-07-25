@@ -12,11 +12,14 @@ https://takayama-lily.github.io/takayamabot/static/bot.html
 --------------------
 ①尝试实现一个自定义功能, 输入如下代码：
 hello = function() {
+    // 这里添加注释说明，功能会被收录
     return "world"
 }
 ②你定义了一个叫hello的功能。现在试着输入：.hello 或者 /hello
+※友情提示：开头添加反斜杠"\\\\"可以打开调试
 --------------------
-※友情提示：开头添加反斜杠"\\\\"可以打开调试\`)`)
+全部功能一览
+http://usus.lietxia.bid/manage/fn.html\`)`)
 
 const getGid = ()=>sandbox.getContext().data.group_id
 
