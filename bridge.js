@@ -7,7 +7,6 @@ const sqlite3 = require('sqlite3')
 const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
 
 const $ = sandbox.exec(`new String(\`这是一个云JavaScript环境。聊天窗口就是控制台。
-该文档可能需要一定的编程基础才能充分理解。
 该文档默认你会使用JavaScript, 或其他类似语言。
 https://takayama-lily.github.io/takayamabot/static/bot.html
 --------------------
@@ -15,7 +14,9 @@ https://takayama-lily.github.io/takayamabot/static/bot.html
 hello = function() {
     return "world"
 }
-②你定义了一个叫hello的功能。现在试着输入：.hello 或者 /hello\`)`)
+②你定义了一个叫hello的功能。现在试着输入：.hello 或者 /hello\`)
+--------------------
+※友情提示：开头添加反斜杠"\\"可以打开调试`)
 
 const getGid = ()=>sandbox.getContext().data.group_id
 
@@ -247,6 +248,8 @@ module.exports = (bot)=>{
                 echo = false
             if (["number","boolean"].includes(typeof res) && res.toString() === message)
                 echo = false
+            if (message.substr(0,1) === "\\" && typeof res === "undefined")
+                res = "undefined"
             if (echo)
                 bot.reply(data, res, {at_sender: false})
         }
