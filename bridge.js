@@ -20,16 +20,6 @@ hello = function() {
 
 const getGid = ()=>sandbox.getContext().data.group_id
 
-const beforeCallApi = function() {
-    let fn = arguments.callee.caller
-    let function_name = "current_called_api_"+Date.now()
-    sandbox.getContext()[function_name] = fn
-    sandbox.exec(`if (typeof this.beforeCallApi === "function") {
-    this.beforeCallApi(this.${function_name})
-    delete this.${function_name}
-}`)
-}
-
 const asyncCallback = (env, callback, argv = [])=>{
     sandbox.setEnv(env)
     const function_name = "tmp_" + Date.now()
@@ -52,9 +42,20 @@ const checkFrequency = ()=>{
     if (!buckets.hasOwnProperty(uid))
         buckets[uid] = {time: 0, cnt: 0}
     if (buckets[uid].cnt >= 3)
-        return sandbox.throw("Error", "调用频率太快")
+        throw new Error("调用频率太快。") 
     buckets[uid].time = Date.now()
     ++buckets[uid].cnt
+}
+
+const precheck = function() {
+    checkFrequency()
+    let fn = arguments.callee.caller
+    let function_name = "current_called_api_"+Date.now()
+    sandbox.getContext()[function_name] = fn
+    sandbox.exec(`if (typeof this.beforeApiCalled === "function") {
+    this.beforeApiCalled(this.${function_name})
+    delete this.${function_name}
+}`)
 }
 
 sandbox.include("query", (sql, callback)=>{
@@ -198,17 +199,6 @@ module.exports = (bot)=>{
         }
     }
 
-    const checkAuth = (gid)=>{
-        if (sandbox.getContext().isMaster())
-            return
-        let uid = sandbox.getContext().data.user_id
-        try {
-            if (["owner","admin"].includes(groups[gid].members[uid].role))
-                return 
-        } catch (e) {}
-        sandbox.throw("Error", "403 Forbidden")
-    }
-
     bot.on("connection", ()=>{
         initQQData()
         sandbox.exec(`try{this.afterInit()}catch(e){}`)
@@ -274,97 +264,77 @@ module.exports = (bot)=>{
         return groups[gid]
     }
     $.sendPrivateMsg = (uid, msg, escape = false)=>{
-        checkFrequency()
-        beforeCallApi()
+        precheck()
         bot.sendPrivateMsg(uid, msg, escape)
     }
     $.sendGroupMsg = (gid, msg, escape = false)=>{
-        checkFrequency()
-        beforeCallApi()
+        precheck()
         bot.sendGroupMsg(gid, msg, escape)
     }
     $.deleteMsg = (message_id)=>{
-        checkFrequency()
-        beforeCallApi()
+        precheck()
         bot.deleteMsg(message_id)
     }
     $.setGroupKick = (uid, forever = false)=>{
+        precheck()
         let gid = getGid()
-        checkAuth(gid)
-        checkFrequency()
-        beforeCallApi()
         bot.setGroupKick(gid, uid, forever)
     }
     $.setGroupBan = (uid, duration = 60)=>{
+        precheck()
         let gid = getGid()
-        checkFrequency()
-        beforeCallApi()
         bot.setGroupBan(gid, uid, duration)
     }
     $.setGroupAnonymousBan = (flag, duration = 60)=>{
+        precheck()
         let gid = getGid()
-        checkFrequency()
-        beforeCallApi()
         bot.setGroupAnonymousBan(gid, flag, duration)
     }
     $.setGroupAdmin = (uid, enable = true)=>{
+        precheck()
         let gid = getGid()
-        checkFrequency()
-        beforeCallApi()
         bot.setGroupAdmin(gid, uid, enable)
     }
     $.setGroupWholeBan = (enable = true)=>{
+        precheck()
         let gid = getGid()
-        checkAuth(gid)
-        checkFrequency()
-        beforeCallApi()
         bot.setGroupWholeBan(gid, enable)
     }
     $.setGroupAnonymous = (enable = true)=>{
+        precheck()
         let gid = getGid()
-        checkFrequency()
-        beforeCallApi()
         bot.setGroupAnonymous(gid, enable)
     }
     $.setGroupCard = (uid, card = undefined)=>{
+        precheck()
         let gid = getGid()
-        checkFrequency()
-        beforeCallApi()
         bot.setGroupCard(gid, uid, card)
     }
     $.setGroupLeave = (dismiss = false)=>{
+        precheck()
         let gid = getGid()
-        checkAuth(gid)
-        checkFrequency()
-        beforeCallApi()
         bot.setGroupLeave(gid, dismiss)
     }
     $.setGroupSpecialTitle = (uid, title, duration = -1)=>{
+        precheck()
         let gid = getGid()
-        checkFrequency()
-        beforeCallApi()
         bot.setGroupSpecialTitle(gid, uid, title, duration)
     }
     $.sendGroupNotice = (title, content)=>{
         let gid = getGid()
-        checkAuth(gid)
-        checkFrequency()
-        beforeCallApi()
+        precheck()
         bot.sendGroupNotice(gid, title, content)
     }
     $.setGroupRequest = (flag, approve = true, reason = undefined)=>{
-        checkFrequency()
-        beforeCallApi()
+        precheck()
         bot.setGroupRequest(flag, approve, reason)
     }
     $.setFriendRequest = (flag, approve = true, remark = undefined)=>{
-        checkFrequency()
-        beforeCallApi()
+        precheck()
         bot.setFriendRequest(flag, approve, remark)
     }
     $.setGroupInvitation = (flag, approve = true, reason = undefined)=>{
-        checkFrequency()
-        beforeCallApi()
+        precheck()
         bot.setGroupInvitation(flag, approve, reason)
     }
 
