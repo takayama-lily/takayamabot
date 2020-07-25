@@ -6,13 +6,26 @@ const zlib = require("zlib")
 const spawn = require("child_process")
 const cheerio = require("cheerio")
 const mjsoul = require("./modules/majsoul/majsoul")
+const sandbox = require("./modules/sandbox/sandbox")
 
 const fn = async(req)=>{
     let r = url.parse(req.url)
     let query = querystring.parse(r.query)
 
+    // bot管理
+    if (r.pathname === "/bot/sandbox/fn") {
+        const result = {}
+        const context = sandbox.getContext()
+        for (let k in context) {
+            if (typeof context[k] === "function") {
+                result[k] = context[k].toString()
+            }
+        }
+        return result
+    }
+
     //牌谱请求
-    if (r.pathname === "/record") {
+    else if (r.pathname === "/record") {
         return await mjsoul.getParsedRecord(query.id)
     }
     
@@ -98,6 +111,7 @@ module.exports = async(req, res)=>{
     if (!(result instanceof Buffer) && typeof result !== "string")
         result = JSON.stringify(result)
     res.setHeader("Content-Type", "application/json; charset=utf-8")
+    res.setHeader("Access-Control-Allow-Origin", "*")
 
     //开启gzip
     let acceptEncoding = req.headers["accept-encoding"]
