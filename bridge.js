@@ -20,6 +20,28 @@ hello = function() {
 
 const getGid = ()=>sandbox.getContext().data.group_id
 
+const beforeCallApi = function() {
+    let fn = arguments.callee.caller
+    let function_name = "current_called_api_"+Date.now()
+    sandbox.getContext()[function_name] = fn
+    sandbox.exec(`if (typeof this.beforeCallApi === "function") {
+    this.beforeCallApi(this.${function_name})
+    delete this.${function_name}
+}`)
+}
+
+const asyncCallback = (env, callback, argv = [])=>{
+    sandbox.setEnv(env)
+    const function_name = "tmp_" + Date.now()
+    const argv_name = "tmp_argv_" + Date.now()
+    sandbox.getContext()[function_name] = callback
+    sandbox.getContext()[argv_name] = argv
+    try {
+        sandbox.exec(`this.${function_name}.apply(null, this.${argv_name})`)
+    } catch (e) {}
+    sandbox.exec(`delete this.${function_name};delete this.${argv_name}`)
+}
+
 const buckets = {}
 const checkFrequency = ()=>{
     let uid = sandbox.getContext().data.user_id
@@ -35,71 +57,51 @@ const checkFrequency = ()=>{
     ++buckets[uid].cnt
 }
 
-const query = (sql, callback)=>{
+sandbox.include("query", (sql, callback)=>{
     checkFrequency()
     if (typeof sql !== "string")
-        sandbox.throw("TypeError", "The first param must be a string")
+        throw new TypeError("sql(第一个参数)必须是字符串。")
     if (typeof callback !== "function")
-        sandbox.throw("TypeError", "The second param must be a function")
-    let env = sandbox.getContext().data
-    let cb = (data)=>{
-        sandbox.setEnv(env)
-        let function_name = "tmp_query_"+Date.now()
-        sandbox.getContext()[function_name] = callback
-        sandbox.exec(`${function_name}(${JSON.stringify(data)})`)
-        sandbox.exec(`delete ${function_name}`)
-    }
+        throw new TypeError("callback(第二个参数)必须是函数。")
+    const env = sandbox.getContext().data
     db.get(sql, (err, row)=>{
         if (err)
-            cb(JSON.stringify(err))
+            asyncCallback(env, callback, [JSON.stringify(err)])
         else
-            cb(JSON.stringify(row))
+            asyncCallback(env, callback, [JSON.stringify(row)])
     })
-}
-sandbox.include("query", query)
+})
 
 sandbox.include("setTimeout", (fn, timeout = 1000, argv = [])=>{
     checkFrequency()
     if (typeof fn !== "function")
-        sandbox.throw("TypeError", "The first param must be a function")
+        throw new TypeError("fn(第一个参数)必须是函数。")
     timeout = parseInt(timeout)
     if (isNaN(timeout) || timeout < 1000)
-        sandbox.throw("Error", "时间不能小于1000毫秒")
-    let env = sandbox.getContext().data
-    let cb = ()=>{
-        sandbox.setEnv(env)
-        let function_name = "tmp_timeout_"+Date.now()
-        sandbox.getContext()[function_name] = fn
-        sandbox.exec(`${function_name}.apply(null, ${JSON.stringify(argv)})`)
-        sandbox.exec(`delete ${function_name}`)
-    }
+        throw new Error("延迟时间不能小于1000毫秒。")
+    const env = sandbox.getContext().data
+    const cb = ()=>asyncCallback(env, fn, argv)
     return setTimeout(cb, timeout)
 })
 sandbox.include("clearTimeout", clearTimeout)
+
 const fetch = (url, callback = ()=>{}, headers = null)=>{
     checkFrequency()
     if (typeof url !== "string")
-        sandbox.throw("TypeError", "The first param must be a string")
+        throw new TypeError("url(第一个参数)必须是字符串。")
     if (typeof callback !== "function")
-        sandbox.throw("TypeError", "The second param must be a function")
+        throw new TypeError("callback(第二个参数)必须是函数。")
     if (typeof headers !== "object")
-        sandbox.throw("TypeError", "The third param must be an object")
-    let env = sandbox.getContext().data
-    let cb = (data)=>{
-        sandbox.setEnv(env)
-        let function_name = "tmp_fetch_"+Date.now()
-        sandbox.getContext()[function_name] = callback
-        sandbox.exec(`${function_name}(${JSON.stringify(data)})`)
-        sandbox.exec(`delete ${function_name}`)
-    }
+        throw new TypeError("headers(第三个参数)必须是对象。")
+    const env = sandbox.getContext().data
+    const cb = (data)=>asyncCallback(env, callback, [data])
     url = url.trim()
-    let protocol = url.substr(0, 5) === "https" ? https : http
+    const protocol = url.substr(0, 5) === "https" ? https : http
     let data = []
     let size = 0
     const options = {}
-    if (headers) {
+    if (headers)
         options.headers = headers
-    }
     try {
         protocol.get(url, options, (res)=>{
             if (res.statusCode !== 200) {
@@ -209,7 +211,7 @@ module.exports = (bot)=>{
 
     bot.on("connection", ()=>{
         initQQData()
-        sandbox.exec(`this.afterInit()`)
+        sandbox.exec(`try{this.afterInit()}catch(e){}`)
     })
 
     const setEnv = (data)=>{
@@ -253,17 +255,17 @@ module.exports = (bot)=>{
             if (echo)
                 bot.reply(data, res, {at_sender: false})
         }
-        sandbox.exec(`this.onEvents()`)
+        sandbox.exec(`try{this.onEvents()}catch(e){}`)
     })
     bot.on("notice", (data)=>{
         if (["group_admin","group_decrease","group_increase"].includes(data.notice_type))
             updateGroupCache(data.group_id)
         setEnv(data)
-        sandbox.exec(`this.onEvents()`)
+        sandbox.exec(`try{this.onEvents()}catch(e){}`)
     })
     bot.on("request", (data)=>{
         setEnv(data)
-        sandbox.exec(`this.onEvents()`)
+        sandbox.exec(`try{this.onEvents()}catch(e){}`)
     })
 
     // bot api

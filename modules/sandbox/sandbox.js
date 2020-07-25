@@ -198,9 +198,7 @@ module.exports.run = (code)=>{
     }
 }
 module.exports.exec = (code)=>{
-    try {
-        return vm.runInContext(code, context, {timeout: timeout})
-    } catch (e) {}
+    return vm.runInContext(code, context, {timeout: timeout})
 }
 
 //设置环境变量
