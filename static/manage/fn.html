@@ -35,7 +35,13 @@
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">功能一览(右上角可以搜索)</h6>
+              <h6 class="m-0 font-weight-bold text-primary">功能一览(右侧可以搜索)</h6>
+              <ul>
+                <li>所有功能均为开源，使用"名称.view()"可查看源码</li>
+                <li>前缀调用法可以识别的三种前缀：<code>/ . 。</code></li>
+                <li>前缀调用法的好处是使用方便，符合一般用户的使用习惯，缺点是参数中不能有空格，并且只能是字符串</li>
+                <li>函数调用法的参数可以是任何类型，字符串必须加上双引号</li>
+              </ul>
             </div>
             <div class="card-body">
               <div class="table-responsive">
@@ -44,8 +50,8 @@
                     <tr>
                       <th>名称</th>
                       <th>功能说明</th>
-                      <th>指令法调用</th>
-                      <th>函数法调用(字符串参数要加双引号)</th>
+                      <th>前缀法调用</th>
+                      <th>函数法调用</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
