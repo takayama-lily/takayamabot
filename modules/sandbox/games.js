@@ -59,6 +59,7 @@ chess_phases = [
   
 
 残局 = (index)=>{
+  //象棋残局
   if (index === undefined) {
     return `当前记录了${chess_phases.length}个残局, 编号0~${chess_phases.length-1}, 开始残局输入: .残局 编号`
   }
@@ -74,6 +75,7 @@ chess_phases = [
 }
 
 象棋 = (input)=>{
+  //象棋游戏
   let gid = qun()
   if (!gid) return "此命令只能在群里使用"
   if (!current_chesses[gid])
@@ -283,6 +285,7 @@ chessss = (input = '')=>{
 }
 
 提问=(question)=>{
+  //提问(只能是是非问题)
   if (typeof question !== 'string')
     return
   let sd = 0
@@ -301,22 +304,10 @@ chessss = (input = '')=>{
     return '是'
   else
     return '否'
-  // if (question.includes('可以'))
-  //     return res + '可以'
-  // if (question.includes('可能'))
-  //     return res + '可能'
-  // if (question.includes('有'))
-  //     return res ? '没有' : '有'
-  // if (question.includes('是'))
-  //     return res + '是'
-  // if (question.includes('会'))
-  //     return res + '会'
-  // if (question.includes('能'))
-  //     return res + '能'
-  // return res ? '否' : '是的'
 }
 
 cjly=(str)=>{
+  //创建精灵语
   str = str.toString()
   let res = ''
   let i = 0
@@ -496,18 +487,6 @@ conv = (h)=>{
   return res
 }
 
-sjqs=()=>{
-  let sd = Math.floor(Math.random()*10**16)
-  let res = 起手(sd)
-  return at() + " 你随机得到了以下的手牌:\n" + res + " (" + 向听(conv(res)) + "向听)\n" + 麻将格式化(res)
-}
-
-jrqs = (q=qq())=>{
-  let sd = seed(q).toString()
-  let res = 起手(sd)
-  return at(q) + " 今天的起手是:\n" + res + " (" + 向听(conv(res)) + "向听)\n" + 麻将格式化(res)
-}
-
 猜拳结束=()=>{
   let gid = qun()
   let uid = qq()
@@ -545,6 +524,7 @@ jrqs = (q=qq())=>{
 }
 
 猜拳=()=>{
+  //猜拳游戏
   let gid = qun()
   let uid = qq()
   if (!jangken) jangken = {}
@@ -596,13 +576,12 @@ jrqs = (q=qq())=>{
 }
 
 写信=(q, msg)=>{
+  //给某人写信
   if (!q || isNaN(q) || msg === undefined) {
-    return `写信使用方法: 
-●第一个参数是对方的qq号
-●第二个参数是写信内容(放在反引号或引号中间，反引号支持换行引号不支持)
-例:
-写信(429245111, \`我喜欢你\`)
-★收信输入: 收信() 、删信输入: 删信()`
+    return `写信使用方法: .写信 QQ号 内容
+例: .写信 429245111 我喜欢你
+※收信输入: .收信
+※删信输入: .删信`
   }
   q = parseInt(q)
   if (!letters) letters = {}
@@ -661,6 +640,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
 
 浇水成长值={}
 浇水=(q)=>{
+  //给群友浇水，参数是@对方
   q=parseQQ(q)
   if (q===qq())
     return at()+" 不能给自己浇水"
@@ -674,11 +654,6 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
     return at()+" 12小时内不能重复浇水。"
   let a = random(5,10)*random(5,10)
   let b = random(2,5)*random(2,5)
-  // let double_text=""
-  // let hour = (new Date(Date.now()+new Date().getTimezoneOffset()*60000).getHours()+8)%24
-  // if (hour>=6&&hour<9) {
-  //   a*=2,b*=2,double_text="(早起收益加倍)"
-  // }
   浇水成长值[q].value+=a
   浇水成长值[q].fans[qq()].value+=b
   浇水成长值[q].fans[qq()].last=Date.now()
@@ -686,6 +661,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
 目标获得成长值${a}点。当前成长值${浇水成长值[q].value}(${浇水称号(浇水成长值[q].value)})。`
 }
 好感度=(q)=>{
+  //查看浇水好感度
   q=parseQQ(q)
   if (!浇水成长值[q])
     return "什么都没有"
@@ -736,6 +712,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
   }
 }
 浇水排行榜=()=>{
+  //查看浇水排行榜
   let arr = Object.keys(浇水成长值)
   arr.sort((a,b)=>{
     return 浇水成长值[b].value - 浇水成长值[a].value
@@ -749,6 +726,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
 }
 
 拼点禁言=(q, max_time = 100)=>{
+  //和群内成员拼点, 拼输的受到禁言惩罚
   if (q===undefined)
     return `和群内成员拼点, 拼输的受到禁言惩罚。
 ※机器人是管理员的时候, 才会真正执行惩罚。
@@ -786,16 +764,20 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
   let his_roll = random(0,max_time)
   let res = at() + `掷出了${my_roll}, ${at(q)}掷出了${his_roll}\n`
   let time = Math.abs(my_roll-his_roll)
-  if (my_roll > his_roll) {
-    time = Math.ceil(time/2)
-    res += at(q) + `被禁言${time}秒`
-    $.setGroupBan(q,time)
-  } else if (my_roll < his_roll) {
-    res += at() + `被禁言${time}秒`
-    $.setGroupBan(qq(),time)
-  } else {
-    res += `可惜是平手`
-  }
+  this.contextify(true)
+  try {
+    if (my_roll > his_roll) {
+      time = Math.ceil(time/2)
+      res += at(q) + `被禁言${time}秒`
+      $.setGroupBan(q,time)
+    } else if (my_roll < his_roll) {
+      res += at() + `被禁言${time}秒`
+      $.setGroupBan(qq(),time)
+    } else {
+      res += `可惜是平手`
+    }
+  } catch (e) {}
+  this.contextify(false)
   return res
 }
 
@@ -934,26 +916,9 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
   return arr
 }
 
-time2string=(timestamp)=>{
-  let time = Math.floor((Date.now() - timestamp)/1000)
-    if (time >= 86400)
-        time = Math.floor(time / 86400) + "天"
-    else if (time >= 3600)
-        time = Math.floor(time / 3600) + "小时"
-    else if (time >= 60)
-        time = Math.floor(time / 60) + "分钟"
-    else
-        time = Math.floor(time) + "秒"
-    return time + "前"
-}
-
-protectQQ=(q)=>{
-  q=parseQQ(q).toString()
-  return q.substr(0, 2) + "***" + q.substr(q.length-2, 2)
-}
-
 knowledges=[]
 wiki=(title, content)=>{
+  //wiki提问和回答
   if (title===undefined) {
     let res = "当前最新问题: "
     for (let i = knowledges.length - 1; i >= 0; --i) {
@@ -1001,6 +966,7 @@ wiki=(title, content)=>{
 }
 
 新番=()=>{
+  //查看新番时间表
   $.ajax("https://api.bgm.tv/calendar", (data)=>{
     data=JSON.parse(data)
     let res = ""
