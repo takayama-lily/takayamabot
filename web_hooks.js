@@ -63,8 +63,8 @@ const fn = async(req)=>{
             })
         }
         const [result1, result2] = await Promise.all([
-            tmp("bittert", "四"),
-            tmp("bittert", "三")
+            tmp(query.id, "四"),
+            tmp(query.id, "三")
         ])
         return {4: result1, 3: result2}
     }
