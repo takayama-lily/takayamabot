@@ -275,80 +275,96 @@ module.exports = (bot)=>{
     }
     $.sendPrivateMsg = (uid, msg, escape = false)=>{
         checkFrequency()
+        beforeCallApi()
         bot.sendPrivateMsg(uid, msg, escape)
     }
     $.sendGroupMsg = (gid, msg, escape = false)=>{
         checkFrequency()
+        beforeCallApi()
         bot.sendGroupMsg(gid, msg, escape)
     }
     $.deleteMsg = (message_id)=>{
         checkFrequency()
+        beforeCallApi()
         bot.deleteMsg(message_id)
     }
     $.setGroupKick = (uid, forever = false)=>{
         let gid = getGid()
         checkAuth(gid)
         checkFrequency()
+        beforeCallApi()
         bot.setGroupKick(gid, uid, forever)
     }
     $.setGroupBan = (uid, duration = 60)=>{
         let gid = getGid()
         checkFrequency()
+        beforeCallApi()
         bot.setGroupBan(gid, uid, duration)
     }
     $.setGroupAnonymousBan = (flag, duration = 60)=>{
         let gid = getGid()
         checkFrequency()
+        beforeCallApi()
         bot.setGroupAnonymousBan(gid, flag, duration)
     }
     $.setGroupAdmin = (uid, enable = true)=>{
         let gid = getGid()
         checkFrequency()
+        beforeCallApi()
         bot.setGroupAdmin(gid, uid, enable)
     }
     $.setGroupWholeBan = (enable = true)=>{
         let gid = getGid()
         checkAuth(gid)
         checkFrequency()
+        beforeCallApi()
         bot.setGroupWholeBan(gid, enable)
     }
     $.setGroupAnonymous = (enable = true)=>{
         let gid = getGid()
         checkFrequency()
+        beforeCallApi()
         bot.setGroupAnonymous(gid, enable)
     }
     $.setGroupCard = (uid, card = undefined)=>{
         let gid = getGid()
         checkFrequency()
+        beforeCallApi()
         bot.setGroupCard(gid, uid, card)
     }
     $.setGroupLeave = (dismiss = false)=>{
         let gid = getGid()
         checkAuth(gid)
         checkFrequency()
+        beforeCallApi()
         bot.setGroupLeave(gid, dismiss)
     }
     $.setGroupSpecialTitle = (uid, title, duration = -1)=>{
         let gid = getGid()
         checkFrequency()
+        beforeCallApi()
         bot.setGroupSpecialTitle(gid, uid, title, duration)
     }
     $.sendGroupNotice = (title, content)=>{
         let gid = getGid()
         checkAuth(gid)
         checkFrequency()
+        beforeCallApi()
         bot.sendGroupNotice(gid, title, content)
     }
     $.setGroupRequest = (flag, approve = true, reason = undefined)=>{
         checkFrequency()
+        beforeCallApi()
         bot.setGroupRequest(flag, approve, reason)
     }
     $.setFriendRequest = (flag, approve = true, remark = undefined)=>{
         checkFrequency()
+        beforeCallApi()
         bot.setFriendRequest(flag, approve, remark)
     }
     $.setGroupInvitation = (flag, approve = true, reason = undefined)=>{
         checkFrequency()
+        beforeCallApi()
         bot.setGroupInvitation(flag, approve, reason)
     }
 
