@@ -2,6 +2,8 @@ const http = require("http")
 const https = require("https")
 const sandbox = require("./modules/sandbox/sandbox")
 
+let bot = null
+
 // CQ数据库初始化
 const sqlite3 = require('sqlite3')
 const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
@@ -21,7 +23,37 @@ hello = function() {
 
 const getGid = ()=>sandbox.getContext().data.group_id
 
-const asyncCallback = (env, callback, argv = [])=>{
+const async_queue = {}
+const checkAndAddAsyncQueue = (o)=>{
+    const key = sandbox.getContext().data.self_id + sandbox.getContext().data.group_id + sandbox.getContext().data.user_id
+    if (!async_queue.hasOwnProperty([key])) {
+        async_queue[key] = new Map()
+        async_queue[key].set("start_moment", 0)
+    }
+    if (async_queue[key].get("start_moment") > 0 && Date.now() - async_queue[key].get("start_moment") > 60000) {
+        async_queue[key].set("start_moment", 0)
+        throw new Error("判定为递归调用，中断。")
+    }
+    async_queue[key].set(o, {start_time: Date.now(), end_time: undefined})
+}
+
+const asyncCallback = (o, env, callback, argv = [])=>{
+    const key = env.self_id + env.group_id + env.user_id
+    let start_moment = async_queue[key].get("start_moment")
+    let endless_flag = false
+    async_queue[key].forEach((v, k, map)=>{
+        if (k === o)
+            v.end_time = Date.now()
+        else if (v.end_time && Date.now() - v.end_time > 500)
+            map.delete(k)
+        else {
+            endless_flag = true
+            if (start_moment === 0)
+                async_queue[key].set("start_moment", Date.now())
+        }
+    })
+    if (!endless_flag)
+        async_queue[key].set("start_moment", 0)
     sandbox.setEnv(env)
     const function_name = "tmp_" + Date.now()
     const argv_name = "tmp_argv_" + Date.now()
@@ -59,8 +91,9 @@ const precheck = function() {
 }`)
 }
 
-sandbox.include("query", (sql, callback)=>{
+sandbox.include("query", function(sql, callback) {
     checkFrequency()
+    checkAndAddAsyncQueue(this)
     if (typeof sql !== "string")
         throw new TypeError("sql(第一个参数)必须是字符串。")
     if (typeof callback !== "function")
@@ -68,27 +101,29 @@ sandbox.include("query", (sql, callback)=>{
     const env = sandbox.getContext().data
     db.get(sql, (err, row)=>{
         if (err)
-            asyncCallback(env, callback, [JSON.stringify(err)])
+            asyncCallback(this, env, callback, [JSON.stringify(err)])
         else
-            asyncCallback(env, callback, [JSON.stringify(row)])
+            asyncCallback(this, env, callback, [JSON.stringify(row)])
     })
 })
 
-sandbox.include("setTimeout", (fn, timeout = 1000, argv = [])=>{
+sandbox.include("setTimeout", function(fn, timeout = 5000, argv = []) {
     checkFrequency()
+    checkAndAddAsyncQueue(this)
     if (typeof fn !== "function")
         throw new TypeError("fn(第一个参数)必须是函数。")
     timeout = parseInt(timeout)
-    if (isNaN(timeout) || timeout < 1000)
-        throw new Error("延迟时间不能小于1000毫秒。")
+    if (isNaN(timeout) || timeout < 5000)
+        throw new Error("延迟时间不能小于5000毫秒。")
     const env = sandbox.getContext().data
-    const cb = ()=>asyncCallback(env, fn, argv)
+    const cb = ()=>asyncCallback(this, env, fn, argv)
     return setTimeout(cb, timeout)
 })
 sandbox.include("clearTimeout", clearTimeout)
 
-const fetch = (url, callback = ()=>{}, headers = null)=>{
+const fetch = function(url, callback = ()=>{}, headers = null) {
     checkFrequency()
+    checkAndAddAsyncQueue(this)
     if (typeof url !== "string")
         throw new TypeError("url(第一个参数)必须是字符串。")
     if (typeof callback !== "function")
@@ -96,7 +131,7 @@ const fetch = (url, callback = ()=>{}, headers = null)=>{
     if (typeof headers !== "object")
         throw new TypeError("headers(第三个参数)必须是对象。")
     const env = sandbox.getContext().data
-    const cb = (data)=>asyncCallback(env, callback, [data])
+    const cb = (data)=>asyncCallback(this, env, callback, [data])
     url = url.trim()
     const protocol = url.substr(0, 5) === "https" ? https : http
     let data = []
@@ -160,57 +195,139 @@ Object.freeze(Object.prototype)
 Object.freeze(Function)
 // Object.freeze(Function.prototype)
 
-module.exports = (bot)=>{
-
-    //初始化数据，主要是获取群和群员列表
-    const groups = new Proxy(Object.create(null), {
-        get: (o, k)=>{
-            if (o[k]) {
-                if (Date.now() - o[k].update_time >= 1800000)
-                    updateGroupCache(k)
-                return o[k]
-            } else {
+//初始化数据，主要是获取群和群员列表
+const groups = new Proxy(Object.create(null), {
+    get: (o, k)=>{
+        if (o[k]) {
+            if (Date.now() - o[k].update_time >= 1800000)
                 updateGroupCache(k)
-                return undefined
-            }
-        }
-    })
-    const updateGroupCache = async(gid, cache = false)=>{
-        gid = parseInt(gid)
-        let group = (await bot.getGroupInfo(gid, cache)).data
-        let members = (await bot.getGroupMemberList(gid)).data
-        if (!group || !members)
-            return
-        group.update_time = Date.now()
-        group = Object.setPrototypeOf(group, null)
-        group.members = Object.create(null)
-        for (let v of members) {
-            group.members[v.user_id] = Object.setPrototypeOf(v, null)
-            Object.freeze(group.members[v.user_id])
-        }
-        groups[gid] = group
-        Object.freeze(groups[gid])
-    }
-    const initQQData = async()=>{
-        let res = await bot.getGroupList()
-        if (!res.retcode && res.data instanceof Array) {
-            for (let v of res.data) {
-                await updateGroupCache(v.group_id, true)
-            }
+            return o[k]
+        } else {
+            updateGroupCache(k)
+            return undefined
         }
     }
+})
+const updateGroupCache = async(gid, cache = false)=>{
+    gid = parseInt(gid)
+    let group = (await bot.getGroupInfo(gid, cache)).data
+    let members = (await bot.getGroupMemberList(gid)).data
+    if (!group || !members)
+        return
+    group.update_time = Date.now()
+    group = Object.setPrototypeOf(group, null)
+    group.members = Object.create(null)
+    for (let v of members) {
+        group.members[v.user_id] = Object.setPrototypeOf(v, null)
+        Object.freeze(group.members[v.user_id])
+    }
+    groups[gid] = group
+    Object.freeze(groups[gid])
+}
+const initQQData = async()=>{
+    let res = await bot.getGroupList()
+    if (!res.retcode && res.data instanceof Array) {
+        for (let v of res.data) {
+            await updateGroupCache(v.group_id, true)
+        }
+    }
+}
+
+const setEnv = (data)=>{
+    if (data.group_id && groups[data.group_id]) {
+        data.group_name = groups[data.group_id].group_name
+    }
+    sandbox.setEnv(data)
+}
+
+// bot api
+$.getGroupInfo = ()=>{
+    let gid = getGid()
+    return groups[gid]
+}
+$.sendPrivateMsg = (uid, msg, escape = false)=>{
+    precheck()
+    bot.sendPrivateMsg(uid, msg, escape)
+}
+$.sendGroupMsg = (gid, msg, escape = false)=>{
+    precheck()
+    bot.sendGroupMsg(gid, msg, escape)
+}
+$.deleteMsg = (message_id)=>{
+    precheck()
+    bot.deleteMsg(message_id)
+}
+$.setGroupKick = (uid, forever = false)=>{
+    precheck()
+    let gid = getGid()
+    bot.setGroupKick(gid, uid, forever)
+}
+$.setGroupBan = (uid, duration = 60)=>{
+    precheck()
+    let gid = getGid()
+    bot.setGroupBan(gid, uid, duration)
+}
+$.setGroupAnonymousBan = (flag, duration = 60)=>{
+    precheck()
+    let gid = getGid()
+    bot.setGroupAnonymousBan(gid, flag, duration)
+}
+$.setGroupAdmin = (uid, enable = true)=>{
+    precheck()
+    let gid = getGid()
+    bot.setGroupAdmin(gid, uid, enable)
+}
+$.setGroupWholeBan = (enable = true)=>{
+    precheck()
+    let gid = getGid()
+    bot.setGroupWholeBan(gid, enable)
+}
+$.setGroupAnonymous = (enable = true)=>{
+    precheck()
+    let gid = getGid()
+    bot.setGroupAnonymous(gid, enable)
+}
+$.setGroupCard = (uid, card = undefined)=>{
+    precheck()
+    let gid = getGid()
+    bot.setGroupCard(gid, uid, card)
+}
+$.setGroupLeave = (dismiss = false)=>{
+    precheck()
+    let gid = getGid()
+    bot.setGroupLeave(gid, dismiss)
+}
+$.setGroupSpecialTitle = (uid, title, duration = -1)=>{
+    precheck()
+    let gid = getGid()
+    bot.setGroupSpecialTitle(gid, uid, title, duration)
+}
+$.sendGroupNotice = (title, content)=>{
+    let gid = getGid()
+    precheck()
+    bot.sendGroupNotice(gid, title, content)
+}
+$.setGroupRequest = (flag, approve = true, reason = undefined)=>{
+    precheck()
+    bot.setGroupRequest(flag, approve, reason)
+}
+$.setFriendRequest = (flag, approve = true, remark = undefined)=>{
+    precheck()
+    bot.setFriendRequest(flag, approve, remark)
+}
+$.setGroupInvitation = (flag, approve = true, reason = undefined)=>{
+    precheck()
+    bot.setGroupInvitation(flag, approve, reason)
+}
+sandbox.include("$", $)
+
+module.exports = (o)=>{
+    bot = o
 
     bot.on("connection", ()=>{
         initQQData()
         sandbox.exec(`try{this.afterInit()}catch(e){}`)
     })
-
-    const setEnv = (data)=>{
-        if (data.group_id && groups[data.group_id]) {
-            data.group_name = groups[data.group_id].group_name
-        }
-        sandbox.setEnv(data)
-    }
 
     //传递给沙盒的事件
     bot.on("message", (data)=>{
@@ -258,86 +375,4 @@ module.exports = (bot)=>{
         setEnv(data)
         sandbox.exec(`try{this.onEvents()}catch(e){}`)
     })
-
-    // bot api
-    $.getGroupInfo = ()=>{
-        let gid = getGid()
-        return groups[gid]
-    }
-    $.sendPrivateMsg = (uid, msg, escape = false)=>{
-        precheck()
-        bot.sendPrivateMsg(uid, msg, escape)
-    }
-    $.sendGroupMsg = (gid, msg, escape = false)=>{
-        precheck()
-        bot.sendGroupMsg(gid, msg, escape)
-    }
-    $.deleteMsg = (message_id)=>{
-        precheck()
-        bot.deleteMsg(message_id)
-    }
-    $.setGroupKick = (uid, forever = false)=>{
-        precheck()
-        let gid = getGid()
-        bot.setGroupKick(gid, uid, forever)
-    }
-    $.setGroupBan = (uid, duration = 60)=>{
-        precheck()
-        let gid = getGid()
-        bot.setGroupBan(gid, uid, duration)
-    }
-    $.setGroupAnonymousBan = (flag, duration = 60)=>{
-        precheck()
-        let gid = getGid()
-        bot.setGroupAnonymousBan(gid, flag, duration)
-    }
-    $.setGroupAdmin = (uid, enable = true)=>{
-        precheck()
-        let gid = getGid()
-        bot.setGroupAdmin(gid, uid, enable)
-    }
-    $.setGroupWholeBan = (enable = true)=>{
-        precheck()
-        let gid = getGid()
-        bot.setGroupWholeBan(gid, enable)
-    }
-    $.setGroupAnonymous = (enable = true)=>{
-        precheck()
-        let gid = getGid()
-        bot.setGroupAnonymous(gid, enable)
-    }
-    $.setGroupCard = (uid, card = undefined)=>{
-        precheck()
-        let gid = getGid()
-        bot.setGroupCard(gid, uid, card)
-    }
-    $.setGroupLeave = (dismiss = false)=>{
-        precheck()
-        let gid = getGid()
-        bot.setGroupLeave(gid, dismiss)
-    }
-    $.setGroupSpecialTitle = (uid, title, duration = -1)=>{
-        precheck()
-        let gid = getGid()
-        bot.setGroupSpecialTitle(gid, uid, title, duration)
-    }
-    $.sendGroupNotice = (title, content)=>{
-        let gid = getGid()
-        precheck()
-        bot.sendGroupNotice(gid, title, content)
-    }
-    $.setGroupRequest = (flag, approve = true, reason = undefined)=>{
-        precheck()
-        bot.setGroupRequest(flag, approve, reason)
-    }
-    $.setFriendRequest = (flag, approve = true, remark = undefined)=>{
-        precheck()
-        bot.setFriendRequest(flag, approve, remark)
-    }
-    $.setGroupInvitation = (flag, approve = true, reason = undefined)=>{
-        precheck()
-        bot.setGroupInvitation(flag, approve, reason)
-    }
-
-    sandbox.include("$", $)
 }
