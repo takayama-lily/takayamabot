@@ -43,7 +43,7 @@ const asyncCallback = (o, env, callback, argv = [])=>{
     let endless_flag = false
     async_queue[key].forEach((v, k, map)=>{
         if (k === o)
-            v.end_time = Date.now()
+            map.set(k, {end_time: Date.now()})
         else if (v.end_time && Date.now() - v.end_time > 500)
             map.delete(k)
         else {
