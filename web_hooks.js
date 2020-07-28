@@ -81,6 +81,20 @@ const fn = async(req)=>{
         ])
         return {4: result1, 3: result2}
     }
+
+    //whois请求
+    else if (r.pathname === "/whois" && query.domain) {
+        return new Promise((resolve, reject)=>{
+            spawn.exec("whois " + query.domain, (error, stdout, stderr) => {
+                let output = {
+                    "stdout": stdout,
+                    "stderr": stderr,
+                    "error": error
+                }
+                resolve(output)
+            })
+        })
+    }
     
     //github webhock
     else if (r.pathname === "/youShouldPull") {

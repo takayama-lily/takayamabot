@@ -284,8 +284,8 @@ chessss = (input = '')=>{
   return str
 }
 
-提问=(question)=>{
-  //提问(只能是是非问题)
+function 提问(question){
+  //小游戏.提问(只能是是非问题)
   if (typeof question !== 'string')
     return
   let sd = 0
@@ -523,8 +523,8 @@ conv = (h)=>{
   return "你出了"+aaa+"。去群里输入：猜拳() 查看结果"
 }
 
-猜拳=()=>{
-  //猜拳游戏
+function 猜拳(){
+  //小游戏,猜拳
   let gid = qun()
   let uid = qq()
   if (!jangken) jangken = {}
@@ -576,7 +576,7 @@ conv = (h)=>{
 }
 
 function 写信(QQ号, msg){
-  //给某人写信
+  //小游戏,给某人写信
   let q = qq(QQ号)
   if (!q || isNaN(q) || msg === undefined) {
     return `写信使用方法: .写信 QQ号 内容
