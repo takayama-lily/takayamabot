@@ -58,23 +58,23 @@ chess_phases = [
 ]
   
 
-残局 = (index)=>{
+function 残局(编号){
   //象棋残局
-  if (index === undefined) {
+  if (编号 === undefined) {
     return `当前记录了${chess_phases.length}个残局, 编号0~${chess_phases.length-1}, 开始残局输入: .残局 编号`
   }
   let gid = qun()
   if (!gid) return "此命令只能在群里使用"
-  if (!chess_phases[index])
+  if (!chess_phases[编号])
     return "该残局不存在"
   if (!current_chesses[gid])
     current_chesses[gid] = {chess:[],step:0}
-  current_chesses[gid].chess = JSON.parse(JSON.stringify(chess_phases[index]))
+  current_chesses[gid].chess = JSON.parse(JSON.stringify(chess_phases[编号]))
   current_chesses[gid].step = 1
   return 象棋()
 }
 
-象棋 = (input)=>{
+function 象棋(input){
   //象棋游戏
   let gid = qun()
   if (!gid) return "此命令只能在群里使用"
@@ -725,8 +725,9 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
   return res
 }
 
-拼点禁言=(q, max_time = 100)=>{
+function 拼点禁言(QQ, seconds = 100){
   //和群内成员拼点, 拼输的受到禁言惩罚
+  let q = QQ, max_time=seconds
   if (q===undefined)
     return `和群内成员拼点, 拼输的受到禁言惩罚。
 ※机器人是管理员的时候, 才会真正执行惩罚。

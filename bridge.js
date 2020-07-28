@@ -30,23 +30,12 @@ const checkAndAddAsyncQueue = (o)=>{
         async_queue[key] = new Map()
         async_queue[key].set("start_moment", 0)
     }
-    if (async_queue[key].get("start_moment") > 0 && Date.now() - async_queue[key].get("start_moment") > 60000) {
-        async_queue[key].set("start_moment", 0)
-        throw new Error("判定为递归调用，中断。")
-    }
-    async_queue[key].set(o, {start_time: Date.now(), end_time: undefined})
-}
-
-const asyncCallback = (o, env, callback, argv = [])=>{
-    const key = env.self_id + env.group_id + env.user_id
-    let start_moment = async_queue[key].get("start_moment")
     let endless_flag = false
+    let start_moment = async_queue[key].get("start_moment")
     async_queue[key].forEach((v, k, map)=>{
         if (k === "start_moment")
             return
-        if (k === o)
-            v.end_time = Date.now()
-        else if (v.end_time && Date.now() - v.end_time > 500)
+        if (v.end_time && Date.now() - v.end_time > 500)
             map.delete(k)
         else {
             endless_flag = true
@@ -56,6 +45,16 @@ const asyncCallback = (o, env, callback, argv = [])=>{
     })
     if (!endless_flag)
         async_queue[key].set("start_moment", 0)
+    if (async_queue[key].get("start_moment") > 0 && Date.now() - async_queue[key].get("start_moment") > 60000) {
+        async_queue[key].set("start_moment", 0)
+        throw new Error("判定为递归调用，中断。")
+    }
+    async_queue[key].set(o, {start_time: Date.now(), end_time: undefined})
+}
+
+const asyncCallback = (o, env, callback, argv = [])=>{
+    const key = env.self_id + env.group_id + env.user_id
+    async_queue[key].get(o).end_time = Date.now()
     sandbox.setEnv(env)
     const function_name = "tmp_" + Date.now()
     const argv_name = "tmp_argv_" + Date.now()
