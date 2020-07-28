@@ -38,9 +38,8 @@
               <h6 class="m-0 font-weight-bold text-primary">功能一览(右侧可以搜索)</h6>
               <ul>
                 <li>所有功能均为开源，使用"名称.view()"可查看源码</li>
-                <li>前缀调用法可以识别的三种前缀：<code>/ . 。</code></li>
-                <li>前缀调用法的好处是使用方便，符合一般用户的使用习惯，缺点是参数只能是字符串</li>
-                <li>函数调用法的参数可以是任何类型，字符串必须加上双引号</li>
+                <li>前缀调用法符合一般用户的使用习惯，但是单个参数中不能再包含空格</li>
+                <li>函数调用法的参数若为字符串，必须加上双引号</li>
               </ul>
             </div>
             <div class="card-body">
@@ -48,7 +47,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>前缀调用法</th>
+                      <th>前缀调用法 [ <code>. / 。</code> ]</th>
                       <th>可传参数(QQ可以用@代替)</th>
                       <th>功能说明</th>
                       <th>函数调用法</th>

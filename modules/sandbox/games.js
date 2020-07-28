@@ -575,15 +575,15 @@ conv = (h)=>{
   }
 }
 
-写信=(q, msg)=>{
+function 写信(QQ号, msg){
   //给某人写信
+  let q = qq(QQ号)
   if (!q || isNaN(q) || msg === undefined) {
     return `写信使用方法: .写信 QQ号 内容
 例: .写信 429245111 我喜欢你
 ※收信输入: .收信
 ※删信输入: .删信`
   }
-  q = parseInt(q)
   if (!letters) letters = {}
   if (!letters[q]) letters[q]=[]
   letters[q].unshift({from:qq(),time:Date.now(),msg:encodeURIComponent(msg)})
