@@ -59,7 +59,7 @@ chess_phases = [
   
 
 function 残局(编号){
-  //象棋残局
+  //小游戏,象棋残局
   if (编号 === undefined) {
     return `当前记录了${chess_phases.length}个残局, 编号0~${chess_phases.length-1}, 开始残局输入: .残局 编号`
   }
@@ -75,7 +75,7 @@ function 残局(编号){
 }
 
 function 象棋(input){
-  //象棋游戏
+  //小游戏,象棋游戏
   let gid = qun()
   if (!gid) return "此命令只能在群里使用"
   if (!current_chesses[gid])
@@ -639,8 +639,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
 }
 
 浇水成长值={}
-浇水=(q)=>{
-  //给群友浇水，参数是@对方
+function 浇水(q){
   q=parseQQ(q)
   if (q===qq())
     return at()+" 不能给自己浇水"
@@ -660,8 +659,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
   return at()+`本次浇水获得${at(q)}的好感度${b}点。当前好感度${浇水成长值[q].fans[qq()].value}(${浇水称号(浇水成长值[q].fans[qq()].value,2)})。
 目标获得成长值${a}点。当前成长值${浇水成长值[q].value}(${浇水称号(浇水成长值[q].value)})。`
 }
-好感度=(q)=>{
-  //查看浇水好感度
+function 好感度(q){
   q=parseQQ(q)
   if (!浇水成长值[q])
     return "什么都没有"
@@ -676,7 +674,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
   }
   return res
 }
-浇水称号=(pt,type=1)=>{
+function 浇水称号(pt,type=1){
   if(type===1){
     if (pt<1024)
       return "小幼苗"
@@ -702,7 +700,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
     if (pt<256)
       return "心有灵犀"
     if (pt<512)
-      return "小鹿乱撞"
+      return "怦然心动"
     if (pt<1024)
       return "ツンデレ"
     if (pt<2048)
@@ -711,8 +709,7 @@ function sha256(s){var chrsz=8;var hexcase=0;function safe_add(x,y){var lsw=(x&6
       return "生死不离"
   }
 }
-浇水排行榜=()=>{
-  //查看浇水排行榜
+function 浇水排行榜(){
   let arr = Object.keys(浇水成长值)
   arr.sort((a,b)=>{
     return 浇水成长值[b].value - 浇水成长值[a].value

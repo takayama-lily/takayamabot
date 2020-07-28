@@ -27,7 +27,7 @@ $(document).ready(function() {
             let html = `<tr><td>.${k}</td><td>.${k}&nbsp;&nbsp;${params.join("&nbsp;&nbsp;")}</td><td>${comments.join("<br>")}</td><td>${k}(${params2.join(", ")})</td></tr>`
             $("#dataTable tbody").append(html)
           }
-          $('#dataTable').DataTable()
+          $('#dataTable').DataTable({"order":[[2,"asc"]]})
         })
     })
 });
