@@ -24,10 +24,10 @@ $(document).ready(function() {
                 break
               comments.push(v.trim().substr(2).trim())
             }
-            let html = `<tr><td>.${k}</td><td>.${k}&nbsp;&nbsp;${params.join("&nbsp;&nbsp;")}</td><td>${comments.join("<br>")}</td><td>${k}(${params2.join(", ")})</td></tr>`
+            let html = `<tr><td>.${k}</td><td>${comments.join("<br>")}</td><td>.${k}&nbsp;&nbsp;${params.join("&nbsp;&nbsp;")}</td><td>${k}(${params2.join(", ")})</td></tr>`
             $("#dataTable tbody").append(html)
           }
-          $('#dataTable').DataTable({"order":[[2,"asc"]]})
+          $('#dataTable').DataTable({"order":[[1,"asc"]]})
         })
     })
 });

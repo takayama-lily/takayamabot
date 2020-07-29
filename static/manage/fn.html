@@ -14,7 +14,8 @@
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
 
   <!-- Custom styles for this page -->
-  <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/DataTables/DataTables/media/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+  <!-- <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet"> -->
 
 </head>
 
@@ -35,11 +36,10 @@
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">功能一览(右侧可以搜索)</h6>
+              <br><h6 class="m-0 font-weight-bold text-primary">已开发功能一览</h6><br>
               <ul>
-                <li>所有功能均为开源，使用"名称.view()"可查看源码</li>
-                <li>前缀调用法符合一般用户的使用习惯，但是单个参数中不能再包含空格</li>
-                <li>函数调用法的参数若为字符串，必须加上双引号</li>
+                <li>所有功能均为开源，使用"函数名.view()"可查看源码</li>
+                <li>函数名区分大小写</li>
               </ul>
             </div>
             <div class="card-body">
@@ -47,10 +47,10 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>前缀调用法 [ <code>. / 。</code> ]</th>
-                      <th>可传参数(QQ可以用@代替)</th>
-                      <th>功能说明</th>
-                      <th>函数调用法(有默认值的参数可以省略)</th>
+                      <th>前缀调用法<br><span class="small font-weight-light">>>识别[<code>./。</code>]三种前缀</span></th>
+                      <th>功能说明<br><span class="small font-weight-light">>>初始按此排序，点击可调</span></th>
+                      <th>可传参数<br><span class="small font-weight-light">>>QQ可以用@代替</span></th>
+                      <th>函数调用法<br><span class="small font-weight-light">>>字符串参数必须加引号</span></th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -71,28 +71,63 @@
   </div>
   <!-- End of Page Wrapper -->
 
-  <!-- Scroll to Top Button-->
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
-
 
   <!-- Bootstrap core JavaScript-->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap"></script>
+<!--   <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script> -->
 
   <!-- Core plugin JavaScript-->
-  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery.easing"></script>
+  <!-- <script src="vendor/jquery-easing/jquery.easing.min.js"></script> -->
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin-2.min.js"></script>
 
   <!-- Page level plugins -->
-  <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-  <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/DataTables/DataTables/media/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/DataTables/DataTables/media/js/dataTables.bootstrap4.min.js"></script>
+<!--   <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+  <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script> -->
 
   <!-- Page level custom scripts -->
-  <script src="js/demo/datatables-demo.js"></script>
+  <!-- <script src="js/demo/datatables-demo.js"></script> -->
+
+<script>
+$(document).ready(function() {
+  fetch('http://usus.lietxia.bid/bot/sandbox/fn') 
+    .then(function(res) { 
+        res.json().then(function(data) {
+          for (let k in data) {
+            if (k.includes("on_"))
+              continue
+            let codes = data[k].split("\n")
+            if (codes.length === 1)
+              continue
+            if (!["//"].includes(codes[1].trim().substr(0,2)))
+              continue
+            let params = data[k].slice(data[k].indexOf("(")+1, data[k].indexOf(")")).replace(/\s/g,"").split(",")
+            let params2 = data[k].slice(data[k].indexOf("(")+1, data[k].indexOf(")")).replace(/\s/g,"").split(",")
+            for (let i in params) {
+              if (params[i].includes("="))
+                params[i] = params[i].slice(0,params[i].indexOf("="))
+            }
+            codes.shift()
+            let comments = []
+            for (let v of codes) {
+              if (v.trim().substr(0,2)!=="//")
+                break
+              comments.push(v.trim().substr(2).trim())
+            }
+            let html = `<tr><td>.${k}</td><td>${comments.join("<br>")}</td><td>.${k}&nbsp;&nbsp;${params.join("&nbsp;&nbsp;")}</td><td>${k}(${params2.join(", ")})</td></tr>`
+            $("#dataTable tbody").append(html)
+          }
+          $('#dataTable').DataTable({"order":[[1,"asc"]]})
+        })
+    })
+});
+</script>
 
 </body>
 
