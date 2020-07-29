@@ -17,22 +17,17 @@ delete console
 const contextify = (o)=>{
     const contextified = []
     const tmp = (o)=>{
-        if (contextified.includes(o))
-            return
-        contextified.push(o)
-        Object.freeze(o)
         switch (typeof o) {
             case "object":
+            case "function":
                 if (o !== null) {
+                    if (contextified.includes(o))
+                        return
+                    Object.freeze(o)
+                    contextified.push(o)
                     for (let k of Reflect.ownKeys(o)) {
                         tmp(o[k])
                     }
-                }
-                break
-            case "function":
-                if ("prototype" in o) {
-                    contextified.push(o.prototype)
-                    Object.freeze(o.prototype)
                 }
                 break
             default:
