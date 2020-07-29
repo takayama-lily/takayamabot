@@ -1,5 +1,6 @@
 const http = require("http")
 const https = require("https")
+const zlib = require("zlib")
 const sandbox = require("./modules/sandbox/sandbox")
 
 let bot = null
@@ -126,9 +127,12 @@ const fetch = function(url, callback = ()=>{}, headers = null) {
     const protocol = url.substr(0, 5) === "https" ? https : http
     let data = []
     let size = 0
-    const options = {}
-    if (headers)
-        options.headers = headers
+    const options = {
+        headers: {
+            "Accept-Encoding": "gzip",
+            ...headers
+        }
+    }
     try {
         protocol.get(url, options, (res)=>{
             if (res.statusCode !== 200) {
@@ -137,13 +141,20 @@ const fetch = function(url, callback = ()=>{}, headers = null) {
             }
             res.on("data", chunk=>{
                 size += chunk.length
-                if (size > 1500000) {
+                if (size > 500000) {
                     res.destroy()
                     return
                 }
                 data.push(chunk)
             })
-            res.on("end", ()=>cb(Buffer.concat(data).toString()))
+            res.on("end", ()=>{
+                if (res.headers["content-encoding"] && res.headers["content-encoding"].include("gzip")) {
+                    zlib.gunzip(Buffer.concat(data), (err, buffer)=>{
+                        cb(buffer.toString())
+                    })
+                } else
+                    cb(Buffer.concat(data).toString())
+            })
         }).on("error", err=>cb(JSON.stringify(err)))
     } catch (e) {
         cb(JSON.stringify(e))
