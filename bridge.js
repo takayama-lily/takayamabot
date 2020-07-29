@@ -148,7 +148,7 @@ const fetch = function(url, callback = ()=>{}, headers = null) {
                 data.push(chunk)
             })
             res.on("end", ()=>{
-                if (res.headers["content-encoding"] && res.headers["content-encoding"].include("gzip")) {
+                if (res.headers["content-encoding"] && res.headers["content-encoding"].includes("gzip")) {
                     zlib.gunzip(Buffer.concat(data), (err, buffer)=>{
                         cb(buffer.toString())
                     })
