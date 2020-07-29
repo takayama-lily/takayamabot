@@ -137,7 +137,7 @@ const fetch = function(url, callback = ()=>{}, headers = null) {
             }
             res.on("data", chunk=>{
                 size += chunk.length
-                if (size > 1000000) {
+                if (size > 1500000) {
                     res.destroy()
                     return
                 }
