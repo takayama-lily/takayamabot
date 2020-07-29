@@ -170,15 +170,6 @@ module.exports.run = (code)=>{
     let debug = ["\\","＼"].includes(code.substr(0, 1))
     if (debug)
         code = code.substr(1)
-    code = code.replace(/(（|）|，|″|“|”|＝)/g, (s)=>{
-        if (["″","“","”"].includes(s)) return "\""
-        if (s === "，") return ","
-        if (s === "＝") return "="
-        // if (s === "&amp;") return "&"
-        // if (s === "&#91;") return "["
-        // if (s === "&#93;") return "]"
-        return String.fromCharCode(s.charCodeAt(0) - 65248)
-    })
     try {
         let code2 = vm.runInContext(`this.beforeExec(${JSON.stringify(code)})`, context, {timeout: timeout})
         if (typeof code2 === "string")
@@ -187,7 +178,7 @@ module.exports.run = (code)=>{
         if (res instanceof vm.runInContext("Promise", context))
             res = undefined
         let res2 = vm.runInContext(`this.afterExec(${JSON.stringify(res)})`, context, {timeout: timeout})
-        if (typeof code2 !== "undefined")
+        if (typeof res2 !== "undefined")
             res = res2
         return res
     } catch(e) {
