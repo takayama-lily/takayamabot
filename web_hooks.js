@@ -17,8 +17,16 @@ const fn = async(req)=>{
         const result = {}
         const context = sandbox.getContext()
         for (let k in context) {
-            if (typeof context[k] === "function") {
-                result[k] = context[k].toString()
+            if (typeof context[k] === "function" && !k.includes("_") && (k.toLowerCase() === k || k.toUpperCase() === k)) {
+                let v = context[k].toString().split("\n")
+                result[k] = v.shift()
+                for (let vv of v) {
+                    if (vv.trim() === "{")
+                        continue
+                    if (!vv.trim().startsWith("//"))
+                        break
+                    result[k] += "\n" + vv.trim()
+                }
             }
         }
         return result
