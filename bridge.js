@@ -150,6 +150,8 @@ const fetch = function(url, callback = ()=>{}, headers = null) {
             res.on("end", ()=>{
                 if (res.headers["content-encoding"] && res.headers["content-encoding"].includes("gzip")) {
                     zlib.gunzip(Buffer.concat(data), (err, buffer)=>{
+                        if (err)
+                            buffer = JSON.stringify(err)
                         cb(buffer.toString())
                     })
                 } else

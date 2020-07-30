@@ -137,13 +137,13 @@ module.exports = async(req, res)=>{
 
     //开启gzip
     let acceptEncoding = req.headers["accept-encoding"]
-    if (acceptEncoding && acceptEncoding.includes("gzip")) {
+    if (result.length > 1024 && acceptEncoding && acceptEncoding.includes("gzip")) {
         res.writeHead(200, { "Content-Encoding": "gzip" })
-        const output = zlib.createGzip()
-        output.pipe(res)
-        output.write(result, ()=>{
-            output.flush(()=>res.end())
-        });
+        zlib.gzip(result, (err, buffer)=>{
+            if (err)
+                buffer = JSON.stringify({error: err})
+            res.end(buffer)
+        })
     } else {
         res.end(result)
     }
