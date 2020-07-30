@@ -9,7 +9,7 @@ const stringify_config = stringify.configure({
     pure:            false,
     json:            false,
     maxDepth:        2,
-    maxLength:       0,
+    maxLength:       10,
     maxArrayLength:  20,
     maxObjectLength: 20,
     maxStringLength: 30,
