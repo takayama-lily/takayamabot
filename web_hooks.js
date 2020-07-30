@@ -19,14 +19,17 @@ const fn = async(req)=>{
         for (let k in context) {
             if (typeof context[k] === "function" && !k.includes("_") && (k.toLowerCase() === k || k.toUpperCase() === k)) {
                 let v = context[k].toString().split("\n")
-                result[k] = v.shift()
+                let fn_sign = v.shift()
+                let comments = ""
                 for (let vv of v) {
                     if (vv.trim() === "{")
                         continue
                     if (!vv.trim().startsWith("//"))
                         break
-                    result[k] += "\n" + vv.trim()
+                    comments += "\n" + vv.trim()
                 }
+                if (comments)
+                   result[k] = fn_sign + comments
             }
         }
         return result
