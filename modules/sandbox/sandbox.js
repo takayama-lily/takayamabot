@@ -177,7 +177,8 @@ module.exports.run = (code)=>{
         let res = vm.runInContext(code, context, {timeout: timeout})
         if (res instanceof vm.runInContext("Promise", context))
             res = undefined
-        let res2 = vm.runInContext(`this.afterExec(${JSON.stringify(res)})`, context, {timeout: timeout})
+        context._current_echo = res
+        let res2 = vm.runInContext(`this.afterExec()`, context, {timeout: timeout})
         if (typeof res2 !== "undefined")
             res = res2
         return res
