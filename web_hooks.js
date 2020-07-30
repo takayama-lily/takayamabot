@@ -17,7 +17,7 @@ const fn = async(req)=>{
         const result = {}
         const context = sandbox.getContext()
         for (let k in context) {
-            if (typeof context[k] === "function" && !k.includes("_") && (k.toLowerCase() === k || k.toUpperCase() === k)) {
+            if (typeof context[k] === "function" && k.length <= 8) {
                 let v = context[k].toString().split("\n")
                 let fn_sign = v.shift()
                 let comments = ""

@@ -51,22 +51,37 @@
                         <li>不要设置敏感内容和违规内容。</li>
                         <li>禁止恶意攻击、恶意套娃。</li>
                     </ul>
-                    <h6 class="font-weight-bold">限制</h6>
-                    <ul>
-                        <li>无法修改JS内置对象。不包含浏览器API和大部分Node API。</li>
-                        <li>非白名单用户暂时无法使用<code>this</code>、<code>async</code>、<code>const</code>、<code>let</code>、<code>Promise</code>关键字。</li>
-                        <li>无法使用<code>eval</code>和<code>new Function()</code>。</li>
-                    </ul>
                     <h6 class="font-weight-bold">调试</h6>
                     <ul>
-                        <li>消息以反斜杠"\"开头，就会开启调试，bot会输出错误信息。</li>
+                        <li>消息以反斜杠"<code>\</code>"开头，就会开启调试，bot会输出错误信息。</li>
                     </ul>
-                    <h6 class="font-weight-bold">其它</h6>
+                    <h6 class="font-weight-bold">开发</h6>
                     <ul>
                         <li>由于输入习惯问题，以下全角字符会被自动转为半角：<code>（）“”，＝</code></li>
-                        <li>可以使用<a href="https://docs.cqp.im/manual/cqcode/" target="_blank">CQ码</a>定义图片等消息。</li>
-                        <li>大多数函数可以使用【.函数名 参数1 参数2】的形式调用(参数只能是字符串，无法识别变量。这只是为了用户输入方便。)。</li>
-                        <li>在函数的第二行添加注释，则函数会被收录在<a href="http://usus.lietxia.bid/manage/fn.html" target="_blank">功能一览</a>中，注释会显示在功能说明里。</li>
+                        <li>支持使用<a href="https://docs.cqp.im/manual/cqcode/" target="_blank">CQ码</a>定义消息(暂时不能发图)。</li>
+                        <li>为了符合一般用户输入习惯，大多数函数可以使用【.函数名 参数1 参数2】的形式调用(参数只能是字符串)。</li>
+                        <li>在函数的第二行添加注释，则函数会被收录在<a href="http://usus.lietxia.bid/manage/fn.html" target="_blank">功能一览</a>中，注释会显示在功能说明里(暂时只支持多行双斜杠注释)。</li>
+                        <li>功能一览不会收录<code>开头没有注释</code>或<code>命名过长</code>的函数。</li>
+                    </ul>
+                    <h6 class="font-weight-bold">限制</h6>
+                    <ul>
+                        <li>所有原生对象、内置对象、原型都已冻结，无法篡改。</li>
+                        <li>无法使用<code>eval</code>和<code>new Function()</code>。</li>
+                        <li>非白名单用户暂时无法使用<code>this</code>、<code>async</code>、<code>const</code>、<code>let</code>、<code>Promise</code>关键字(可以申请)。</li>
+                    </ul>
+                    <h6 class="font-weight-bold">差异</h6>
+                    <ul>
+                        <li>
+                            JS中的object类型是引用，用等号运算符会使两个对象指向同一个地址，修改一个会影响另一个。<br>
+                            但是服务器有时会重启，对象会经过序列化存储和反序列化还原，此时两个对象将不再指向一个地址。
+                        </li>
+                        <li>
+                            服务器重启还会导致：<br>
+                            ● 所有对象的原型都被指向Object.prototype<br>
+                            ● 所有函数的原型都被指向Function.prototype<br>
+                            ● 函数对象节点下如果包含其他数据，则无法还原<br>
+                            ● 无法序列化保存的对象将被丢弃(比如包含循环引用)
+                        </li>
                     </ul>
                 </div>
                 <div id="function" class="container tab-pane fade"><br>
@@ -427,6 +442,10 @@
                                 <tr>
                                     <td><a href="https://github.com/takayama-lily/riichi" target="_blank">MJ</a></td>
                                     <td>日麻点数计算</td>
+                                </tr>
+                                <tr>
+                                    <td><a href="https://github.com/takayama-lily/syanten" target="_blank">向听</a></td>
+                                    <td>日麻向听数计算</td>
                                 </tr>
                                 <!-- <tr>
                                     <td><a href="https://github.com/cheeriojs/cheerio" target="_blank">cheerio</a></td>
