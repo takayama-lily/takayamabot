@@ -335,37 +335,35 @@ module.exports = (o)=>{
     //传递给沙盒的事件
     bot.on("message", (data)=>{
         setEnv(data)
-        if (data.raw_message.trim().substr(0,1) !== "-") {
-            let message = ""
-            for (let v of data.message) {
-                if (v.type === "text")
-                    message += v.data.text
-                else if (v.type === "at") {
-                    if (v.data.qq == data.self_id && !message.trim())
-                        continue
-                    message += `'[CQ:at,qq=${v.data.qq}]'`
-                }
-                else {
-                    message += `[CQ:${v.type}`
-                    for (let k in v.data)
-                        message += `,${k}=${v.data[k]}`
-                    message += `]`
-                }
+        let message = ""
+        for (let v of data.message) {
+            if (v.type === "text")
+                message += v.data.text
+            else if (v.type === "at") {
+                if (v.data.qq == data.self_id && !message.trim())
+                    continue
+                message += `'[CQ:at,qq=${v.data.qq}]'`
             }
-            message = message.trim()
-            let res = sandbox.run(message)
-            let echo = true
-            if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
-                echo = false
-            if (res === null && message === "null")
-                echo = false
-            if (["number","boolean"].includes(typeof res) && res.toString() === message)
-                echo = false
-            if (message.substr(0,1) === "\\" && typeof res === "undefined")
-                res = "undefined"
-            if (echo)
-                bot.reply(data, res, {at_sender: false})
+            else {
+                message += `[CQ:${v.type}`
+                for (let k in v.data)
+                    message += `,${k}=${v.data[k]}`
+                message += `]`
+            }
         }
+        message = message.trim()
+        let res = sandbox.run(message)
+        let echo = true
+        if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
+            echo = false
+        if (res === null && message === "null")
+            echo = false
+        if (["number","boolean"].includes(typeof res) && res.toString() === message)
+            echo = false
+        if (message.substr(0,1) === "\\" && typeof res === "undefined")
+            res = "undefined"
+        if (echo)
+            bot.reply(data, res, {at_sender: false})
         sandbox.exec(`try{this.onEvents()}catch(e){}`)
     })
     bot.on("notice", (data)=>{

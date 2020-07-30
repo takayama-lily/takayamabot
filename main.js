@@ -12,38 +12,11 @@ process.on("unhandledRejection", (reason, promise)=>{
 const server = http.createServer(require("./web_hooks"))
 
 const QQPlugin = require("./modules/qqplugin/cqhttp")
-const commands = require("./commands")
 const isMaster = (uid)=>{
     return [372914165].includes(uid)
 }
 
 const bot = new QQPlugin()
-
-// const bans = {}
-// bot.on("notice.group_ban.lift_ban", (data)=>{
-//     if (data.user_id === data.self_id) {
-//         if (bans.hasOwnProperty(data.group_id)) {
-//             clearTimeout(bans[data.group_id])
-//             delete bans[data.group_id]
-//         }
-//         bot.sendGroupMsg(data.group_id, "为什么要禁言我")
-//     }
-// })
-// bot.on("notice.group_ban.ban", (data)=>{
-//     if (data.user_id === data.self_id && data.duration > 86400)
-//         bot.setGroupLeave(data.group_id)
-//     else if (data.user_id === data.self_id) {
-//         if (bans.hasOwnProperty(data.group_id)) {
-//             clearTimeout(bans[data.group_id])
-//             delete bans[data.group_id]
-//         }
-//         const id = setTimeout(()=>{
-//             bot.sendGroupMsg(data.group_id, "为什么要禁言我")
-//             delete bans[data.group_id]
-//         }, data.duration * 1000)
-//         bans[data.group_id] = id
-//     }
-// })
 
 //固定指令触发前缀
 const prefix_list = ["-"]
@@ -87,9 +60,6 @@ bot.on("message", async(data)=>{
 会员: ${res.vip_level} (成长值${res.vip_growth_total}|${res.vip_growth_speed}/天)`)
             }
             return
-        }
-        if (commands.hasOwnProperty(command)) {
-            return reply(await commands[command](param))
         }
     }
 })
