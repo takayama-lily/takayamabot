@@ -24,7 +24,9 @@ const stringify_config = stringify.configure({
 const filter = (msg)=>{
     if (typeof msg === "undefined")
         return
-    if (typeof msg !== "string")
+    if (typeof msg === "function")
+        msg = `<function${msg.name?(":"+msg.name):""}>`
+    else if (typeof msg !== "string")
         msg = stringify_config(msg)
     msg = msg.replace(ero, "⃺")
     if (msg.length > 4500)
