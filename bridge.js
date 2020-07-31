@@ -325,6 +325,17 @@ $.setGroupInvitation = (flag, approve = true, reason = undefined)=>{
 }
 sandbox.include("$", $)
 
+sandbox.include("run", (code)=>{
+    if (sandbox.getContext().isMaster()) {
+        try {
+            return eval(code)
+        } catch(e) {
+            return e.stack
+        }
+    } else
+        throw new Error("403 forbidden")
+})
+
 module.exports = (o)=>{
     bot = o
 

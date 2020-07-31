@@ -216,11 +216,3 @@ module.exports.getContext = ()=>context
 module.exports.throw = (type = "Error", msg = "")=>{
     vm.runInContext(`throw new ${type}("${msg}")`, context)
 }
-
-include("exit", ()=>{
-    if (context.isMaster()) {
-        setTimeout(process.exit, 0)
-        return true
-    } else
-        vm.runInContext(`throw error403`, context)
-})
