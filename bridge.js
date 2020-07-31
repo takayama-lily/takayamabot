@@ -342,7 +342,7 @@ module.exports = (o)=>{
 
     bot.on("connection", ()=>{
         initQQData()
-        sandbox.exec(`try{this.afterInit()}catch(e){}`)
+        sandbox.exec(`try{this.afterConn()}catch(e){}`)
     })
 
     //传递给沙盒的事件

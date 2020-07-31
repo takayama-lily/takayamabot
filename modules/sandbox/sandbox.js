@@ -122,6 +122,8 @@ const ${v} = this.${v}`, context)
 }
 init_finished = true
 
+vm.runInContext(`try{this.afterInit()}catch(e){}`, context)
+
 //定时持久化context(60分钟)
 let fn
 const saveFunctions = (o, mp)=>{
