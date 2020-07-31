@@ -162,6 +162,7 @@ setInterval(()=>{
 
 //沙盒执行超时时间
 let timeout = 300
+module.exports.getTimeout = (t)=>timeout
 module.exports.setTimeout = (t)=>timeout=t
 
 //执行代码
@@ -189,6 +190,7 @@ module.exports.run = (code)=>{
         }
     }
 }
+//执行代码 raw
 module.exports.exec = (code)=>{
     return vm.runInContext(code, context, {timeout: timeout})
 }
@@ -203,16 +205,11 @@ contextify(this.data)`, context)
 module.exports.setEnv = setEnv
 
 //传递一个外部对象到context
-const include = (name, object)=>{
+module.exports.include = (name, object)=>{
     context[name] = object
     vm.runInContext(`const ${name} = this.${name}
 contextify(${name})`, context)
 }
-module.exports.include = include
 
 //返回context
 module.exports.getContext = ()=>context
-
-module.exports.throw = (type = "Error", msg = "")=>{
-    vm.runInContext(`throw new ${type}("${msg}")`, context)
-}

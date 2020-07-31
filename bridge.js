@@ -325,6 +325,7 @@ $.setGroupInvitation = (flag, approve = true, reason = undefined)=>{
 }
 sandbox.include("$", $)
 
+//master可以执行任意代码
 sandbox.include("run", (code)=>{
     if (sandbox.getContext().isMaster()) {
         try {
