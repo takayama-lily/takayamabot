@@ -349,18 +349,23 @@ const createBot = (self_id)=>{
             res = "undefined"
         if (echo)
             bot.reply(data, res, {at_sender: false})
-
-        sandbox.exec(`try{this.onEvents()}catch(e){}`)
+        try {
+            sandbox.exec(`try{this.onEvents()}catch(e){}`)
+        } catch (e) {}
     })
     bot.on("notice", (data)=>{
         setEnv(data)
         if (["group_admin","group_decrease","group_increase"].includes(data.notice_type))
             updateGroupCache(data.group_id)
-        sandbox.exec(`try{this.onEvents()}catch(e){}`)
+        try {
+            sandbox.exec(`try{this.onEvents()}catch(e){}`)
+        } catch (e) {}
     })
     bot.on("request", (data)=>{
         setEnv(data)
-        sandbox.exec(`try{this.onEvents()}catch(e){}`)
+        try {
+            sandbox.exec(`try{this.onEvents()}catch(e){}`)
+        } catch (e) {}
     })
     return bot
 }
