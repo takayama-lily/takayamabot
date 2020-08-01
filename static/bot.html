@@ -60,7 +60,7 @@
                         <li>由于输入习惯问题，以下全角字符会被自动转为半角：<code>（）“”，＝</code></li>
                         <li>支持使用<a href="https://docs.cqp.im/manual/cqcode/" target="_blank">CQ码</a>定义消息(暂时不能发图)。</li>
                         <li>为了符合一般用户输入习惯，大多数函数可以使用【.函数名 参数1 参数2】的形式调用(参数只能是字符串)。</li>
-                        <li>在函数的第二行添加注释，则函数会被收录在<a href="http://usus.lietxia.bid/manage/fn.html" target="_blank">功能一览</a>中，注释会显示在功能说明里(暂时只支持多行双斜杠注释)。</li>
+                        <li>在函数的第二行添加注释，则函数会被收录在<a href="http://usus.lietxia.bid/fn.html" target="_blank">功能一览</a>中，注释会显示在功能说明里(暂时只支持多行双斜杠注释)。</li>
                         <li>功能一览不会收录<code>开头没有注释</code>或<code>命名过长</code>的函数。</li>
                     </ul>
                     <h6 class="font-weight-bold">限制</h6>
@@ -121,7 +121,7 @@
                                 <td>setTimeout(fn, timeout, argv=[])</tdd>
                                 <td>
                                     <li>fn: function</li>
-                                    <li>timeout: number ※毫秒(大于1000)</li>
+                                    <li>timeout: number ※毫秒(大于5000)</li>
                                     <li>argv: array ※传递给fn的参数数组</li>
                                 </td>
                                 <td>object</td>
@@ -282,16 +282,16 @@
                                     <li>content: string</li>
                                 </td>
                                 <td>无</td>
-                                <td>发布群公告<br>※调用者必须是管理员</td>
+                                <td>发布群公告<br>※调用者必须是管理</td>
                             </tr>
-                            <!-- <tr>
+                            <tr>
                                 <td>$.setGroupKick(uid)</td>
                                 <td>
                                     <li>uid: number</li>
                                 </td>
                                 <td>无</td>
-                                <td>群踢人<br>※调用者必须是管理员</td>
-                            </tr> -->
+                                <td>群踢人<br>※调用者必须是管理</td>
+                            </tr>
                             <tr>
                                 <td>$.setGroupBan(uid,duration=60)</td>
                                 <td>
@@ -299,7 +299,7 @@
                                     <li>duration: number</li>
                                 </td>
                                 <td>无</td>
-                                <td>群禁言<br>※调用者必须是管理员</td>
+                                <td>群禁言<br>※调用者必须是管理</td>
                             </tr>
                             <tr>
                                 <td>$.setGroupLeave(dismiss=false)</td>
@@ -307,7 +307,7 @@
                                     <li>dismiss: boolean</li>
                                 </td>
                                 <td>无</td>
-                                <td>退群<br>※调用者必须是管理员</td>
+                                <td>退群<br>※调用者必须是管理</td>
                             </tr>
                             <tr>
                                 <td>$.setGroupAdmin(uid,enable=true)</td>
@@ -355,7 +355,7 @@
                     </table>
                 </div>
                 <div id="qqevent" class="container tab-pane fade"><br>
-                    咕
+                    此功能正在重新设计
 <!--                     需要自行重写"on_message_群号"和"on_notice_群号"函数，例如群号为1234567，<br><br>
                     在有群消息时，会触发on_message_1234567函数，重写这个函数即可处理群消息：<br>
 <pre>
