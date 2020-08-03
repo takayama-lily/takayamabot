@@ -7,8 +7,8 @@ const Bot = require("./modules/qqplugin/cqhttp")
 const bots = {}
 
 // CQ数据库初始化
-const sqlite3 = require('sqlite3')
-const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
+// const sqlite3 = require('sqlite3')
+// const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
 
 const getGid = ()=>sandbox.getContext().data.group_id
 const getSid = ()=>sandbox.getContext().data.self_id
