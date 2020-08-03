@@ -389,15 +389,18 @@ module.exports = (server)=>{
     //开启ws服务器处理bot请求
     const wss = new WebSocket.Server({server})
     wss.on("connection", (ws, req)=>{
-        const qq = req.headers["x-self-id"]
-        if (!qq) 
+        const self_id = req.headers["x-self-id"]
+        if (!self_id) 
             return ws.close(4000, "QQ number is not currect.")
-        if (!bots.hasOwnProperty(qq))
-            bots[qq] = createBot(parseInt(qq))
-        bots[qq].conn = ws
+        const access_token = req.headers["authorization"]
+        if (process.env.SANDBOX_AUTH && (!access_token || !access_token.includes(process.env.SANDBOX_AUTH)))
+            return ws.close(4001, "Auth failed.")
+        if (!bots.hasOwnProperty(self_id))
+            bots[self_id] = createBot(parseInt(self_id))
+        bots[self_id].conn = ws
         ws.on("message", (data)=>{
-            bots[qq].onEvent(data)
+            bots[self_id].onEvent(data)
         })
-        bots[qq].emit("connection")
+        bots[self_id].emit("connection")
     })
 }
