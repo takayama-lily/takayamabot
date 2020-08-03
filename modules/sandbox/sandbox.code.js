@@ -51,9 +51,7 @@ const error403 = this.error403 = new Error("403 forbidden")
 this.database = this.database && typeof this.database === "object" ? this.database : {}
 this.database = new Proxy(this.database, {
     get: (o, k)=>{
-        if (this.isMaster())
-            return o[k]
-        if (parseInt(k) !== this.data.group_id)
+        if (parseInt(k) !== this.data.group_id && !this.isMaster())
             throw error403
         if (!o.hasOwnProperty(k))
             o[k] = {}
