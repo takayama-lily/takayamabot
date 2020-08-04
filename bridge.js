@@ -7,8 +7,8 @@ const Bot = require("./modules/qqplugin/cqhttp")
 const bots = {}
 
 // CQ数据库初始化
-// const sqlite3 = require('sqlite3')
-// const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
+const sqlite3 = require('sqlite3')
+const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
 
 const getGid = ()=>sandbox.getContext().data.group_id
 const getSid = ()=>sandbox.getContext().data.self_id
@@ -321,20 +321,24 @@ const createBot = (self_id)=>{
             return bot.setGroupLeave(data.group_id)
         setEnv(data)
         let message = ""
-        for (let v of data.message) {
-            if (v.type === "text")
-                message += v.data.text
-            else if (v.type === "at") {
-                if (v.data.qq == data.self_id && !message.trim())
-                    continue
-                message += `'[CQ:at,qq=${v.data.qq}]'`
+        if (Array.isArray(data.message)) {
+            for (let v of data.message) {
+                if (v.type === "text")
+                    message += v.data.text
+                else if (v.type === "at") {
+                    if (v.data.qq == data.self_id && !message.trim())
+                        continue
+                    message += `'[CQ:at,qq=${v.data.qq}]'`
+                }
+                else {
+                    message += `[CQ:${v.type}`
+                    for (let k in v.data)
+                        message += `,${k}=${v.data[k]}`
+                    message += `]`
+                }
             }
-            else {
-                message += `[CQ:${v.type}`
-                for (let k in v.data)
-                    message += `,${k}=${v.data[k]}`
-                message += `]`
-            }
+        } else {
+            message = data.message
         }
         message = message.trim()
         let res = sandbox.run(message)
