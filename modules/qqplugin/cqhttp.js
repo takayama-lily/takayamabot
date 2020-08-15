@@ -34,6 +34,17 @@ const filter = (msg)=>{
     return msg
 }
 
+const miraiGo935 = (uid, msg, bot)=>{
+    let sub = "";
+    for (let i = 0; i < msg.length; ++i) {
+        sub += msg[i];
+        if (Buffer.byteLength(sub) > 930) {
+            bot.sendPrivateMsg(uid, sub)
+            sub = ""
+        }
+    }
+}
+
 /**
  * implement of QQBot
  */
@@ -79,6 +90,8 @@ class CQHttp extends Events {
     async sendPrivateMsg(uid, msg, escape = false) {
         msg = filter(msg)
         if (!msg) return
+        if (Buffer.byteLength(msg) > 935)
+            return miraiGo935(uid, msg, this)
         let data = this._buildData('send_private_msg', {
             user_id: uid,
             message: msg,

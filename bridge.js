@@ -350,9 +350,13 @@ const createBot = (self_id)=>{
         if (["number","boolean"].includes(typeof res) && res.toString() === message)
             echo = false
         if (message.substr(0,1) === "\\" && typeof res === "undefined")
-            res = "undefined"
-        if (echo)
-            bot.reply(data, res, {at_sender: false})
+            res = "<undefined>"
+        if (echo) {
+            if (data.message_type === "private")
+                bot.sendPrivateMsg(data.user_id, res)
+            else
+                bot.sendGroupMsg(data.group_id, res)
+        }
         try {
             sandbox.exec(`try{this.onEvents()}catch(e){}`)
         } catch (e) {}
