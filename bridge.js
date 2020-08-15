@@ -7,8 +7,8 @@ const Bot = require("./modules/qqplugin/cqhttp")
 const bots = {}
 
 // CQ数据库初始化
-const sqlite3 = require('sqlite3')
-const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
+// const sqlite3 = require('sqlite3')
+// const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
 
 const getGid = ()=>sandbox.getContext().data.group_id
 const getSid = ()=>sandbox.getContext().data.self_id
@@ -82,21 +82,21 @@ const precheck = function() {
 }`)
 }
 
-sandbox.include("query", function(sql, callback) {
-    checkFrequency()
-    checkAndAddAsyncQueue(this)
-    if (typeof sql !== "string")
-        throw new TypeError("sql(第一个参数)必须是字符串。")
-    if (typeof callback !== "function")
-        throw new TypeError("callback(第二个参数)必须是函数。")
-    const env = sandbox.getContext().data
-    db.get(sql, (err, row)=>{
-        if (err)
-            asyncCallback(this, env, callback, [JSON.stringify(err)])
-        else
-            asyncCallback(this, env, callback, [JSON.stringify(row)])
-    })
-})
+// sandbox.include("query", function(sql, callback) {
+//     checkFrequency()
+//     checkAndAddAsyncQueue(this)
+//     if (typeof sql !== "string")
+//         throw new TypeError("sql(第一个参数)必须是字符串。")
+//     if (typeof callback !== "function")
+//         throw new TypeError("callback(第二个参数)必须是函数。")
+//     const env = sandbox.getContext().data
+//     db.get(sql, (err, row)=>{
+//         if (err)
+//             asyncCallback(this, env, callback, [JSON.stringify(err)])
+//         else
+//             asyncCallback(this, env, callback, [JSON.stringify(row)])
+//     })
+// })
 
 sandbox.include("setTimeout", function(fn, timeout = 5000, argv = []) {
     checkFrequency()
