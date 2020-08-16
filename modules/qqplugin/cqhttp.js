@@ -43,6 +43,7 @@ const miraiGo935 = (uid, msg, bot)=>{
             sub = ""
         }
     }
+    bot.sendPrivateMsg(uid, sub)
 }
 
 /**
