@@ -91,8 +91,8 @@ class CQHttp extends Events {
     async sendPrivateMsg(uid, msg, escape = false) {
         msg = filter(msg)
         if (!msg) return
-        if (Buffer.byteLength(msg) > 935)
-            return miraiGo935(uid, msg, this)
+        // if (Buffer.byteLength(msg) > 935)
+        //     return miraiGo935(uid, msg, this)
         let data = this._buildData('send_private_msg', {
             user_id: uid,
             message: msg,
