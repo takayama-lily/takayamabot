@@ -34,12 +34,12 @@ const filter = (msg)=>{
     return msg
 }
 
-const miraiGo935 = (uid, msg, bot)=>{
+const miraiGo935 = async(uid, msg, bot)=>{
     let sub = "";
     for (let i = 0; i < msg.length; ++i) {
         sub += msg[i];
         if (Buffer.byteLength(sub) > 930) {
-            bot.sendPrivateMsg(uid, sub)
+            await bot.sendPrivateMsg(uid, sub)
             sub = ""
         }
     }
