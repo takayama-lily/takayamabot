@@ -277,7 +277,7 @@ const createBot = (self_id)=>{
     }
     const updateGroupCache = async(gid, cache = false)=>{
         gid = parseInt(gid)
-        let group = (await bot.getGroupInfo(gid, cache)).data
+        let group = (await bot.getGroupInfo(gid)).data
         let members = (await bot.getGroupMemberList(gid)).data
         if (!group || !members)
             return
@@ -363,7 +363,7 @@ const createBot = (self_id)=>{
     })
     bot.on("notice", (data)=>{
         setEnv(data)
-        if (["group_admin","group_decrease","group_increase"].includes(data.notice_type))
+        if (data.group_id)
             updateGroupCache(data.group_id)
         try {
             sandbox.exec(`try{this.onEvents()}catch(e){}`)

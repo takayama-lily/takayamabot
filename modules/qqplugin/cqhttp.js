@@ -27,23 +27,11 @@ const filter = (msg)=>{
     else if (typeof msg !== "string")
         msg = stringify_config(msg)
     msg = msg.replace(ero, "⃺")
-    if (msg.length > 4500)
-        msg = msg.substr(0, 4495) + "\n..."
+    if (msg.length > 20000)
+        msg = msg.substr(0, 19996) + "\n..."
     if (!msg.length)
         return
     return msg
-}
-
-const miraiGo935 = async(uid, msg, bot)=>{
-    let sub = "";
-    for (let i = 0; i < msg.length; ++i) {
-        sub += msg[i];
-        if (Buffer.byteLength(sub) > 930) {
-            await bot.sendPrivateMsg(uid, sub)
-            sub = ""
-        }
-    }
-    bot.sendPrivateMsg(uid, sub)
 }
 
 /**
@@ -91,8 +79,6 @@ class CQHttp extends Events {
     async sendPrivateMsg(uid, msg, escape = false) {
         msg = filter(msg)
         if (!msg) return
-        // if (Buffer.byteLength(msg) > 935)
-        //     return miraiGo935(uid, msg, this)
         let data = this._buildData('send_private_msg', {
             user_id: uid,
             message: msg,
