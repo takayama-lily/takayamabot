@@ -405,6 +405,10 @@ module.exports = (server)=>{
         if (!bots.hasOwnProperty(self_id))
             bots[self_id] = createBot(parseInt(self_id))
         bots[self_id].conn = ws
+        ws.on("error", ()=>{})
+        ws.on("close", ()=>{
+            delete bots[self_id];
+        })
         ws.on("message", (data)=>{
             bots[self_id].onEvent(data)
         })
