@@ -316,7 +316,7 @@ const createBot = (self_id)=>{
     })
     //传递给沙盒的事件
     bot.on("message", (data)=>{
-        if (bots.hasOwnProperty(data.user_id) && data.user_id > self_id && data.group_id)
+        if (bots.hasOwnProperty(data.user_id) && data.user_id < self_id && data.group_id)
             return bot.setGroupLeave(data.group_id)
         setEnv(data)
         let message = ""
