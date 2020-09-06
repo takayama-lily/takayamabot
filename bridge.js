@@ -275,7 +275,7 @@ const createBot = (self_id)=>{
         }
         sandbox.setEnv(data)
     }
-    const updateGroupCache = async(gid, cache = false)=>{
+    const updateGroupCache = async(gid)=>{
         gid = parseInt(gid)
         let group = (await bot.getGroupInfo(gid)).data
         let members = (await bot.getGroupMemberList(gid)).data
@@ -283,7 +283,7 @@ const createBot = (self_id)=>{
             return
         group.members = {}
         for (let v of members) {
-            group.members[v.user_id] = Object.setPrototypeOf(v, null)
+            group.members[v.user_id] = v
             Object.freeze(group.members[v.user_id])
         }
         bot.groups[gid] = group
@@ -293,14 +293,14 @@ const createBot = (self_id)=>{
         let res = await bot.getGroupList()
         if (!res.retcode && res.data instanceof Array) {
             for (let v of res.data) {
-                await updateGroupCache(v.group_id, true)
+                await updateGroupCache(v.group_id)
             }
         }
     }
     bot.groups = new Proxy({}, {
         get: (o, k)=>{
             if (o[k]) {
-                if (Date.now() - o[k].member_list_uptime * 1000 >= 300000)
+                if (Date.now() - o[k].member_list_uptime * 1000 >= 1000000)
                     updateGroupCache(k)
                 return o[k]
             } else {
