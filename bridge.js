@@ -287,7 +287,6 @@ const createBot = (self_id)=>{
             Object.freeze(group.members[v.user_id])
         }
         bot.groups[gid] = group
-        Object.freeze(bot.groups[gid])
     }
     const initQQData = async()=>{
         let res = await bot.getGroupList()
@@ -302,6 +301,7 @@ const createBot = (self_id)=>{
             if (o[k]) {
                 if (Date.now() - o[k].member_list_uptime * 1000 >= 1000000)
                     updateGroupCache(k)
+                Object.freeze(o[k])
                 return o[k]
             } else {
                 updateGroupCache(k)
