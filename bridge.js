@@ -318,7 +318,6 @@ const createBot = (self_id)=>{
     bot.on("message", (data)=>{
         if (bots.hasOwnProperty(data.user_id) && data.user_id < self_id && data.group_id)
             return bot.setGroupLeave(data.group_id)
-        setEnv(data)
         let message = ""
         if (Array.isArray(data.message)) {
             for (let v of data.message) {
@@ -340,6 +339,8 @@ const createBot = (self_id)=>{
             message = data.message
         }
         message = message.trim()
+        data.message = message
+        setEnv(data)
         let res = sandbox.run(message)
         let echo = true
         if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
