@@ -223,7 +223,7 @@ class CQHttp extends Events {
         return await this._request(data)
     }
     async sendGroupNotice(gid, title, content) {
-        let data = this._buildData('_send_group_notice', {
+        let data = this._buildData('send_group_notice', {
             group_id: gid,
             title: title,
             content: content
