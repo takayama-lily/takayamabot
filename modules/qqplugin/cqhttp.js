@@ -54,6 +54,7 @@ class CQHttp extends Events {
         if (this.qq && data.self_id != this.qq)
             return
         switch (data.post_type) {
+            case 'meta_event':
             case 'request':
             case 'notice':
             case 'message':

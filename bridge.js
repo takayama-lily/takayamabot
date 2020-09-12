@@ -309,10 +309,12 @@ const createBot = (self_id)=>{
             }
         }
     })
-    bot.on("connection", ()=>{
-        initQQData()
-        setEnv({self_id})
-        sandbox.exec(`try{this.afterConn(${self_id})}catch(e){}`)
+    bot.on("meta_event", (data)=>{
+        if (data.sub_type === "enable") {
+            initQQData()
+            setEnv({self_id})
+            sandbox.exec(`try{this.afterConn(${self_id})}catch(e){}`)
+        }
     })
     //传递给沙盒的事件
     bot.on("message", (data)=>{
@@ -413,6 +415,5 @@ module.exports = (server)=>{
         ws.on("message", (data)=>{
             bots[self_id].onEvent(data)
         })
-        bots[self_id].emit("connection")
     })
 }
