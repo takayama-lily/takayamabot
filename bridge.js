@@ -270,9 +270,9 @@ sandbox.include("$", $)
 const createBot = (self_id)=>{
     const bot = new Bot()
     const setEnv = (data)=>{
-        if (data.group_id && bot.groups[data.group_id]) {
-            data.group_name = bot.groups[data.group_id].group_name
-        }
+        // if (data.group_id && bot.groups[data.group_id]) {
+        //     data.group_name = bot.groups[data.group_id].group_name
+        // }
         sandbox.setEnv(data)
     }
     const updateGroupCache = async(gid)=>{
