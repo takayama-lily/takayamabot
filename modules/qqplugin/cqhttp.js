@@ -231,6 +231,13 @@ class CQHttp extends Events {
         })
         return await this._request(data)
     }
+    async sendGroupPoke(gid, uid) {
+        let data = this._buildData('send_group_poke', {
+            group_id: gid,
+            user_id: uid,
+        })
+        return await this._request(data)
+    }
     async getLoginInfo() {
         let data = this._buildData('get_login_info')
         return await this._request(data)

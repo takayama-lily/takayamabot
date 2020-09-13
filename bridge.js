@@ -251,6 +251,10 @@ $.sendGroupNotice = (title, content)=>{
     precheck()
     bots[getSid()].sendGroupNotice(getGid(), title, content)
 }
+$.sendGroupPoke = (uid)=>{
+    precheck()
+    bots[getSid()].sendGroupNotice(getGid(), uid)
+}
 $.setGroupRequest = (flag, approve = true, reason = undefined)=>{
     precheck()
     bots[getSid()].setGroupRequest(flag, approve, reason)
