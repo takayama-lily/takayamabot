@@ -287,7 +287,7 @@ class CQHttp extends Events {
         return await this._request(data)
     }
     async inviteFriend(gid, uid) {
-        let data = this._buildData('delete_friend', {
+        let data = this._buildData('invite_friend', {
             group_id: gid,
             user_id: uid,
         })
