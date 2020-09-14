@@ -267,6 +267,18 @@ $.setGroupInvitation = (flag, approve = true, reason = undefined)=>{
     precheck()
     bots[getSid()].setGroupInvitation(flag, approve, reason)
 }
+$.addFriend = (gid, uid, comment = "")=>{
+    precheck()
+    bots[getSid()].addFriend(gid, uid, comment)
+}
+$.deleteFriend = (uid, block = true)=>{
+    precheck()
+    bots[getSid()].deleteFriend(uid, block)
+}
+$.inviteFriend = (gid, uid)=>{
+    precheck()
+    bots[getSid()].inviteFriend(gid, uid)
+}
 $.ajax = fetch
 $.get = fetch
 sandbox.include("$", $)

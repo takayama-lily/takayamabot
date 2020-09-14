@@ -271,6 +271,28 @@ class CQHttp extends Events {
         })
         return await this._request(data)
     }
+    async addFriend(gid, uid, comment = "") {
+        let data = this._buildData('add_friend', {
+            group_id: gid,
+            user_id: uid,
+            comment
+        })
+        return await this._request(data)
+    }
+    async deleteFriend(uid, block = true) {
+        let data = this._buildData('delete_friend', {
+            user_id: uid,
+            block
+        })
+        return await this._request(data)
+    }
+    async inviteFriend(gid, uid) {
+        let data = this._buildData('delete_friend', {
+            group_id: gid,
+            user_id: uid,
+        })
+        return await this._request(data)
+    }
     async getGroupNotice(gid) {
         let data = this._buildData('_get_group_notice', {
             group_id: gid
