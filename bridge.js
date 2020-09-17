@@ -312,8 +312,8 @@ const createBot = (self_id)=>{
     bot.groups = new Proxy({}, {
         get: (o, k)=>{
             if (o[k]) {
-                // if (Date.now() - o[k].member_list_uptime * 1000 >= 1000000)
-                //     updateGroupCache(k)
+                if (!Object.keys(o[k].members).length)
+                    updateGroupCache(k)
                 Object.freeze(o[k])
                 return o[k]
             } else {
