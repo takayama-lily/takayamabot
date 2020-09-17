@@ -286,9 +286,6 @@ sandbox.include("$", $)
 const createBot = (self_id)=>{
     const bot = new Bot()
     const setEnv = (data)=>{
-        // if (data.group_id && bot.groups[data.group_id]) {
-        //     data.group_name = bot.groups[data.group_id].group_name
-        // }
         sandbox.setEnv(data)
     }
     const updateGroupCache = async(gid)=>{
@@ -315,8 +312,8 @@ const createBot = (self_id)=>{
     bot.groups = new Proxy({}, {
         get: (o, k)=>{
             if (o[k]) {
-                if (Date.now() - o[k].member_list_uptime * 1000 >= 1000000)
-                    updateGroupCache(k)
+                // if (Date.now() - o[k].member_list_uptime * 1000 >= 1000000)
+                //     updateGroupCache(k)
                 Object.freeze(o[k])
                 return o[k]
             } else {
