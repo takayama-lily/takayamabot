@@ -136,7 +136,7 @@ const fetch = function(url, callback = ()=>{}, headers = null) {
     try {
         protocol.get(url, options, (res)=>{
             if (res.statusCode !== 200) {
-                cb(JSON.stringify({code: res.statusCode}))
+                cb(JSON.stringify(res.headers))
                 return
             }
             res.on("data", chunk=>{
