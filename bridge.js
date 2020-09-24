@@ -136,7 +136,7 @@ const fetch = function(url, callback = ()=>{}, headers = null) {
     try {
         protocol.get(url, options, (res)=>{
             if (res.statusCode !== 200) {
-                cb(JSON.stringify(res.headers))
+                cb(res.headers)
                 return
             }
             res.on("data", chunk=>{
@@ -157,9 +157,9 @@ const fetch = function(url, callback = ()=>{}, headers = null) {
                 } else
                     cb(Buffer.concat(data).toString())
             })
-        }).on("error", err=>cb(JSON.stringify(err)))
+        }).on("error", err=>cb(err))
     } catch (e) {
-        cb(JSON.stringify(e))
+        cb(e)
     }
 }
 sandbox.include("fetch", fetch)
