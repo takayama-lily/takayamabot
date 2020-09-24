@@ -136,6 +136,7 @@ const fetch = function(url, callback = ()=>{}, headers = null) {
     try {
         protocol.get(url, options, (res)=>{
             if (res.statusCode !== 200) {
+                res.headers["status-code"] = res.statusCode
                 cb(res.headers)
                 return
             }
