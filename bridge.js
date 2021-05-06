@@ -1,14 +1,85 @@
 const http = require("http")
 const https = require("https")
-const WebSocket = require("ws")
 const zlib = require("zlib")
+const { parentPort } = require("worker_threads")
+const stringify = require('string.ify')
+const stringify_config = stringify.configure({
+    pure:            false,
+    json:            false,
+    maxDepth:        2,
+    maxLength:       10,
+    maxArrayLength:  20,
+    maxObjectLength: 20,
+    maxStringLength: 30,
+    precision:       undefined,
+    formatter:       undefined,
+    pretty:          true,
+    rightAlignKeys:  true,
+    fancy:           false,
+    indentation:     '  ',
+})
 const sandbox = require("./modules/sandbox/sandbox")
-const Bot = require("./modules/qqplugin/cqhttp")
-const bots = {}
 
-// CQ数据库初始化
-// const sqlite3 = require('sqlite3')
-// const db = new sqlite3.Database('/var/www/db/eventv2.db', sqlite3.OPEN_READONLY)
+parentPort.on("close", process.exit)
+parentPort.on("message", (value) => {
+    if (typeof value === "string") {
+        value = JSON.parse(value)
+        onmessage(value)
+    } else {
+        handler.get(value.echo)?.(value)
+        handler.delete(value.echo)
+    }
+})
+const handler = new Map
+function callApi(method, params = [], check = true) {
+    if (check)
+        precheck()
+    const echo = String(Math.random()) + String(Date.now())
+    parentPort.postMessage({
+        uin: getSid(),
+        method, params, echo
+    })
+    return new Promise((resolve) => handler.set(echo, resolve))
+}
+
+const bots = new Map
+async function init(data, gid) {
+    if (!bots.has(data.self_id))
+        bots.set(data.self_id, {})
+    const bot = bots.get(data.self_id)
+    if (!bot.groups) {
+        sandbox.setEnv(data)
+        bot.groups = callApi("getGroupList", [], false)
+    }
+    if (bot.groups instanceof Promise) {
+        bot.groups = (await bot.groups).data
+    }
+    if (!gid) {
+        for (const [gid, ginfo] of bot.groups) {
+            sandbox.setEnv(data)
+            const members = (await callApi("getGroupMemberList", [gid], false)).data
+            ginfo.members = {}
+            for (const [uid, minfo] of members) {
+                ginfo.members[uid] = minfo
+                Object.freeze(minfo)
+            }
+            Object.freeze(ginfo.members)
+            Object.freeze(ginfo)
+        }
+    } else {
+        sandbox.setEnv(data)
+        const ginfo = (await callApi("getGroupInfo", [gid], false)).data
+        sandbox.setEnv(data)
+        const members = (await callApi("getGroupMemberList", [gid], false)).data
+        ginfo.members = {}
+        for (const [uid, minfo] of members) {
+            ginfo.members[uid] = minfo
+            Object.freeze(minfo)
+        }
+        Object.freeze(ginfo.members)
+        Object.freeze(ginfo)
+    }
+}
 
 const getGid = ()=>sandbox.getContext().data.group_id
 const getSid = ()=>sandbox.getContext().data.self_id
@@ -81,22 +152,6 @@ const precheck = function() {
     delete this.${function_name}
 }`)
 }
-
-// sandbox.include("query", function(sql, callback) {
-//     checkFrequency()
-//     checkAndAddAsyncQueue(this)
-//     if (typeof sql !== "string")
-//         throw new TypeError("sql(第一个参数)必须是字符串。")
-//     if (typeof callback !== "function")
-//         throw new TypeError("callback(第二个参数)必须是函数。")
-//     const env = sandbox.getContext().data
-//     db.get(sql, (err, row)=>{
-//         if (err)
-//             asyncCallback(this, env, callback, [JSON.stringify(err)])
-//         else
-//             asyncCallback(this, env, callback, [JSON.stringify(row)])
-//     })
-// })
 
 sandbox.include("setTimeout", function(fn, timeout = 5000, argv = []) {
     checkFrequency()
@@ -191,211 +246,151 @@ sandbox.include("querystring", require("querystring"))
 sandbox.include("path", require("path"))
 sandbox.include("zip", require("zlib").deflateSync)
 sandbox.include("unzip", require("zlib").unzipSync)
-// sandbox.include("url", require("url"))
-// sandbox.include("string_decoder", require("string_decoder"))
-// sandbox.include("util", require("util"))
 sandbox.include("os", require("os"))
-// sandbox.include("vm", require("vm"))
 sandbox.include("Buffer", Buffer)
-// sandbox.include("Events", require("events"))
+
+// 色情敏感词过滤
+const ero = /(母狗|看批|日批|香批|批里|成人|无码|苍井空|b里|嫩b|嫩比|小便|大便|粪|屎|尿|淦|屄|屌|奸|淫|穴|yin|luan|xue|jiao|cao|sao|肏|肛|骚|逼|妓|艹|子宫|月经|危险期|安全期|戴套|无套|内射|中出|射在里|射在外|精子|卵子|受精|幼女|嫩幼|粉嫩|日我|日烂|草我|草烂|干我|日死|草死|干死|狂草|狂干|狂插|狂操|日比|草比|搞我|舔我|舔阴|浪女|浪货|浪逼|浪妇|发浪|浪叫|淫荡|淫乱|荡妇|荡女|荡货|操烂|抽插|被干|被草|被操|被日|被上|被艹|被插|被射|射爆|射了|颜射|射脸|按摩棒|肉穴|小穴|阴核|阴户|阴阜|阴蒂|阴囊|阴部|阴道|阴唇|阴茎|肉棒|阳具|龟头|勃起|爱液|蜜液|精液|食精|咽精|吃精|吸精|吞精|喷精|射精|遗精|梦遗|深喉|人兽|兽交|滥交|拳交|乱交|群交|肛交|足交|脚交|口爆|口活|口交|乳交|乳房|乳头|乳沟|巨乳|玉乳|豪乳|暴乳|爆乳|乳爆|乳首|乳罩|奶子|奶罩|摸奶|胸罩|摸胸|胸部|胸推|推油|大保健|黄片|爽片|a片|野战|叫床|露出|露b|漏出|漏b|乱伦|轮奸|轮暴|轮操|强奸|强暴|情色|色情|全裸|裸体|果体|酥痒|捏弄|套弄|体位|骑乘|后入|二穴|三穴|嬲|调教|凌辱|饥渴|好想要|性交|性奴|性虐|性欲|性行为|性爱|做爱|作爱|手淫|撸管|自慰|痴女|jj|jb|j8|j8|鸡8|鸡ba|鸡鸡|鸡巴|鸡吧|鸡儿|肉便器|rbq|泄欲|发泄|高潮|潮吹|潮喷|爽死|爽翻|爽爆|你妈|屁眼|后庭|菊花|援交|操死|插死)/ig
+function filter(msg) {
+    if (typeof msg === "undefined")
+        return
+    else if (typeof msg !== "string")
+        msg = stringify_config(msg)
+    msg = msg.replace(ero, "⃺")
+    if (msg.length > 6000)
+        msg = msg.substr(0, 6000) + "\n..."
+    if (!msg.length)
+        return
+    return msg
+}
 
 // qq api
 const $ = {}
 $.getGroupInfo = ()=>{
-    return bots[getSid()].groups[getGid()]
+    return bots.get(getSid())?.groups?.get(getGid())
 }
 $.sendPrivateMsg = (uid, msg, escape_flag = false)=>{
-    precheck()
-    bots[getSid()].sendPrivateMsg(uid, msg, escape_flag)
+    msg = filter(msg)
+    if (!msg) return
+    callApi("sendPrivateMsg", [uid, msg, escape_flag])
 }
 $.sendGroupMsg = (gid, msg, escape_flag = false)=>{
-    precheck()
-    bots[getSid()].sendGroupMsg(gid, msg, escape_flag)
+    msg = filter(msg)
+    if (!msg) return
+    callApi("sendGroupMsg", [gid, msg, escape_flag])
+}
+$.sendDiscussMsg = (id, msg, escape_flag = false)=>{
+    msg = filter(msg)
+    if (!msg) return
+    callApi("sendDiscussMsg", [id, msg, escape_flag])
 }
 $.deleteMsg = (message_id)=>{
-    precheck()
-    bots[getSid()].deleteMsg(message_id)
+    callApi("deleteMsg", [message_id])
 }
 $.setGroupKick = (uid, forever = false)=>{
-    precheck()
-    bots[getSid()].setGroupKick(getGid(), uid, forever)
+    callApi("setGroupKick", [getGid(), uid, forever])
 }
 $.setGroupBan = (uid, duration = 60)=>{
-    precheck()
-    bots[getSid()].setGroupBan(getGid(), uid, duration)
+    callApi("setGroupBan", [getGid(), uid, duration])
 }
 $.setGroupAnonymousBan = (flag, duration = 60)=>{
-    precheck()
-    bots[getSid()].setGroupAnonymousBan(getGid(), flag, duration)
+    callApi("setGroupAnonymousBan", [getGid(), flag, duration])
 }
 $.setGroupAdmin = (uid, enable = true)=>{
-    precheck()
-    bots[getSid()].setGroupAdmin(getGid(), uid, enable)
+    callApi("setGroupAdmin", [getGid(), uid, enable])
 }
 $.setGroupWholeBan = (enable = true)=>{
-    precheck()
-    bots[getSid()].setGroupWholeBan(getGid(), enable)
+    callApi("setGroupWholeBan", [getGid(), enable])
 }
 $.setGroupAnonymous = (enable = true)=>{
-    precheck()
-    bots[getSid()].setGroupAnonymous(getGid(), enable)
+    callApi("setGroupAnonymous", [getGid(), enable])
 }
-$.setGroupCard = (uid, card = undefined)=>{
-    precheck()
-    bots[getSid()].setGroupCard(getGid(), uid, card)
+$.setGroupCard = (uid, card)=>{
+    callApi("setGroupCard", [getGid(), uid, card])
 }
 $.setGroupLeave = (dismiss = false)=>{
-    precheck()
-    bots[getSid()].setGroupLeave(getGid(), dismiss)
+    callApi("setGroupLeave", [getGid(), dismiss])
 }
 $.setGroupSpecialTitle = (uid, title, duration = -1)=>{
-    precheck()
-    bots[getSid()].setGroupSpecialTitle(getGid(), uid, title, duration)
+    callApi("setGroupSpecialTitle", [getGid(), uid, title, duration])
 }
-$.sendGroupNotice = (title, content)=>{
-    precheck()
-    bots[getSid()].sendGroupNotice(getGid(), title, content)
+$.sendGroupNotice = (content)=>{
+    callApi("sendGroupNotice", [getGid(), content])
 }
 $.sendGroupPoke = (uid)=>{
-    precheck()
-    bots[getSid()].sendGroupPoke(getGid(), uid)
+    callApi("sendGroupPoke", [getGid(), uid])
 }
 $.setGroupRequest = (flag, approve = true, reason = undefined)=>{
-    precheck()
-    bots[getSid()].setGroupRequest(flag, approve, reason)
+    callApi("setGroupAddRequest", [flag, approve, reason])
 }
 $.setFriendRequest = (flag, approve = true, remark = undefined)=>{
-    precheck()
-    bots[getSid()].setFriendRequest(flag, approve, remark)
+    callApi("setFriendAddRequest", [flag, approve, remark])
 }
 $.setGroupInvitation = (flag, approve = true, reason = undefined)=>{
-    precheck()
-    bots[getSid()].setGroupInvitation(flag, approve, reason)
+    callApi("setGroupAddRequest", [flag, approve, reason])
 }
-// $.addFriend = (gid, uid, comment = "")=>{
-//     precheck()
-//     bots[getSid()].addFriend(gid, uid, comment)
-// }
-// $.deleteFriend = (uid, block = true)=>{
-//     precheck()
-//     bots[getSid()].deleteFriend(uid, block)
-// }
 $.inviteFriend = (gid, uid)=>{
-    precheck()
-    bots[getSid()].inviteFriend(gid, uid)
+    callApi("inviteFriend", [gid, uid])
 }
 $.ajax = fetch
 $.get = fetch
 sandbox.include("$", $)
 
-const createBot = (self_id)=>{
-    const bot = new Bot()
-    const setEnv = (data)=>{
-        sandbox.setEnv(data)
-    }
-    const updateGroupCache = async(gid)=>{
-        gid = parseInt(gid)
-        let group = (await bot.getGroupInfo(gid)).data
-        let members = (await bot.getGroupMemberList(gid)).data
-        if (!group || !members)
-            return
-        group.members = {}
-        for (let v of members) {
-            group.members[v.user_id] = v
-            Object.freeze(group.members[v.user_id])
+/**
+ * @param {import("oicq").EventData} data 
+ */
+function onmessage(data) {
+    if (data.post_type === "message") {
+        if (data.message_type === "group" && bots.has(data.user_id) && data.user_id !== data.self_id && data.user_id < data.self_id) {
+            return callApi("setGroupLeave", [data.group_id], false)
         }
-        bot.groups[gid] = group
-    }
-    const initQQData = async()=>{
-        let res = await bot.getGroupList()
-        if (!res.retcode && res.data instanceof Array) {
-            for (let v of res.data) {
-                await updateGroupCache(v.group_id)
-            }
-        }
-    }
-    bot.groups = new Proxy({}, {
-        get: (o, k)=>{
-            if (o[k]) {
-                if (!Object.keys(o[k].members).length)
-                    updateGroupCache(k)
-                Object.freeze(o[k])
-                return o[k]
-            } else {
-                updateGroupCache(k)
-                return undefined
-            }
-        }
-    })
-    bot.on("meta_event", (data)=>{
-        if (data.sub_type === "enable") {
-            initQQData()
-            setEnv({self_id})
-            sandbox.exec(`try{this.afterConn(${self_id})}catch(e){}`)
-        }
-    })
-    //传递给沙盒的事件
-    bot.on("message", (data)=>{
-        if (bots.hasOwnProperty(data.user_id) && data.user_id < self_id && data.group_id)
-            return bot.setGroupLeave(data.group_id)
         let message = ""
-        if (Array.isArray(data.message)) {
-            for (let v of data.message) {
-                if (v.type === "text")
-                    message += v.data.text
-                else if (v.type === "at") {
-                    if (v.data.qq == data.self_id && !message.trim())
-                        continue
-                    message += `'[CQ:at,qq=${v.data.qq}]'`
-                }
-                else {
-                    message += `[CQ:${v.type}`
-                    for (let k in v.data)
-                        message += `,${k}=${v.data[k]}`
-                    message += `]`
-                }
+        for (let v of data.message) {
+            if (v.type === "text")
+                message += v.data.text
+            else if (v.type === "at") {
+                if (v.data.qq === data.self_id && !message)
+                    continue
+                message += `'[CQ:at,qq=${v.data.qq}]'`
+            } else {
+                message += `[CQ:${v.type}`
+                for (let k in v.data)
+                    message += `,${k}=${v.data[k]}`
+                message += `]`
             }
-        } else {
-            message = data.message
         }
         message = message.trim()
         data.message = message
-        setEnv(data)
+        sandbox.setEnv(data)
         let res = sandbox.run(message)
         let echo = true
         if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
             echo = false
         if (res === null && message === "null")
             echo = false
-        if (["number","boolean"].includes(typeof res) && res.toString() === message)
+        if (["number", "boolean"].includes(typeof res) && res.toString() === message)
             echo = false
         if (message.substr(0,1) === "\\" && typeof res === "undefined")
             res = "<undefined>"
-        if (echo) {
+        res = filter(res)
+        if (echo && res) {
             if (data.message_type === "private")
-                bot.sendPrivateMsg(data.user_id, res)
-            else
-                bot.sendGroupMsg(data.group_id, res)
+                callApi("sendPrivateMsg", [data.user_id, res], false)
+            else if (data.message_type === "group")
+                callApi("sendGroupMsg", [data.group_id, res], false)
+            else if (data.message_type === "discuss")
+                callApi("sendDiscussMsg", [data.discuss_id, res], false)
         }
-        try {
-            sandbox.exec(`try{this.onEvents()}catch(e){}`)
-        } catch (e) {}
-    })
-    bot.on("notice", (data)=>{
-        setEnv(data)
-        if (data.group_id)
-            updateGroupCache(data.group_id)
-        try {
-            sandbox.exec(`try{this.onEvents()}catch(e){}`)
-        } catch (e) {}
-    })
-    bot.on("request", (data)=>{
-        setEnv(data)
-        try {
-            sandbox.exec(`try{this.onEvents()}catch(e){}`)
-        } catch (e) {}
-    })
-    return bot
+    } else {
+        sandbox.setEnv(data)
+    }
+    if (!bots.has(data.self_id))
+        init(data)
+    else if (data.post_type === "notice" && data.notice_type === "group")
+        init(data, data.group_id)
+    try {
+        sandbox.exec(`try{this.onEvents()}catch(e){}`)
+    } catch { }
 }
 
 //防止沙盒逃逸
@@ -412,26 +407,3 @@ Object.freeze(Object)
 Object.freeze(Object.prototype)
 Object.freeze(Function)
 // Object.freeze(Function.prototype)
-
-module.exports = (server)=>{
-    //开启ws服务器处理bot请求
-    const wss = new WebSocket.Server({server})
-    wss.on("connection", (ws, req)=>{
-        const self_id = req.headers["x-self-id"]
-        if (!self_id) 
-            return ws.close(4000, "QQ number is not currect.")
-        const access_token = req.headers["authorization"]
-        if (process.env.SANDBOX_AUTH && (!access_token || !access_token.includes(process.env.SANDBOX_AUTH)))
-            return ws.close(4001, "Auth failed.")
-        if (!bots.hasOwnProperty(self_id))
-            bots[self_id] = createBot(parseInt(self_id))
-        bots[self_id].conn = ws
-        ws.on("error", ()=>{})
-        ws.on("close", ()=>{
-            delete bots[self_id];
-        })
-        ws.on("message", (data)=>{
-            bots[self_id].onEvent(data)
-        })
-    })
-}

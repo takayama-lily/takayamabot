@@ -1,6 +1,0 @@
-#!/bin/bash
-cd `dirname $0`
-eval `ssh-agent -s`
-ssh-add ~/.ssh/takayama-bot
-git pull
-npm install

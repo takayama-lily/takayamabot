@@ -1,5 +1,6 @@
 const fs = require("fs")
 const path = require("path")
+const zlib = require("zlib")
 const vm = require("vm")
 const dataPath = path.join(__dirname, "data")
 const contextFile = path.join(dataPath, "context")
@@ -13,7 +14,7 @@ if (!fs.existsSync(dataPath)) {
 let context = {}
 //还原context中的数据
 if (fs.existsSync(contextFile)) {
-    context = JSON.parse(fs.readFileSync(contextFile))
+    context = JSON.parse(zlib.brotliDecompressSync(fs.readFileSync(contextFile)))
 }
 
 //把context包装成proxy对象，来捕捉一些操作
@@ -61,12 +62,13 @@ vm.createContext(context, {
     codeGeneration: {
         strings: false,
         wasm: false
-    }
+    },
+    microtaskMode: "afterEvaluate"
 })
 
 //还原context中的函数
 if (fs.existsSync(fnFile)) {
-    let fn = JSON.parse(fs.readFileSync(fnFile))
+    let fn = JSON.parse(zlib.brotliDecompressSync(fs.readFileSync(fnFile)))
     const restoreFunctions = (o, name)=>{
         for (let k in o) {
             let key = name + `["${k}"]`
@@ -90,7 +92,7 @@ vm.runInContext(`Object.defineProperty(this, "root", {
     configurable: false,
     enumerable: false,
     writable: false,
-    value: ${JSON.stringify(process.env.SANDBOX_ROOT)}
+    value: "372914165"
 })`, context)
 
 //冻结内置对象(不包括console,globalThis)
@@ -143,6 +145,8 @@ const saveFunctions = (o, mp)=>{
                 continue
             mp[k] = {}
             saveFunctions(o[k], mp[k])
+        } else if (typeof o[k] === "bigint") {
+            o[k] = Number(o[k])
         }
     }
 }
@@ -151,15 +155,36 @@ const beforeSaveContext = ()=>{
     fn = {}
     saveFunctions(context, fn)
 }
+const brotli_options = {
+    params: {
+        [zlib.constants.BROTLI_PARAM_QUALITY]: 5
+    }
+}
 process.on("exit", (code)=>{
+    if (code !== 200)
+        return
     beforeSaveContext()
-    fs.writeFileSync(fnFile, JSON.stringify(fn))
-    fs.writeFileSync(contextFile, JSON.stringify(context))
+    fs.writeFileSync(fnFile, zlib.brotliCompressSync(JSON.stringify(fn), brotli_options))
+    fs.writeFileSync(contextFile, zlib.brotliCompressSync(JSON.stringify(context), brotli_options))
 })
 setInterval(()=>{
     beforeSaveContext()
-    fs.writeFile(fnFile, JSON.stringify(fn), (err)=>{})
-    fs.writeFile(contextFile, JSON.stringify(context), (err)=>{})
+    zlib.brotliCompress(
+        JSON.stringify(fn),
+        brotli_options,
+        (err, res) => {
+            if (!res)
+                fs.writeFile(fnFile, res, ()=>{})
+        }
+    )
+    zlib.brotliCompress(
+        JSON.stringify(context),
+        brotli_options,
+        (err, res) => {
+            if (!res)
+                fs.writeFile(contextFile, res, ()=>{})
+        }
+    )
 }, 3600000)
 
 //沙盒执行超时时间
