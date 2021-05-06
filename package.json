@@ -1,24 +1,17 @@
 {
-  "name": "cq",
+  "name": "sandbox",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
-    "https-proxy-agent": "^3.0.1",
-    "mjsoul": "^2.1.4",
-    "moment": "^2.27.0",
-    "protobufjs": "^6.10.1",
-    "riichi": "^1.1.3",
-    "sqlite3": "^4.2.0",
+  "description": "dependencies: cheerio moment riichi string.ify mjsoul syanten ws",
+  "main": "index.js",
+  "author": "takayama",
+  "license": "MIT",
+  "devDependencies": {
+    "cheerio": "^1.0.0-rc.6",
+    "mjsoul": "^2.2.0",
+    "moment": "^2.29.1",
+    "riichi": "^1.2.0",
     "string.ify": "^1.0.64",
-    "syanten": "^1.4.0",
-    "vm2": "^3.9.2",
-    "ws": "^7.3.1"
+    "syanten": "^1.5.0",
+    "ws": "^7.4.5"
   }
 }

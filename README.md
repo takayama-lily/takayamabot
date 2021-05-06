@@ -1,3 +1,5 @@
-# 聊天机器人
+# plugin-sandbox
 
-你看到了一个README.md
+[abot](https://github.com/takayama-lily/abot) 的一个插件
+
+将所有消息无差别地当做代码在沙盒中执行，并返回结果
