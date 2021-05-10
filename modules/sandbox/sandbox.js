@@ -173,7 +173,7 @@ setInterval(()=>{
         JSON.stringify(fn),
         brotli_options,
         (err, res) => {
-            if (!res)
+            if (res)
                 fs.writeFile(fnFile, res, ()=>{})
         }
     )
@@ -181,7 +181,7 @@ setInterval(()=>{
         JSON.stringify(context),
         brotli_options,
         (err, res) => {
-            if (!res)
+            if (res)
                 fs.writeFile(contextFile, res, ()=>{})
         }
     )
