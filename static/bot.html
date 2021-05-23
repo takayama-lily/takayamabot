@@ -65,7 +65,7 @@
                     <ul>
                         <li>所有原生对象、内置对象、原型都已冻结，无法篡改。</li>
                         <li>无法使用<code>eval</code>和<code>new Function()</code>。</li>
-                        <li>非白名单用户暂时无法使用<code>this</code>、<code>async</code>、<code>const</code>、<code>let</code>、<code>Promise</code>关键字(可以申请)。</li>
+                        <li>一般用户无法使用<code>this</code>、<code>const</code>、<code>let</code>关键字。</li>
                     </ul>
                     <h6 class="font-weight-bold">差异</h6>
                     <ul>
@@ -463,7 +463,7 @@
                     <li>Error | RangeError | ReferenceError | SyntaxError | TypeError | URIError</li>
                     <li>ArrayBuffer | SharedArrayBuffer | Atomics | DataView | Uint8ClampedArray</li>
                     <li>Uint8Array | Int8Array | Uint16Array | Int16Array | Uint32Array | Int32Array | Float32Array | Float64Array | BigUint64Array | BigInt64Array</li>
-                    <li>Promise (白名单用户可用)</li>
+                    <li>Promise</li>
                     <br>
                     <h6 class="font-weight-bold">不可用的</h6>
                     <li>global | globalThis | eval | console | WebAssembly</li>
