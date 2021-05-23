@@ -66,20 +66,7 @@
                         <li>所有原生对象、内置对象、原型都已冻结，无法篡改。</li>
                         <li>无法使用<code>eval</code>和<code>new Function()</code>。</li>
                         <li>一般用户无法使用<code>this</code>、<code>const</code>、<code>let</code>关键字。</li>
-                    </ul>
-                    <h6 class="font-weight-bold">差异</h6>
-                    <ul>
-                        <li>
-                            JS中的object类型是引用，用等号运算符会使两个对象指向同一个地址，修改一个会影响另一个。<br>
-                            但是服务器有时会重启，对象会经过序列化存储和反序列化还原，此时两个对象将不再指向一个地址。
-                        </li>
-                        <li>
-                            服务器重启还会导致：<br>
-                            ● 所有对象的原型都被指向Object.prototype<br>
-                            ● 所有函数的原型都被指向Function.prototype<br>
-                            ● 函数对象节点下如果包含其他数据，则无法还原<br>
-                            ● 除函数外，无法序列化保存的对象将被丢弃(比如包含循环引用)
-                        </li>
+                        <li>服务器有时会重启，一些无法序列化保存的变量可能会丢失。</li>
                     </ul>
                 </div>
                 <div id="function" class="container tab-pane fade"><br>
