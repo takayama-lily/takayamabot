@@ -163,52 +163,29 @@ const brotli_options = {
 process.on("exit", (code)=>{
     if (code !== 200)
         return
-    try {
-        beforeSaveContext()
-        fs.writeFileSync(fnFile, zlib.brotliCompressSync(JSON.stringify(fn), brotli_options))
-        fs.writeFileSync(contextFile, zlib.brotliCompressSync(JSON.stringify(context), brotli_options))
-    } catch (e) {
-        fs.appendFileSync("err.log", Date() + " " + e.stack + "\n")
-    }
+    beforeSaveContext()
+    fs.writeFileSync(fnFile, zlib.brotliCompressSync(JSON.stringify(fn), brotli_options))
+    fs.writeFileSync(contextFile, zlib.brotliCompressSync(JSON.stringify(context), brotli_options))
 })
 setInterval(()=>{
-    try {
-        fs.appendFileSync("err.log", Date() + "start save")
-        beforeSaveContext()
-        zlib.brotliCompress(
-            JSON.stringify(fn),
-            brotli_options,
-            (err, res) => {
-                if (err)
-                    fs.appendFileSync("err.log", Date() + " " + err.stack + "\n")
-                if (res) {
-                    fs.appendFileSync("err.log", Date() + "res length: " + res.length)
-                    fs.writeFile(fnFile, res, (err)=>{
-                        if (err)
-                            fs.appendFileSync("err.log", Date() + " " + err.stack + "\n")
-                    })
-                }
-            }
-        )
-        zlib.brotliCompress(
-            JSON.stringify(context),
-            brotli_options,
-            (err, res) => {
-                if (err)
-                    fs.appendFileSync("err.log", Date() + " " + err.stack + "\n")
-                if (res) {
-                    fs.appendFileSync("err.log", Date() + "res length: " + res.length)
-                    fs.writeFile(contextFile, res, ()=>{
-                        if (err)
-                        fs.appendFileSync("err.log", Date() + " " + err.stack + "\n")
-                    })
-                }
-            }
-        )
-    } catch (err) {
-        fs.appendFileSync("err.log", Date() + " " + err.stack + "\n")
-    }
-}, 60000)
+    beforeSaveContext()
+    zlib.brotliCompress(
+        JSON.stringify(fn),
+        brotli_options,
+        (err, res) => {
+            if (res)
+                fs.writeFile(fnFile, res, ()=>{})
+        }
+    )
+    zlib.brotliCompress(
+        JSON.stringify(context),
+        brotli_options,
+        (err, res) => {
+            if (res)
+                fs.writeFile(contextFile, res, ()=>{})
+        }
+    )
+}, 3600000)
 
 //沙盒执行超时时间
 let timeout = 300

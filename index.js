@@ -10,8 +10,15 @@ let flag = true
     if (!flag)
         return
     console.log(Date(), "sandbox启动")
-    worker = new Worker(path.join(__dirname, "main.js"))
-    worker.on("error", () => { })
+    worker = new Worker(path.join(__dirname, "main.js"), {
+        resourceLimits: {
+            maxYoungGenerationSizeMb: 128,
+            maxOldGenerationSizeMb: 1024,
+        }
+    })
+    worker.on("error", (err) => {
+        console.error(err)
+    })
     worker.on("exit", () => {
         console.log(Date(), "sandbox停止")
         startWorker()
