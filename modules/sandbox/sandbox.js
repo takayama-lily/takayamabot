@@ -212,7 +212,7 @@ module.exports.run = (code)=>{
         return res
     } catch(e) {
         if (debug) {
-            let line = e.stack.split("\n")[0].split(":").pop()
+            let line = e?.stack.split("\n")[0].split(":").pop()
             return e.name + ": " + e.message + " (line: " + parseInt(line) + ")"
         }
     }
