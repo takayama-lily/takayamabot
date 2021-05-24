@@ -78,6 +78,7 @@ async function init(data, gid) {
         }
         Object.freeze(ginfo.members)
         Object.freeze(ginfo)
+        bot.groups.set(gid, ginfo)
     }
 }
 
