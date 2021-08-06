@@ -192,7 +192,8 @@ class Bot extends EventEmitter {
                 this.lobby.open(async()=>{
                     res_login = await this.lobby.sendAsync("oauth2Login", {
                         type: 10,
-                        access_token: account
+                        access_token: account,
+                        client_version_string: "web-0.9.205"
                     })
                     resolve()
                 })
@@ -203,6 +204,7 @@ class Bot extends EventEmitter {
                     res_login = await this.lobby.sendAsync("login", {
                         account: account,
                         password: this.lobby.hash(password),
+                        client_version_string: "web-0.9.205",
                         type: isNaN(account) ? 0 : 1
                     })
                     resolve()
