@@ -7,7 +7,7 @@
   "license": "MIT",
   "devDependencies": {
     "cheerio": "^1.0.0-rc.6",
-    "mjsoul": "^2.2.0",
+    "mjsoul": "^2.3.0",
     "moment": "^2.29.1",
     "riichi": "^1.2.0",
     "string.ify": "^1.0.64",

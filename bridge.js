@@ -18,7 +18,7 @@ const stringify_config = stringify.configure({
     fancy:           false,
     indentation:     '  ',
 })
-const sandbox = require("./modules/sandbox/sandbox")
+const sandbox = require("./sandbox")
 
 parentPort.on("close", process.exit)
 parentPort.on("message", (value) => {
@@ -407,4 +407,4 @@ Function.prototype.constructor = new Proxy(Function, {
 Object.freeze(Object)
 Object.freeze(Object.prototype)
 Object.freeze(Function)
-// Object.freeze(Function.prototype)
+Object.freeze(Function.prototype)

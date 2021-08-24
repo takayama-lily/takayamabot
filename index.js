@@ -1,4 +1,5 @@
 "use strict"
+const fs = require("fs")
 const path = require("path")
 const { Worker } = require("worker_threads")
 
@@ -10,14 +11,14 @@ let flag = true
     if (!flag)
         return
     console.log(Date(), "sandbox启动")
-    worker = new Worker(path.join(__dirname, "main.js"), {
+    worker = new Worker(path.join(__dirname, "bridge.js"), {
         resourceLimits: {
             maxYoungGenerationSizeMb: 128,
             maxOldGenerationSizeMb: 1024,
         }
     })
     worker.on("error", (err) => {
-        console.error(err)
+        fs.appendFile("err.log", Date() + " " + err.stack + "\n", ()=>{})
     })
     worker.on("exit", () => {
         console.log(Date(), "sandbox停止")
