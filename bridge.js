@@ -58,6 +58,7 @@ async function init(data, gid) {
         for (const [gid, ginfo] of bot.groups) {
             sandbox.setEnv(data)
             const members = (await callApi("getGroupMemberList", [gid], false)).data
+            if (!members) continue
             ginfo.members = {}
             for (const [uid, minfo] of members) {
                 ginfo.members[uid] = minfo
@@ -71,6 +72,7 @@ async function init(data, gid) {
         const ginfo = (await callApi("getGroupInfo", [gid], false)).data
         sandbox.setEnv(data)
         const members = (await callApi("getGroupMemberList", [gid], false)).data
+        if (!ginfo || !members) return
         ginfo.members = {}
         for (const [uid, minfo] of members) {
             ginfo.members[uid] = minfo
