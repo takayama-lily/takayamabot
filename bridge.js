@@ -1,7 +1,6 @@
 const http = require("http")
 const https = require("https")
 const zlib = require("zlib")
-const { parentPort } = require("worker_threads")
 const stringify = require('string.ify')
 const stringify_config = stringify.configure({
     pure:            false,
@@ -20,8 +19,8 @@ const stringify_config = stringify.configure({
 })
 const sandbox = require("./sandbox")
 
-parentPort.on("close", process.exit)
-parentPort.on("message", (value) => {
+process.on("disconnect", process.exit)
+process.on("message", (value) => {
     if (typeof value === "string") {
         value = JSON.parse(value)
         onmessage(value)
@@ -35,7 +34,7 @@ function callApi(method, params = [], check = true) {
     if (check)
         precheck()
     const echo = String(Math.random()) + String(Date.now())
-    parentPort.postMessage({
+    process.send({
         uin: getSid(),
         method, params, echo
     })

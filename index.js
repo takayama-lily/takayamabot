@@ -1,9 +1,13 @@
 "use strict"
 const fs = require("fs")
 const path = require("path")
-const { Worker } = require("worker_threads")
+const cp = require("child_process")
 
 const bots = new Map
+
+/**
+ * @type {cp.ChildProcess}
+ */
 let worker
 let flag = true
 
@@ -11,12 +15,7 @@ let flag = true
     if (!flag)
         return
     console.log(Date(), "sandbox启动")
-    worker = new Worker(path.join(__dirname, "bridge.js"), {
-        resourceLimits: {
-            maxYoungGenerationSizeMb: 128,
-            maxOldGenerationSizeMb: 1024,
-        }
-    })
+    worker = cp.fork(path.join(__dirname, "bridge.js"))
     worker.on("error", (err) => {
         fs.appendFile("err.log", Date() + " " + err.stack + "\n", ()=>{})
     })
@@ -32,12 +31,12 @@ let flag = true
         if (ret instanceof Promise)
             ret = await ret
         ret.echo = value?.echo
-        worker.postMessage(ret)
+        worker.send(ret)
     })
 })()
 
 function listener(data) {
-    worker?.postMessage(JSON.stringify(data))
+    worker.send(JSON.stringify(data))
 }
 
 /**
