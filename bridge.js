@@ -21,8 +21,7 @@ const sandbox = require("./sandbox")
 
 process.on("disconnect", process.exit)
 process.on("message", (value) => {
-    if (typeof value === "string") {
-        value = JSON.parse(value)
+    if (!value.echo) {
         onmessage(value)
     } else {
         handler.get(value.echo)?.(value)
@@ -48,16 +47,15 @@ async function init(data, gid) {
     const bot = bots.get(data.self_id)
     if (!bot.groups) {
         sandbox.setEnv(data)
-        bot.groups = callApi("getGroupList", [], false)
-    }
-    if (bot.groups instanceof Promise) {
-        bot.groups = (await bot.groups).data
+        bot.groups = (await callApi("getGroupList", [], false)).data
+        bot.groups = new Map(bot.groups)
     }
     if (!gid) {
         for (const [gid, ginfo] of bot.groups) {
             sandbox.setEnv(data)
-            const members = (await callApi("getGroupMemberList", [gid], false)).data
+            let members = (await callApi("getGroupMemberList", [gid], false)).data
             if (!members) continue
+            members = new Map(members)
             ginfo.members = {}
             for (const [uid, minfo] of members) {
                 ginfo.members[uid] = minfo
@@ -70,8 +68,9 @@ async function init(data, gid) {
         sandbox.setEnv(data)
         const ginfo = (await callApi("getGroupInfo", [gid], false)).data
         sandbox.setEnv(data)
-        const members = (await callApi("getGroupMemberList", [gid], false)).data
+        let members = (await callApi("getGroupMemberList", [gid], false)).data
         if (!ginfo || !members) return
+        members = new Map(members)
         ginfo.members = {}
         for (const [uid, minfo] of members) {
             ginfo.members[uid] = minfo

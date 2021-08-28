@@ -27,16 +27,16 @@ let flag = true
         const bot = bots.get(value?.uin)
         if (!bot)
             return
-        let ret = bot[value?.method]?.apply(bot, value?.params)
-        if (ret instanceof Promise)
-            ret = await ret
+        let ret = await bot[value?.method]?.apply(bot, value?.params)
+        if (ret.data instanceof Map)
+            ret.data = Array.from(ret.data)
         ret.echo = value?.echo
         worker.send(ret)
     })
 })()
 
 function listener(data) {
-    worker.send(JSON.stringify(data))
+    worker.send(data)
 }
 
 /**
