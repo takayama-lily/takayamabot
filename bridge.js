@@ -31,7 +31,7 @@ process.on("message", (value) => {
 const handler = new Map
 function callApi(method, params = [], check = true) {
     if (check)
-        precheck(arguments.callee.caller)
+        precheck(()=>{})
     const echo = String(Math.random()) + String(Date.now())
     process.send({
         uin: getSid(),
