@@ -31,7 +31,7 @@ process.on("message", (value) => {
 const handler = new Map
 function callApi(method, params = [], check = true) {
     if (check)
-        precheck()
+        precheck(arguments.callee.caller)
     const echo = String(Math.random()) + String(Date.now())
     process.send({
         uin: getSid(),
@@ -143,11 +143,10 @@ const checkFrequency = ()=>{
     ++buckets[uid].cnt
 }
 
-const precheck = function() {
+const precheck = function(caller) {
     checkFrequency()
-    let fn = arguments.callee.caller
     let function_name = "current_called_api_"+Date.now()
-    sandbox.getContext()[function_name] = fn
+    sandbox.getContext()[function_name] = caller
     sandbox.exec(`if (typeof this.beforeApiCalled === "function") {
     this.beforeApiCalled(this.${function_name})
     delete this.${function_name}
