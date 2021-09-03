@@ -64,7 +64,7 @@ function deactivate(bot) {
 
 function destructor() {
     flag = false
-    worker?.terminate()
+    worker?.kill()
 }
 
 module.exports = {
