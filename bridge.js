@@ -259,8 +259,6 @@ function filter(msg) {
     else if (typeof msg !== "string")
         msg = stringify_config(msg)
     msg = msg.replace(ero, "⃺")
-    if (msg.length > 6000)
-        msg = msg.substr(0, 6000) + "\n..."
     if (!msg.length)
         return
     return msg
