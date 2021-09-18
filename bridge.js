@@ -257,6 +257,7 @@ sandbox.include("loadCanvasImage", loadCanvasImage)
 
 function loadCanvasImage(buf, cb) {
     const env = sandbox.getContext().data
+    checkAndAddAsyncQueue(this)
     loadImage(buf).then((image) => {
         asyncCallback(this, env, cb, [image])
     }).catch(console.log)
