@@ -257,8 +257,9 @@ sandbox.include("loadCanvasImage", loadCanvasImage)
 
 function loadCanvasImage(buf, cb) {
     const env = sandbox.getContext().data
-    cb = (img)=>asyncCallback(this, env, cb, [img])
-    loadImage(buf).then(cb).catch(console.log)
+    loadImage(buf).then((image) => {
+        asyncCallback(this, env, cb, [image])
+    }).catch(console.log)
 }
 
 // 色情敏感词过滤
