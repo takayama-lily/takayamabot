@@ -2,6 +2,7 @@ const http = require("http")
 const https = require("https")
 const zlib = require("zlib")
 const { createCanvas, loadImage } = require("canvas")
+const isValidUTF8 = require('utf-8-validate')
 const stringify = require('string.ify')
 const stringify_config = stringify.configure({
     pure:            false,
@@ -213,8 +214,10 @@ const fetch = function(url, callback = ()=>{}, headers = null) {
                             cb(buffer.toString())
                         })
                     } catch {}
-                } else
-                    cb(Buffer.concat(data).toString())
+                } else {
+                    const buf = Buffer.concat(data)
+                    cb(isValidUTF8(buf) ? buf.toString() : buf)
+                }
             })
         }).on("error", err=>cb(err))
     } catch (e) {
@@ -255,7 +258,7 @@ sandbox.include("loadCanvasImage", loadCanvasImage)
 function loadCanvasImage(buf, cb) {
     const env = sandbox.getContext().data
     cb = (img)=>asyncCallback(this, env, cb, [img])
-    loadImage(buf).then(cb)
+    loadImage(buf).then(cb).catch(console.log)
 }
 
 // 色情敏感词过滤
