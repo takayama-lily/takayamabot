@@ -27,14 +27,18 @@ let flag = true
         if (!bot)
             return
         let ret = await bot[value?.method]?.apply(bot, value?.params)
-        if (ret.data instanceof Map)
-            ret.data = Array.from(ret.data)
+        if (ret instanceof Map)
+            ret = Array.from(ret)
         ret.echo = value?.echo
-        worker.send(ret)
+        worker.send({
+            data: ret,
+            echo: value?.echo
+        })
     })
 })()
 
 function listener(data) {
+    data.self_id = this.uin
     worker.send(data)
 }
 

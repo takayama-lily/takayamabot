@@ -4,6 +4,7 @@ const zlib = require("zlib")
 const { createCanvas, loadImage } = require("canvas")
 const isValidUTF8 = require('utf-8-validate')
 const stringify = require('string.ify')
+const { segment } = require('oicq')
 const stringify_config = stringify.configure({
     pure:            false,
     json:            false,
@@ -260,7 +261,7 @@ function loadCanvasImage(buf, cb) {
     checkAndAddAsyncQueue(this)
     loadImage(buf).then((image) => {
         asyncCallback(this, env, cb, [image])
-    }).catch(console.log)
+    }).catch(()=>{})
 }
 
 // 色情敏感词过滤
@@ -284,17 +285,17 @@ $.getGroupInfo = ()=>{
 $.sendPrivateMsg = (uid, msg, escape_flag = false)=>{
     msg = filter(msg)
     if (!msg) return
-    callApi("sendPrivateMsg", [uid, msg, escape_flag])
+    callApi("sendPrivateMsg", [uid, segment.fromCqcode(msg)])
 }
 $.sendGroupMsg = (gid, msg, escape_flag = false)=>{
     msg = filter(msg)
     if (!msg) return
-    callApi("sendGroupMsg", [gid, msg, escape_flag])
+    callApi("sendGroupMsg", [gid, segment.fromCqcode(msg)])
 }
 $.sendDiscussMsg = (id, msg, escape_flag = false)=>{
     msg = filter(msg)
     if (!msg) return
-    callApi("sendDiscussMsg", [id, msg, escape_flag])
+    callApi("sendDiscussMsg", [id, segment.fromCqcode(msg)])
 }
 $.deleteMsg = (message_id)=>{
     callApi("deleteMsg", [message_id])
@@ -359,15 +360,18 @@ function onmessage(data) {
         let message = ""
         for (let v of data.message) {
             if (v.type === "text")
-                message += v.data.text
+                message += v.text
             else if (v.type === "at") {
-                if (v.data.qq === data.self_id && !message)
+                if (v.qq === data.self_id && !message)
                     continue
-                message += `'[CQ:at,qq=${v.data.qq}]'`
+                message += `'[CQ:at,qq=${v.qq}]'`
             } else {
-                message += `[CQ:${v.type}`
-                for (let k in v.data)
-                    message += `,${k}=${v.data[k]}`
+                for (let k in v) {
+                    if (k === "type")
+                        message += `[CQ:${v.type}`
+                    else
+                        message += `,${k}=${v[k]}`
+                }
                 message += `]`
             }
         }
@@ -386,6 +390,7 @@ function onmessage(data) {
             res = "<undefined>"
         res = filter(res)
         if (echo && res) {
+            res = segment.fromCqcode(res)
             if (data.message_type === "private")
                 callApi("sendPrivateMsg", [data.user_id, res], false)
             else if (data.message_type === "group")
