@@ -300,12 +300,12 @@ $.sendDiscussMsg = (id, msg, escape_flag = false)=>{
 $.deleteMsg = (message_id)=>{
     callApi("deleteMsg", [message_id])
 }
-$.setGroupKick = (uid, forever = false)=>{
-    callApi("setGroupKick", [getGid(), uid, forever])
-}
-$.setGroupBan = (uid, duration = 60)=>{
-    callApi("setGroupBan", [getGid(), uid, duration])
-}
+// $.setGroupKick = (uid, forever = false)=>{
+//     callApi("setGroupKick", [getGid(), uid, forever])
+// }
+// $.setGroupBan = (uid, duration = 60)=>{
+//     callApi("setGroupBan", [getGid(), uid, duration])
+// }
 $.setGroupAnonymousBan = (flag, duration = 60)=>{
     callApi("setGroupAnonymousBan", [getGid(), flag, duration])
 }
@@ -321,15 +321,15 @@ $.setGroupAnonymous = (enable = true)=>{
 $.setGroupCard = (uid, card)=>{
     callApi("setGroupCard", [getGid(), uid, card])
 }
-$.setGroupLeave = (dismiss = false)=>{
-    callApi("setGroupLeave", [getGid(), dismiss])
-}
+// $.setGroupLeave = (dismiss = false)=>{
+//     callApi("setGroupLeave", [getGid(), dismiss])
+// }
 $.setGroupSpecialTitle = (uid, title, duration = -1)=>{
     callApi("setGroupSpecialTitle", [getGid(), uid, title, duration])
 }
-$.sendGroupNotice = (content)=>{
-    callApi("sendGroupNotice", [getGid(), content])
-}
+// $.sendGroupNotice = (content)=>{
+//     callApi("sendGroupNotice", [getGid(), content])
+// }
 $.sendGroupPoke = (uid)=>{
     callApi("sendGroupPoke", [getGid(), uid])
 }
