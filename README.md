@@ -1,5 +1,5 @@
 # plugin-sandbox
 
-[abot](https://github.com/takayama-lily/abot) 的一个插件
+A plugin of abot
 
-将所有消息无差别地当做代码在沙盒中执行，并返回结果
+Run code in sandbox
