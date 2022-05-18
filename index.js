@@ -29,7 +29,8 @@ let flag = true
         let ret = await bot[value?.method]?.apply(bot, value?.params)
         if (ret instanceof Map)
             ret = Array.from(ret)
-        ret.echo = value?.echo
+        if (ret)
+            ret.echo = value?.echo
         worker.send({
             data: ret,
             echo: value?.echo

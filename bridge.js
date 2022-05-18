@@ -300,6 +300,13 @@ $.sendDiscussMsg = (id, msg, escape_flag = false)=>{
 $.deleteMsg = (message_id)=>{
     callApi("deleteMsg", [message_id])
 }
+$.sendGroupForwardMsg = (gid, msgs)=>{
+    callApi("makeForwardMsg", [msgs])
+    .then(xml=>{
+        callApi("sendGroupMsg", [gid, xml?.data])
+    })
+    .catch(()=>{})
+}
 // $.setGroupKick = (uid, forever = false)=>{
 //     callApi("setGroupKick", [getGid(), uid, forever])
 // }
@@ -312,9 +319,9 @@ $.setGroupAnonymousBan = (flag, duration = 60)=>{
 $.setGroupAdmin = (uid, enable = true)=>{
     callApi("setGroupAdmin", [getGid(), uid, enable])
 }
-$.setGroupWholeBan = (enable = true)=>{
-    callApi("setGroupWholeBan", [getGid(), enable])
-}
+// $.setGroupWholeBan = (enable = true)=>{
+//     callApi("setGroupWholeBan", [getGid(), enable])
+// }
 $.setGroupAnonymous = (enable = true)=>{
     callApi("setGroupAnonymous", [getGid(), enable])
 }
