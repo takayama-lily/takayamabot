@@ -24,12 +24,10 @@ let flag = true
     })
     worker.on("message", async (value) => {
         let bot = bots.get(value?.uin)
-        if (!bot)
-            return
         if (value.method === "sendGroupMsg") {
             const gid = Number(value?.params?.[0])
-            if (!bot.gl.has(gid)) {
-                for (const b of bots) {
+            if (!bot?.gl.has(gid)) {
+                for (const [_, b] of bots) {
                     if (b.gl.has(gid)) {
                         bot = b
                         break
@@ -37,6 +35,8 @@ let flag = true
                 }
             }
         }
+        if (!bot)
+            return
         let ret = await bot[value?.method]?.apply(bot, value?.params)
         if (ret instanceof Map)
             ret = Array.from(ret)
